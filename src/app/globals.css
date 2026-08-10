@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@import '../shared/styles/tokens.css';
+
+/*
+ * Shriftlar hozircha Next shablonidagi Geist.
+ * `design/tokens/tokens.md` da haqiqiy shrift ko'rsatilgach,
+ * `layout.tsx` dagi `next/font` chaqiruvi va shu yer almashtiriladi.
+ */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Klaviatura bilan yurganda fokus ko'rinib turishi kerak (a11y). */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
