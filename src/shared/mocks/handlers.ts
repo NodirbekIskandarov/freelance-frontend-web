@@ -2,7 +2,9 @@ import { delay, http, HttpResponse } from 'msw';
 
 import type { AuthTokens } from '../types/api';
 import type { AppUser, AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
+import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
 import { mockUsers } from './data';
+import { mockDownloads, mockStudentDashboard, mockStudentOrders } from './student';
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
 const LATENCY_MS = 300;
@@ -75,11 +77,36 @@ export function createHandlers(baseUrl: string) {
       return HttpResponse.json<AuthTokens>(tokens);
     }),
 
-    http.get(path('auth/me'), async () => {
+    /*
+     * Token tekshiruvi ataylab: `SessionBootstrap` eskirgan token bilan
+     * qanday yo'l tutishini shusiz sinab bo'lmaydi — mock hamma vaqt
+     * foydalanuvchi qaytarsa, 401 shoxi hech qachon ishlamaydi.
+     */
+    http.get(path('auth/me'), async ({ request }) => {
       await delay(LATENCY_MS);
+
+      if (request.headers.get('Authorization') !== `Bearer ${tokens.accessToken}`) {
+        return HttpResponse.json({ message: 'Seans tugagan' }, { status: 401 });
+      }
+
       const user = mockUsers[0];
       if (!user) return HttpResponse.json({ message: 'Foydalanuvchi topilmadi' }, { status: 404 });
       return HttpResponse.json<AppUser>(stripPassword(user));
+    }),
+
+    http.get(path('student/dashboard'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<StudentDashboard>(mockStudentDashboard);
+    }),
+
+    http.get(path('student/orders'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<StudentOrder[]>(mockStudentOrders);
+    }),
+
+    http.get(path('student/downloads'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<DownloadItem[]>(mockDownloads);
     }),
   ];
 }

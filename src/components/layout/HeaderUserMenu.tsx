@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import type { AppUser } from '@/shared/types/auth';
+import { baseApi, tokenStore } from '@/store/api';
 import { clearCurrentUser } from '@/store/slices/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 
@@ -33,8 +34,13 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
   const [open, setOpen] = useState(false);
 
   function handleLogout() {
-    // TODO(auth-phase): tokenlarni tozalash + /auth/logout mutatsiyasi shu yerga qo'shiladi.
+    // Uchala qadam ham zarur: token saqlanib qolsa `SessionBootstrap`
+    // keyingi yuklashda foydalanuvchini qaytarib qo'yadi; RTK Query keshi
+    // tozalanmasa esa oldingi foydalanuvchi ma'lumoti ekranda qoladi.
+    tokenStore.clear();
     dispatch(clearCurrentUser());
+    dispatch(baseApi.util.resetApiState());
+
     setOpen(false);
     router.push('/');
   }

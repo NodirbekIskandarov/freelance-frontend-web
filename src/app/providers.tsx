@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Provider } from 'react-redux';
 
+import { SessionBootstrap } from '@/features/auth/SessionBootstrap';
 import { makeStore, type AppStore } from '@/store';
 
 /**
@@ -57,7 +58,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <Provider store={storeRef.current}>
-      <MockGate>{children}</MockGate>
+      <MockGate>
+        <SessionBootstrap />
+        {children}
+      </MockGate>
     </Provider>
   );
 }

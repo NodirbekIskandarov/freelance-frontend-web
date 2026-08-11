@@ -42,6 +42,12 @@ function isAuthTokens(value: unknown): value is AuthTokens {
  * qolganlari o'sha promise'ni kutadi (single-flight). Aks holda har bir
  * so'rov alohida refresh yuborib, refresh token'ni bekor qilib qo'yishi mumkin.
  */
+/**
+ * 401 javobi "seans tugadi" degani BO'LMAGAN yo'llar.
+ * Bu ro'yxatdagi so'rovlar refresh/redirect oqimiga tushmaydi.
+ */
+const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'] as const;
+
 export function createAppBaseQuery({
   baseUrl,
   tokens,
@@ -85,11 +91,19 @@ export function createAppBaseQuery({
   return async (args, api, extraOptions) => {
     let result = await rawBaseQuery(args, api, extraOptions);
 
+    const requestUrl = typeof args === 'string' ? args : args.url;
     const isUnauthorized = result.error?.status === 401;
-    const isRefreshRequest =
-      typeof args !== 'string' && typeof args.url === 'string' && args.url === refreshPath;
 
-    if (!isUnauthorized || isRefreshRequest) {
+    /*
+     * Auth endpoint'laridan kelgan 401 — bu "seans tugadi" emas, "login
+     * yoki parol xato". Ularni refresh + redirect oqimidan chetlab
+     * o'tkazish SHART: aks holda noto'g'ri parol kiritilganda
+     * `onAuthFailure` sahifani qayta yuklaydi va foydalanuvchi endigina
+     * to'ldirgan forma tozalanib ketadi. Brauzerda aynan shu kuzatilgan.
+     */
+    const isAuthRequest = AUTH_PATHS.some((authPath) => requestUrl.startsWith(authPath));
+
+    if (!isUnauthorized || isAuthRequest) {
       return result;
     }
 
