@@ -1,5 +1,6 @@
 import { delay, http, HttpResponse } from 'msw';
 
+import type { Appeal, CreateAppealInput, SavedItem, Wallet } from '../types/account';
 import type { AuthTokens } from '../types/api';
 import type { AppUser, AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
 import {
@@ -15,6 +16,7 @@ import type {
   FreelancerOrder,
 } from '../types/freelancerCabinet';
 import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
+import { mockAppeals, mockSavedItems, mockWallet } from './account';
 import { mockUsers } from './data';
 import { mockExchangeOffers, mockExchangeTasks } from './exchange';
 import {
@@ -76,6 +78,8 @@ export function createHandlers(baseUrl: string) {
    * urug' holatiga qaytadi, bu mock uchun kutilgan xatti-harakat.
    */
   const tasks: ExchangeTask[] = [...mockExchangeTasks];
+  const savedItems: SavedItem[] = [...mockSavedItems];
+  const appeals: Appeal[] = [...mockAppeals];
 
   return [
     http.post(path('auth/login'), async ({ request }) => {
@@ -173,6 +177,51 @@ export function createHandlers(baseUrl: string) {
     http.get(path('student/downloads'), async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json<DownloadItem[]>(mockDownloads);
+    }),
+
+    http.get(path('account/saved'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<SavedItem[]>(savedItems);
+    }),
+
+    http.delete(path('account/saved/:itemId'), async ({ params }) => {
+      await delay(LATENCY_MS);
+
+      const index = savedItems.findIndex((item) => item.id === String(params.itemId));
+      if (index === -1) {
+        return HttpResponse.json({ message: 'Element topilmadi' }, { status: 404 });
+      }
+
+      savedItems.splice(index, 1);
+      return new HttpResponse(null, { status: 204 });
+    }),
+
+    http.get(path('account/wallet'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<Wallet>(mockWallet);
+    }),
+
+    http.get(path('account/appeals'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<Appeal[]>(appeals);
+    }),
+
+    http.post(path('account/appeals'), async ({ request }) => {
+      await delay(LATENCY_MS);
+
+      const body = (await request.json()) as CreateAppealInput;
+      const created: Appeal = {
+        id: `ap-${Date.now()}`,
+        reference: `MRJ-${3100 + appeals.length}`,
+        subject: body.subject,
+        message: body.message,
+        status: 'open',
+        createdAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
+        reply: null,
+      };
+
+      appeals.unshift(created);
+      return HttpResponse.json<Appeal>(created, { status: 201 });
     }),
 
     http.get(path('freelancer/dashboard'), async () => {

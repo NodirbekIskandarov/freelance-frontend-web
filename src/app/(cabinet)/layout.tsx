@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+import { CabinetShell } from '@/components/layout/CabinetShell';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { RequireAuth } from '@/features/auth/RequireAuth';
@@ -22,7 +23,9 @@ export default function CabinetLayout({ children }: { children: ReactNode }) {
     <>
       <Header />
       <main className="flex-1">
-        <RequireAuth>{children}</RequireAuth>
+        <RequireAuth>
+          <CabinetShell>{children}</CabinetShell>
+        </RequireAuth>
       </main>
       <Footer />
     </>

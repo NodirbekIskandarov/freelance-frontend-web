@@ -1,4 +1,5 @@
 import { Container } from '@/components/ui/Container';
+import { LANDING_FAQ } from '@/content/faq';
 
 import { FAQ } from './FAQ';
 import { PopularSubjects } from './PopularSubjects';
@@ -9,7 +10,7 @@ export function LandingBottomGrid() {
       <Container>
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-10 xl:gap-14">
           <PopularSubjects />
-          <FAQ />
+          <FAQ items={LANDING_FAQ} />
         </div>
       </Container>
     </section>

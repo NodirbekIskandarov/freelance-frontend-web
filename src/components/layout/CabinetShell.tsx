@@ -1,9 +1,12 @@
 'use client';
 
 import {
+  Bookmark,
   Briefcase,
+  Coins,
   Download,
   LayoutDashboard,
+  LifeBuoy,
   ShoppingBag,
   UserRound,
   Wallet,
@@ -15,6 +18,8 @@ import type { ReactNode } from 'react';
 
 import { Container } from '@/components/ui/Container';
 import { cn } from '@/lib/cn';
+import { selectCurrentUser } from '@/store/slices/authSlice';
+import { useAppSelector } from '@/store/hooks';
 
 interface CabinetNavItem {
   label: string;
@@ -31,6 +36,13 @@ interface CabinetNavItem {
  * ("Functions cannot be passed directly to Client Components").
  * Konfiguratsiyani mijoz tomonida saqlash bu chegarani butunlay yo'q qiladi.
  */
+/** Ikkala rolda ham bir xil bo'lgan, rolga bog'liq bo'lmagan bo'limlar. */
+const SHARED_NAV: CabinetNavItem[] = [
+  { label: 'Saqlanganlar', href: '/saved', icon: Bookmark },
+  { label: 'Hamyon', href: '/wallet', icon: Wallet },
+  { label: 'Murojaatlar', href: '/appeals', icon: LifeBuoy },
+];
+
 const NAV: Record<CabinetVariant, { title: string; items: CabinetNavItem[] }> = {
   student: {
     title: 'Talaba kabineti',
@@ -39,6 +51,7 @@ const NAV: Record<CabinetVariant, { title: string; items: CabinetNavItem[] }> = 
       { label: 'Buyurtmalar', href: '/student/orders', icon: ShoppingBag },
       { label: 'Yuklamalar', href: '/student/downloads', icon: Download },
       { label: 'Profil', href: '/student/profile', icon: UserRound },
+      ...SHARED_NAV,
     ],
   },
   freelancer: {
@@ -46,8 +59,9 @@ const NAV: Record<CabinetVariant, { title: string; items: CabinetNavItem[] }> = 
     items: [
       { label: 'Bosh sahifa', href: '/freelancer/dashboard', icon: LayoutDashboard },
       { label: 'Buyurtmalar', href: '/freelancer/orders', icon: Briefcase },
-      { label: 'Daromad', href: '/freelancer/earnings', icon: Wallet },
+      { label: 'Daromad', href: '/freelancer/earnings', icon: Coins },
       { label: 'Profil', href: '/freelancer/profile', icon: UserRound },
+      ...SHARED_NAV,
     ],
   },
 };
@@ -57,15 +71,17 @@ export type CabinetVariant = 'student' | 'freelancer';
 /**
  * Talaba va freelancer kabinetlari uchun umumiy qobiq: chapda navigatsiya,
  * o'ngda kontent. Ikkalasi bir xil tuzilishga ega, faqat menyu farq qiladi.
+ *
+ * Variant prop orqali emas, kirgan foydalanuvchidan olinadi. Ilgari uni
+ * har bir rol layout'i uzatardi, ammo `/saved`, `/wallet` va `/appeals`
+ * ikkala rolga ham tegishli — ular uchun qaysi variantni uzatish
+ * kerakligi noaniq edi va natijada bu sahifalar qobiqsiz qolgandi.
  */
-export function CabinetShell({
-  variant,
-  children,
-}: {
-  variant: CabinetVariant;
-  children: ReactNode;
-}) {
+export function CabinetShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const user = useAppSelector(selectCurrentUser);
+
+  const variant: CabinetVariant = user?.status === 'freelancer' ? 'freelancer' : 'student';
   const { title, items } = NAV[variant];
 
   return (

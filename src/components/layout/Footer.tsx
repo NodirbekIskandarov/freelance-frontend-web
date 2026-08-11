@@ -115,12 +115,12 @@ export function Footer() {
 
           <FooterCol title="Freelancerlar">
             <FooterLink href="/freelance/apply">Freelancer bo&apos;lish</FooterLink>
-            <FooterLink href="/freelance">Birja</FooterLink>
-            <FooterLink href="/freelancer/profile">Profil</FooterLink>
+            <FooterLink href="/freelance">Freelancer qidirish</FooterLink>
+            <FooterLink href="/freelance/exchange">Birja</FooterLink>
           </FooterCol>
 
           <FooterCol title="Yordam">
-            <FooterLink href="/#faq">FAQ</FooterLink>
+            <FooterLink href="/faq">FAQ</FooterLink>
             <FooterLink href="/legal">Qoidalar</FooterLink>
             <FooterLink href="/about">Biz haqimizda</FooterLink>
             <FooterLink href="/appeals">Murojaatlar</FooterLink>

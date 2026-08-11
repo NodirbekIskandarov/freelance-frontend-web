@@ -12,5 +12,5 @@ export const PUBLIC_NAV_ITEMS: PublicNavItem[] = [
   { label: 'Konspekt', href: '/#xizmatlar', comingSoon: true },
   { label: 'Tayyor materiallar', href: '/materials' },
   { label: 'Freelancerlar', href: '/freelance' },
-  { label: 'Yordam', href: '/#faq' },
+  { label: 'Yordam', href: '/faq' },
 ];
