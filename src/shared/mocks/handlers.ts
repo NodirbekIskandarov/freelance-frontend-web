@@ -2,8 +2,15 @@ import { delay, http, HttpResponse } from 'msw';
 
 import type { AuthTokens } from '../types/api';
 import type { AppUser, AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
+import {
+  WORK_DIRECTION_LABELS,
+  type CreateExchangeTaskInput,
+  type ExchangeOffer,
+  type ExchangeTask,
+} from '../types/freelance';
 import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
 import { mockUsers } from './data';
+import { mockExchangeOffers, mockExchangeTasks } from './exchange';
 import { mockDownloads, mockStudentDashboard, mockStudentOrders } from './student';
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
@@ -29,6 +36,14 @@ function stripPassword(user: (typeof mockUsers)[number]): AppUser {
  */
 export function createHandlers(baseUrl: string) {
   const path = (suffix: string) => `${baseUrl.replace(/\/$/, '')}/${suffix}`;
+
+  /*
+   * Nusxa, urug'ning o'zi emas: yaratilgan topshiriq shu ro'yxatga
+   * qo'shiladi va keyingi `GET`da qaytadi — POST'dan keyin ro'yxat
+   * yangilanishini mock ham to'g'ri ko'rsatadi. Sahifa yangilanganda
+   * urug' holatiga qaytadi, bu mock uchun kutilgan xatti-harakat.
+   */
+  const tasks: ExchangeTask[] = [...mockExchangeTasks];
 
   return [
     http.post(path('auth/login'), async ({ request }) => {
@@ -107,6 +122,43 @@ export function createHandlers(baseUrl: string) {
     http.get(path('student/downloads'), async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json<DownloadItem[]>(mockDownloads);
+    }),
+
+    http.get(path('exchange/tasks'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<ExchangeTask[]>(tasks);
+    }),
+
+    http.post(path('exchange/tasks'), async ({ request }) => {
+      await delay(LATENCY_MS);
+
+      const body = (await request.json()) as CreateExchangeTaskInput;
+      const created: ExchangeTask = {
+        id: `extask-${Date.now()}`,
+        referenceCode: `BRJ-${1000 + tasks.length + 1}`,
+        title: body.title,
+        direction: body.direction,
+        directionLabel: WORK_DIRECTION_LABELS[body.direction],
+        taskFile: body.fileName ? { fileName: body.fileName, fileSize: 180_000 } : null,
+        deadline: body.deadline,
+        comment: body.comment ?? null,
+        status: 'yangi',
+        offersCount: 0,
+        agreedPrice: null,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Ro'yxat boshiga — birja `createdAt` kamayish tartibida ko'rsatiladi.
+      tasks.unshift(created);
+      return HttpResponse.json<ExchangeTask>(created, { status: 201 });
+    }),
+
+    http.get(path('exchange/tasks/:taskId/offers'), async ({ params }) => {
+      await delay(LATENCY_MS);
+      const taskId = String(params.taskId);
+      return HttpResponse.json<ExchangeOffer[]>(
+        mockExchangeOffers.filter((offer) => offer.taskId === taskId),
+      );
     }),
   ];
 }

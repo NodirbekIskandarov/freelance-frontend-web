@@ -5,8 +5,19 @@ import { env } from '@/lib/env';
 
 export const tokenStore = createLocalStorageTokenStore('web.auth');
 
-/** Kirishni talab qiladigan bo'limlar — `robots.ts` dagi ro'yxat bilan bir xil. */
-const PROTECTED_PREFIXES = ['/student', '/freelancer', '/wallet', '/saved', '/appeals'];
+/**
+ * Kirishni talab qiladigan bo'limlar — `robots.ts` dagi ro'yxat bilan bir xil.
+ * `/freelance/exchange` to'liq yozilgan: `/freelance` ning o'zi ochiq katalog,
+ * uni ham qamrab olsa mehmon qidiruv sahifasidan quvilardi.
+ */
+const PROTECTED_PREFIXES = [
+  '/student',
+  '/freelancer',
+  '/freelance/exchange',
+  '/wallet',
+  '/saved',
+  '/appeals',
+];
 
 /**
  * Bo'sh `endpoints` — bu ataylab.

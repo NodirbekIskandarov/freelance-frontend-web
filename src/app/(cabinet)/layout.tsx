@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { RequireAuth } from '@/features/auth/RequireAuth';
 
 /**
  * Kabinet sahifalari — shaxsiy, indekslanmasligi kerak.
@@ -20,7 +21,9 @@ export default function CabinetLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <RequireAuth>{children}</RequireAuth>
+      </main>
       <Footer />
     </>
   );
