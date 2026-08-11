@@ -10,6 +10,7 @@ import { TextField } from '@/components/ui/Field';
 import { getApiErrorMessage } from '@/shared/api';
 
 import { useLoginMutation } from './authApi';
+import { cabinetPathFor } from './cabinetPath';
 
 export function LoginForm() {
   const router = useRouter();
@@ -22,8 +23,8 @@ export function LoginForm() {
     event.preventDefault();
 
     try {
-      await login({ phone, password }).unwrap();
-      router.push('/student/dashboard');
+      const { user } = await login({ phone, password }).unwrap();
+      router.push(cabinetPathFor(user));
     } catch {
       // Xato `error` orqali ko'rsatiladi — bu yerda jim o'tamiz,
       // aks holda konsolda ushlanmagan promise xatosi chiqadi.

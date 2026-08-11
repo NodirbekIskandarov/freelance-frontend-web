@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { cabinetPathFor } from '@/features/auth/cabinetPath';
 import { cn } from '@/lib/cn';
 import type { AppUser } from '@/shared/types/auth';
 import { baseApi, tokenStore } from '@/store/api';
@@ -18,14 +19,6 @@ function initialsOf(name: string): string {
     .map((part) => part[0])
     .join('')
     .toUpperCase();
-}
-
-/**
- * Rolga qarab kabinet yo'li boshqacha — talaba va freelancer alohida
- * bo'limlarda ishlaydi.
- */
-function cabinetPath(user: AppUser): string {
-  return user.status === 'freelancer' ? '/freelancer' : '/student/dashboard';
 }
 
 export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile?: boolean }) {
@@ -49,7 +42,7 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
     return (
       <div className="flex flex-col gap-2">
         <Link
-          href={cabinetPath(user)}
+          href={cabinetPathFor(user)}
           className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
         >
           <LayoutDashboard className="size-4" />
@@ -98,7 +91,7 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
             )}
           >
             <Link
-              href={cabinetPath(user)}
+              href={cabinetPathFor(user)}
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >

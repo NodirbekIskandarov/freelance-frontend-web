@@ -9,9 +9,19 @@ import {
   type ExchangeTask,
 } from '../types/freelance';
 import type { FreelancerApplicationResponse } from '../types/freelancerApplication';
+import type {
+  FreelancerDashboard,
+  FreelancerEarnings,
+  FreelancerOrder,
+} from '../types/freelancerCabinet';
 import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
 import { mockUsers } from './data';
 import { mockExchangeOffers, mockExchangeTasks } from './exchange';
+import {
+  mockFreelancerDashboard,
+  mockFreelancerEarnings,
+  mockFreelancerOrders,
+} from './freelancerCabinet';
 import { mockDownloads, mockStudentDashboard, mockStudentOrders } from './student';
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
@@ -20,10 +30,28 @@ const LATENCY_MS = 300;
 /** Mock SMS kodi — foydalanuvchiga formada ochiq ko'rsatiladi. */
 const DEMO_SMS_CODE = '111111';
 
-const tokens: AuthTokens = {
-  accessToken: 'mock-access-token',
-  refreshToken: 'mock-refresh-token',
-};
+/**
+ * Token foydalanuvchi id'sini o'z ichiga oladi.
+ *
+ * Ilgari token barcha uchun bir xil edi va `/auth/me` doim birinchi
+ * foydalanuvchini qaytarardi — freelancer sifatida kirib sahifani
+ * yangilagan odam talabaga aylanib qolardi. Haqiqiy backend'da bu ish
+ * JWT ichidagi `sub` bilan bajariladi; mock shu xatti-harakatni
+ * eng sodda ko'rinishda takrorlaydi.
+ */
+function tokensFor(userId: string): AuthTokens {
+  return {
+    accessToken: `mock-access-token.${userId}`,
+    refreshToken: `mock-refresh-token.${userId}`,
+  };
+}
+
+function userIdFromAuthHeader(request: Request): string | null {
+  const header = request.headers.get('Authorization');
+  const prefix = 'Bearer mock-access-token.';
+  if (!header?.startsWith(prefix)) return null;
+  return header.slice(prefix.length) || null;
+}
 
 function stripPassword(user: (typeof mockUsers)[number]): AppUser {
   const { password: _password, ...rest } = user;
@@ -63,7 +91,10 @@ export function createHandlers(baseUrl: string) {
         );
       }
 
-      return HttpResponse.json<AuthResponse>({ ...tokens, user: stripPassword(user) });
+      return HttpResponse.json<AuthResponse>({
+        ...tokensFor(user.id),
+        user: stripPassword(user),
+      });
     }),
 
     http.post(path('auth/register'), async ({ request }) => {
@@ -77,23 +108,41 @@ export function createHandlers(baseUrl: string) {
         );
       }
 
-      const user: AppUser = {
+      const user = {
         id: String(mockUsers.length + 1),
         publicId: `USR-${100000 + mockUsers.length + 1}`,
         fullName: body.fullName ?? '',
         phone: body.phone ?? '',
         email: null,
         avatarUrl: null,
-        status: 'student',
-        createdAt: new Date(0).toISOString(),
+        status: 'student' as const,
+        createdAt: new Date().toISOString(),
+        password: body.password ?? '',
       };
 
-      return HttpResponse.json<AuthResponse>({ ...tokens, user });
+      /*
+       * Ro'yxatga QO'SHILADI: aks holda yangi foydalanuvchi kabinetga
+       * kirardi-yu, sahifani yangilashi bilan `/auth/me` uni topolmay
+       * seansdan chiqarib yuborardi.
+       */
+      mockUsers.push(user);
+
+      return HttpResponse.json<AuthResponse>({
+        ...tokensFor(user.id),
+        user: stripPassword(user),
+      });
     }),
 
-    http.post(path('auth/refresh'), async () => {
+    http.post(path('auth/refresh'), async ({ request }) => {
       await delay(LATENCY_MS);
-      return HttpResponse.json<AuthTokens>(tokens);
+
+      const body = (await request.json()) as { refreshToken?: string };
+      const userId = body.refreshToken?.replace('mock-refresh-token.', '');
+      if (!userId || !mockUsers.some((candidate) => candidate.id === userId)) {
+        return HttpResponse.json({ message: "Refresh token yaroqsiz" }, { status: 401 });
+      }
+
+      return HttpResponse.json<AuthTokens>(tokensFor(userId));
     }),
 
     /*
@@ -104,12 +153,10 @@ export function createHandlers(baseUrl: string) {
     http.get(path('auth/me'), async ({ request }) => {
       await delay(LATENCY_MS);
 
-      if (request.headers.get('Authorization') !== `Bearer ${tokens.accessToken}`) {
-        return HttpResponse.json({ message: 'Seans tugagan' }, { status: 401 });
-      }
+      const userId = userIdFromAuthHeader(request);
+      const user = userId ? mockUsers.find((candidate) => candidate.id === userId) : undefined;
 
-      const user = mockUsers[0];
-      if (!user) return HttpResponse.json({ message: 'Foydalanuvchi topilmadi' }, { status: 404 });
+      if (!user) return HttpResponse.json({ message: 'Seans tugagan' }, { status: 401 });
       return HttpResponse.json<AppUser>(stripPassword(user));
     }),
 
@@ -126,6 +173,21 @@ export function createHandlers(baseUrl: string) {
     http.get(path('student/downloads'), async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json<DownloadItem[]>(mockDownloads);
+    }),
+
+    http.get(path('freelancer/dashboard'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<FreelancerDashboard>(mockFreelancerDashboard);
+    }),
+
+    http.get(path('freelancer/orders'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<FreelancerOrder[]>(mockFreelancerOrders);
+    }),
+
+    http.get(path('freelancer/earnings'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<FreelancerEarnings>(mockFreelancerEarnings);
     }),
 
     http.get(path('exchange/tasks'), async () => {

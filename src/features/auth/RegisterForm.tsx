@@ -10,6 +10,7 @@ import { TextField } from '@/components/ui/Field';
 import { getApiErrorMessage } from '@/shared/api';
 
 import { useRegisterMutation } from './authApi';
+import { cabinetPathFor } from './cabinetPath';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -32,8 +33,8 @@ export function RegisterForm() {
     setPasswordError(undefined);
 
     try {
-      await register({ fullName, phone, password }).unwrap();
-      router.push('/student/dashboard');
+      const { user } = await register({ fullName, phone, password }).unwrap();
+      router.push(cabinetPathFor(user));
     } catch {
       // Server xatosi `error` orqali ko'rsatiladi.
     }
