@@ -1,0 +1,24 @@
+import Link from 'next/link';
+
+import { cn } from '@/lib/cn';
+
+export function SiteLogo({
+  className,
+  accentClassName,
+}: {
+  className?: string;
+  accentClassName?: string;
+}) {
+  return (
+    <Link
+      href="/"
+      className={cn(
+        'inline-flex items-center rounded-lg text-xl font-bold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:text-2xl',
+        className,
+      )}
+    >
+      Yopamiz
+      <span className={cn('text-emerald-500', accentClassName)}>.uz</span>
+    </Link>
+  );
+}

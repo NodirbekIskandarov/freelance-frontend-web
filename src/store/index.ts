@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 
 import { baseApi } from './api';
+import { authReducer } from './slices/authSlice';
 
 /**
  * Store fabrikasi — modul darajasidagi singleton EMAS.
@@ -14,6 +15,7 @@ export function makeStore() {
   const store = configureStore({
     reducer: {
       [baseApi.reducerPath]: baseApi.reducer,
+      auth: authReducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
     devTools: process.env.NODE_ENV !== 'production',

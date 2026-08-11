@@ -1,33 +1,31 @@
-import type { User } from '../types/api';
+import type { AppUser } from '../types/auth';
 
 /**
- * Soxta ma'lumotlar. Backend tayyor bo'lgach bu papka butunlay o'chiriladi.
- * Shakli `types/api.ts` bilan bir xil — shuning uchun real API'ga
- * o'tganda komponentlar o'zgarmaydi.
+ * Soxta foydalanuvchilar. Backend tayyor bo'lgach bu papka butunlay
+ * o'chiriladi — shakli `types/auth.ts` bilan bir xil, komponentlar
+ * o'zgarmaydi.
  */
-export const mockUsers: User[] = [
+export const mockUsers: (AppUser & { password: string })[] = [
   {
     id: '1',
-    email: 'admin@example.com',
-    name: 'Admin Adminov',
-    role: 'admin',
+    publicId: 'USR-100001',
+    fullName: 'Dilnoza Karimova',
+    phone: '+998901112233',
+    email: 'dilnoza@example.com',
     avatarUrl: null,
-    createdAt: '2026-01-15T09:00:00.000Z',
+    status: 'student',
+    createdAt: '2026-02-03T14:20:00.000Z',
+    password: 'parol123',
   },
   {
     id: '2',
-    email: 'dilnoza@example.com',
-    name: 'Dilnoza Karimova',
-    role: 'user',
-    avatarUrl: null,
-    createdAt: '2026-02-03T14:20:00.000Z',
-  },
-  {
-    id: '3',
+    publicId: 'USR-100002',
+    fullName: 'Jasur Toshmatov',
+    phone: '+998907778899',
     email: 'jasur@example.com',
-    name: 'Jasur Toshmatov',
-    role: 'user',
     avatarUrl: null,
+    status: 'freelancer',
     createdAt: '2026-03-21T11:45:00.000Z',
+    password: 'parol123',
   },
 ];

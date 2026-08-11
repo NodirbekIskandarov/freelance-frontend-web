@@ -2,26 +2,199 @@
 @import '../shared/styles/tokens.css';
 
 /*
- * Shriftlar hozircha Next shablonidagi Geist.
- * `design/tokens/tokens.md` da haqiqiy shrift ko'rsatilgach,
- * `layout.tsx` dagi `next/font` chaqiruvi va shu yer almashtiriladi.
+ * Tailwind v4 da `dark:` sukut bo'yicha `prefers-color-scheme`ga tayanadi.
+ * Bizda tema `.dark` klassi bilan boshqariladi (foydalanuvchi tanlovi +
+ * soat bo'yicha avtomatik, `layout.tsx` dagi skript), shuning uchun
+ * variantni qayta e'lon qilamiz. Bu qator bo'lmasa barcha `dark:*`
+ * utility'lar jim turadi va tungi rejimda oq kartalar qolib ketadi.
  */
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
   body {
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Klaviatura bilan yurganda fokus ko'rinib turishi kerak (a11y). */
   :focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-emerald-500);
     outline-offset: 2px;
+  }
+}
+
+/*
+ * Hero fon animatsiyalari — eski ilovadan aynan ko'chirilgan (blob suzishi,
+ * orbital chiziqlar). `prefers-reduced-motion` uchun pastda o'chiriladi.
+ */
+@keyframes hero-blob-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+  33% {
+    transform: translate(8%, -6%) scale(1.08);
+    opacity: 0.45;
+  }
+  66% {
+    transform: translate(-5%, 4%) scale(0.95);
+    opacity: 0.3;
+  }
+}
+
+@keyframes hero-blob-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(-10%, 8%) scale(1.1);
+    opacity: 0.35;
+  }
+}
+
+@keyframes hero-blob-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  40% {
+    transform: translate(6%, -8%) scale(1.05);
+    opacity: 0.3;
+  }
+}
+
+@keyframes hero-orbit {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes hero-orbit-reverse {
+  from {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
+.hero-blob {
+  animation-duration: 12s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.hero-blob-1 {
+  animation-name: hero-blob-1;
+}
+
+.hero-blob-2 {
+  animation-name: hero-blob-2;
+  animation-duration: 14s;
+  animation-delay: -2s;
+}
+
+.hero-blob-3 {
+  animation-name: hero-blob-3;
+  animation-duration: 16s;
+  animation-delay: -4s;
+}
+
+.hero-orbit {
+  animation: hero-orbit 40s linear infinite;
+}
+
+.hero-orbit-reverse {
+  animation: hero-orbit-reverse 55s linear infinite;
+}
+
+@keyframes testimonial-blob-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.45;
+  }
+  33% {
+    transform: translate(6%, -8%) scale(1.08);
+    opacity: 0.6;
+  }
+  66% {
+    transform: translate(-4%, 5%) scale(0.96);
+    opacity: 0.4;
+  }
+}
+
+@keyframes testimonial-blob-2 {
+  0%,
+  100% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-50%, -10%) scale(1.12);
+    opacity: 0.55;
+  }
+}
+
+@keyframes testimonial-blob-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.42;
+  }
+  40% {
+    transform: translate(-8%, 6%) scale(1.06);
+    opacity: 0.58;
+  }
+  70% {
+    transform: translate(5%, -4%) scale(0.94);
+    opacity: 0.38;
+  }
+}
+
+.testimonial-blob {
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.testimonial-blob-1 {
+  animation-name: testimonial-blob-1;
+  animation-duration: 16s;
+}
+
+.testimonial-blob-2 {
+  animation-name: testimonial-blob-2;
+  animation-duration: 18s;
+  animation-delay: -3s;
+}
+
+.testimonial-blob-3 {
+  animation-name: testimonial-blob-3;
+  animation-duration: 20s;
+  animation-delay: -6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-blob,
+  .hero-orbit,
+  .hero-orbit-reverse,
+  .testimonial-blob {
+    animation: none;
   }
 }

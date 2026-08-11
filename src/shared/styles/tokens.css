@@ -1,74 +1,103 @@
 /*
- * Umumiy dizayn tokenlari (Tailwind v4 — CSS-first konfiguratsiya).
+ * Yopamiz.uz — dizayn tokenlari (Tailwind v4, CSS-first).
  *
- * DIQQAT: hozirgi qiymatlar VAQTINCHA o'rin egallovchi (placeholder).
- * `design/tokens/tokens.md` fayli to'lgach, shu yer haqiqiy Figma
- * qiymatlari bilan almashtiriladi va butun loyiha avtomatik yangilanadi.
+ * Manba: `design/web/Yopamiz-uz-main.zip` (eski Next.js ilova) —
+ * `app/globals.css`, shadcn/ui asosidagi oklch tizimi + emerald brend rangi.
+ * Qiymatlar taxmin qilinmagan, eski ilovaning o'zidan ko'chirilgan.
  *
- * Ikkala app ham (web va admin) shu faylni import qiladi, shuning uchun
- * rang yoki shrift bir joyda o'zgaradi.
+ * Tungi rejim: eski ilova `prefers-color-scheme` emas, `.dark` klassiga
+ * tayanadi (soat bo'yicha avtomatik + qo'lda tanlash uchun). Shu sabab
+ * bu yerda ham `@media (prefers-color-scheme)` emas, `.dark` selektori
+ * ishlatiladi — boshqarish `src/app/layout.tsx` dagi inline skriptda.
  */
 
 @theme {
-  /* --- Brend ranglari --- */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  /* --- Brend: emerald (o'lchangan: rgba(16,185,129)) --- */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
 
-  /* --- Neytral (matn, chegara, fon) --- */
-  --color-ink-50: #f8fafc;
-  --color-ink-100: #f1f5f9;
-  --color-ink-200: #e2e8f0;
-  --color-ink-300: #cbd5e1;
-  --color-ink-400: #94a3b8;
-  --color-ink-500: #64748b;
-  --color-ink-600: #475569;
-  --color-ink-700: #334155;
-  --color-ink-800: #1e293b;
-  --color-ink-900: #0f172a;
-
-  /* --- Holat ranglari --- */
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-info: #0284c7;
-
-  /* --- Radius --- */
-  --radius-control: 0.5rem; /* tugma, input */
-  --radius-card: 0.75rem;
-  --radius-modal: 1rem;
-
-  /* --- Soya --- */
-  --shadow-card: 0 1px 3px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.04);
-  --shadow-dropdown: 0 10px 25px rgb(15 23 42 / 0.1);
-  --shadow-modal: 0 25px 50px rgb(15 23 42 / 0.15);
-
-  /* --- Konteyner --- */
-  --spacing-container: 80rem; /* 1280px */
+  /* --- Radius (shadcn --radius=0.625rem asosida) --- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.375rem;
 }
 
 /*
- * Semantik qatlam: komponentlar to'g'ridan-to'g'ri `brand-600` emas,
- * `--color-primary` kabi ma'noli nomlarga tayanadi. Shunda dizaynda
- * brend rangi almashsa, komponentlarga tegmasdan shu yer o'zgaradi.
+ * shadcn/ui asosiy tokenlari — oklch. Yorug' rejim (:root) va qorong'i
+ * rejim (.dark) qiymatlari eski ilovadan aynan ko'chirilgan.
  */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+}
+
+/* Tailwind v4: yuqoridagi CSS o'zgaruvchilarni utility'larga bog'laydi. */
 @theme inline {
-  --color-primary: var(--color-brand-600);
-  --color-primary-hover: var(--color-brand-700);
-  --color-primary-soft: var(--color-brand-50);
-
-  --color-surface: #ffffff;
-  --color-surface-muted: var(--color-ink-50);
-  --color-border: var(--color-ink-200);
-
-  --color-text: var(--color-ink-900);
-  --color-text-muted: var(--color-ink-500);
-  --color-text-inverse: #ffffff;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }

@@ -1,10 +1,8 @@
 import { delay, http, HttpResponse } from 'msw';
 
-import type { AuthTokens, LoginResponse, Paginated, User } from '../types/api';
+import type { AuthTokens } from '../types/api';
+import type { AppUser, AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
 import { mockUsers } from './data';
-
-// Yo'llar wildcard bilan boshlanadi — shunda handler baseUrl'dan qat'i nazar
-// ishlaydi (web va admin turli portlarda, .env da manzil o'zgarishi mumkin).
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
 const LATENCY_MS = 300;
@@ -14,77 +12,74 @@ const tokens: AuthTokens = {
   refreshToken: 'mock-refresh-token',
 };
 
-function paginate<T>(items: T[], page: number, limit: number): Paginated<T> {
-  const start = (page - 1) * limit;
-  return {
-    items: items.slice(start, start + limit),
-    pagination: {
-      page,
-      limit,
-      total: items.length,
-      totalPages: Math.max(1, Math.ceil(items.length / limit)),
-    },
-  };
+function stripPassword(user: (typeof mockUsers)[number]): AppUser {
+  const { password: _password, ...rest } = user;
+  return rest;
 }
 
-export const handlers = [
-  http.post('*/auth/login', async ({ request }) => {
-    await delay(LATENCY_MS);
+/**
+ * Handler'lar API manziliga bog'lab yaratiladi — `createHandlers(baseUrl)`.
+ *
+ * Wildcard (`*`) yo'llar ATAYLAB ishlatilmaydi: `admin/` loyihasida
+ * `*[/]users/:id` naqshi Vite'ning dev modul so'rovini ushlab qolib,
+ * "Failed to fetch dynamically imported module" xatosiga olib kelgan edi.
+ * To'liq manzilga bog'langanda handler faqat haqiqiy API so'rovlarini ushlaydi.
+ */
+export function createHandlers(baseUrl: string) {
+  const path = (suffix: string) => `${baseUrl.replace(/\/$/, '')}/${suffix}`;
 
-    const body = (await request.json()) as { email?: string; password?: string };
-    const user = mockUsers.find((candidate) => candidate.email === body.email);
+  return [
+    http.post(path('auth/login'), async ({ request }) => {
+      await delay(LATENCY_MS);
 
-    if (!user || !body.password) {
-      return HttpResponse.json(
-        { message: 'Email yoki parol noto‘g‘ri' },
-        { status: 401 },
-      );
-    }
+      const body = (await request.json()) as Partial<LoginRequest>;
+      const user = mockUsers.find((candidate) => candidate.phone === body.phone);
 
-    return HttpResponse.json<LoginResponse>({ ...tokens, user });
-  }),
+      if (!user || user.password !== body.password) {
+        return HttpResponse.json(
+          { message: "Telefon raqam yoki parol noto'g'ri" },
+          { status: 401 },
+        );
+      }
 
-  http.post('*/auth/refresh', async () => {
-    await delay(LATENCY_MS);
-    return HttpResponse.json<AuthTokens>(tokens);
-  }),
+      return HttpResponse.json<AuthResponse>({ ...tokens, user: stripPassword(user) });
+    }),
 
-  http.get('*/auth/me', async () => {
-    await delay(LATENCY_MS);
-    const user = mockUsers[0];
-    if (!user) {
-      return HttpResponse.json({ message: 'Foydalanuvchi topilmadi' }, { status: 404 });
-    }
-    return HttpResponse.json<User>(user);
-  }),
+    http.post(path('auth/register'), async ({ request }) => {
+      await delay(LATENCY_MS);
 
-  http.get('*/users', async ({ request }) => {
-    await delay(LATENCY_MS);
+      const body = (await request.json()) as Partial<RegisterRequest>;
+      if (mockUsers.some((candidate) => candidate.phone === body.phone)) {
+        return HttpResponse.json(
+          { message: 'Bu telefon raqam bilan foydalanuvchi allaqachon mavjud' },
+          { status: 409 },
+        );
+      }
 
-    const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page') ?? '1');
-    const limit = Number(url.searchParams.get('limit') ?? '10');
-    const search = url.searchParams.get('search')?.toLowerCase() ?? '';
+      const user: AppUser = {
+        id: String(mockUsers.length + 1),
+        publicId: `USR-${100000 + mockUsers.length + 1}`,
+        fullName: body.fullName ?? '',
+        phone: body.phone ?? '',
+        email: null,
+        avatarUrl: null,
+        status: 'student',
+        createdAt: new Date(0).toISOString(),
+      };
 
-    const filtered = search
-      ? mockUsers.filter(
-          (user) =>
-            user.name.toLowerCase().includes(search) ||
-            user.email.toLowerCase().includes(search),
-        )
-      : mockUsers;
+      return HttpResponse.json<AuthResponse>({ ...tokens, user });
+    }),
 
-    return HttpResponse.json<Paginated<User>>(paginate(filtered, page, limit));
-  }),
+    http.post(path('auth/refresh'), async () => {
+      await delay(LATENCY_MS);
+      return HttpResponse.json<AuthTokens>(tokens);
+    }),
 
-  http.get('*/users/:id', async ({ params }) => {
-    await delay(LATENCY_MS);
-
-    const user = mockUsers.find((candidate) => candidate.id === params.id);
-    if (!user) {
-      return HttpResponse.json({ message: 'Foydalanuvchi topilmadi' }, { status: 404 });
-    }
-
-    return HttpResponse.json<User>(user);
-  }),
-];
+    http.get(path('auth/me'), async () => {
+      await delay(LATENCY_MS);
+      const user = mockUsers[0];
+      if (!user) return HttpResponse.json({ message: 'Foydalanuvchi topilmadi' }, { status: 404 });
+      return HttpResponse.json<AppUser>(stripPassword(user));
+    }),
+  ];
+}

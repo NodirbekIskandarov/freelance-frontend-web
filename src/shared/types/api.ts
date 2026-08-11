@@ -1,7 +1,7 @@
 /**
- * Backend hali tayyor emas. Bu yerdagi shakllar — keng tarqalgan konvensiya.
- * API shartnomasi (Swagger) kelgach shu fayl birinchi bo'lib moslanadi;
- * qolgan kod faqat shu tiplarga tayangani uchun o'zgarish shu yerda to'xtaydi.
+ * Umumiy, domenga bog'liq bo'lmagan API shakllari (sahifalash, xato tanasi,
+ * token juftligi). Domen tiplari (`AppUser`, `University`...) o'z fayllarida:
+ * `shared/types/auth.ts`, `shared/types/materials.ts`.
  */
 
 /** Ro'yxat endpoint'lari uchun sahifalash meta ma'lumoti. */
@@ -39,24 +39,4 @@ export interface ApiErrorBody {
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
-}
-
-export type UserRole = 'user' | 'admin';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  avatarUrl?: string | null;
-  createdAt: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse extends AuthTokens {
-  user: User;
 }
