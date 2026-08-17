@@ -2,12 +2,13 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { FreelancerDirectory } from '@/features/freelance/FreelancerDirectory';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
-import { getFreelancerInstitutes, getFreelancers } from '@/server/freelance/directory';
+import { getFreelancerCities, getFreelancers } from '@/server/freelance/directory';
+import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
 
 export const metadata = buildMetadata({
   title: 'Freelancer qidirish — ishonchli mutaxassislar',
   description:
-    "Yopamiz.uz'da tasdiqlangan freelancerlar: dasturlash, chizmachilik, kurs ishlari va tarjima. Reyting, narx va institut bo'yicha tanlang.",
+    "Yopamiz.uz'da tasdiqlangan freelancerlar: dasturlash, chizmachilik, kurs ishlari va tarjima. Reyting, narx va shahar bo'yicha tanlang.",
   path: '/freelance',
 });
 
@@ -17,10 +18,7 @@ const crumbs = [
 ];
 
 export default async function FreelancePage() {
-  const [freelancers, institutes] = await Promise.all([
-    getFreelancers(),
-    getFreelancerInstitutes(),
-  ]);
+  const [freelancers, cities] = await Promise.all([getFreelancers(), getFreelancerCities()]);
 
   /*
    * ItemList — ro'yxatning TO'LIQ nusxasi, sahifada esa avvaliga 8 tasi
@@ -37,21 +35,21 @@ export default async function FreelancePage() {
       position: index + 1,
       item: {
         '@type': 'Person',
-        name: freelancer.name,
-        jobTitle: freelancer.primarySkill,
+        name: freelancer.full_name,
+        jobTitle: WORK_DIRECTION_LABELS[freelancer.direction] ?? freelancer.direction,
         description: freelancer.bio,
         knowsAbout: freelancer.skills,
-        alumniOf: {
-          '@type': 'CollegeOrUniversity',
-          name: freelancer.universityFullName,
-        },
+        ...(freelancer.city ? { homeLocation: freelancer.city } : {}),
         url: absoluteUrl('/freelance'),
       },
     })),
   };
 
+  /* Katalog bo'sh bo'lsa 0/0 = NaN chiqardi — nolga tushamiz. */
   const averageRating =
-    freelancers.reduce((sum, item) => sum + item.rating, 0) / freelancers.length;
+    freelancers.length > 0
+      ? freelancers.reduce((sum, item) => sum + Number(item.rating), 0) / freelancers.length
+      : 0;
 
   return (
     <>
@@ -84,7 +82,7 @@ export default async function FreelancePage() {
         </header>
 
         <div className="mt-8">
-          <FreelancerDirectory freelancers={freelancers} institutes={institutes} />
+          <FreelancerDirectory freelancers={freelancers} cities={cities} />
         </div>
       </Container>
     </>

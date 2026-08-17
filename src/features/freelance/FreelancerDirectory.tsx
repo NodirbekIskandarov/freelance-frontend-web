@@ -8,7 +8,6 @@ import {
   SearchX,
   SlidersHorizontal,
   Users,
-  Wifi,
   X,
 } from 'lucide-react';
 import { useDeferredValue, useMemo, useState, type ReactNode } from 'react';
@@ -16,7 +15,11 @@ import { useDeferredValue, useMemo, useState, type ReactNode } from 'react';
 import { FreelancerCard } from '@/components/freelance/FreelancerCard';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
-import type { FreelancerProfile } from '@/shared/types/freelance';
+import {
+  WORK_DIRECTIONS,
+  WORK_DIRECTION_LABELS,
+  type PublicFreelancer,
+} from '@/shared/types/publicFreelance';
 
 import {
   countActiveFilters,
@@ -30,9 +33,8 @@ import {
 const INITIAL_VISIBLE = 8;
 const LOAD_STEP = 4;
 
-interface Institute {
-  slug: string;
-  shortName: string;
+interface CityOption {
+  city: string;
   count: number;
 }
 
@@ -67,10 +69,10 @@ function ToggleChip({
 
 export function FreelancerDirectory({
   freelancers,
-  institutes,
+  cities,
 }: {
-  freelancers: FreelancerProfile[];
-  institutes: Institute[];
+  freelancers: PublicFreelancer[];
+  cities: CityOption[];
 }) {
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<FreelanceFilterState>(DEFAULT_FREELANCE_FILTERS);
@@ -200,16 +202,33 @@ export function FreelancerDirectory({
             <div className="flex flex-wrap items-center gap-2">
               <label className="flex min-w-[170px] flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 sm:flex-none">
                 <GraduationCap className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span className="sr-only">Institut</span>
+                <span className="sr-only">Shahar</span>
                 <select
-                  value={filters.institute}
-                  onChange={(event) => updateFilters({ institute: event.target.value })}
+                  value={filters.city}
+                  onChange={(event) => updateFilters({ city: event.target.value })}
                   className="min-w-0 flex-1 bg-transparent text-xs font-medium text-foreground outline-none"
                 >
-                  <option value="all">Barcha institutlar</option>
-                  {institutes.map((institute) => (
-                    <option key={institute.slug} value={institute.slug}>
-                      {institute.shortName} ({institute.count})
+                  <option value="all">Barcha shaharlar</option>
+                  {cities.map((option) => (
+                    <option key={option.city} value={option.city}>
+                      {option.city} ({option.count})
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex min-w-[160px] flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 sm:flex-none">
+                <SlidersHorizontal className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span className="sr-only">Yo&apos;nalish</span>
+                <select
+                  value={filters.direction}
+                  onChange={(event) => updateFilters({ direction: event.target.value })}
+                  className="min-w-0 flex-1 bg-transparent text-xs font-medium text-foreground outline-none"
+                >
+                  <option value="all">Barcha yo&apos;nalishlar</option>
+                  {WORK_DIRECTIONS.map((direction) => (
+                    <option key={direction} value={direction}>
+                      {WORK_DIRECTION_LABELS[direction]}
                     </option>
                   ))}
                 </select>
@@ -225,12 +244,6 @@ export function FreelancerDirectory({
                 icon={<CircleCheck className="size-3.5" />}
                 label="Faqat bo'sh"
               />
-              <ToggleChip
-                active={filters.onlineOnly}
-                onClick={() => updateFilters({ onlineOnly: !filters.onlineOnly })}
-                icon={<Wifi className="size-3.5" />}
-                label="Faqat onlayn"
-              />
             </div>
           </div>
 
@@ -238,25 +251,23 @@ export function FreelancerDirectory({
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
               <span className="text-[11px] font-medium text-muted-foreground">Faol:</span>
               {query && <ActiveChip label={`Qidiruv: ${query}`} onClear={() => setQuery('')} />}
-              {filters.institute !== 'all' && (
+              {filters.city !== 'all' && (
+                <ActiveChip label={filters.city} onClear={() => updateFilters({ city: 'all' })} />
+              )}
+              {filters.direction !== 'all' && (
                 <ActiveChip
                   label={
-                    institutes.find((item) => item.slug === filters.institute)?.shortName ??
-                    filters.institute
+                    WORK_DIRECTION_LABELS[
+                      filters.direction as keyof typeof WORK_DIRECTION_LABELS
+                    ] ?? filters.direction
                   }
-                  onClear={() => updateFilters({ institute: 'all' })}
+                  onClear={() => updateFilters({ direction: 'all' })}
                 />
               )}
               {filters.availability !== 'all' && (
                 <ActiveChip
                   label="Faqat bo'sh"
                   onClear={() => updateFilters({ availability: 'all' })}
-                />
-              )}
-              {filters.onlineOnly && (
-                <ActiveChip
-                  label="Faqat onlayn"
-                  onClear={() => updateFilters({ onlineOnly: false })}
                 />
               )}
             </div>

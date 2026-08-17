@@ -1,11 +1,12 @@
 import 'server-only';
 
-import type { FreelancerProfile } from '@/shared/types/freelance';
+import type { ApiPaginated } from '@/shared/types/catalogue';
+import type { PublicFreelancer } from '@/shared/types/publicFreelance';
 
-import { freelancers } from './seed';
+import { request } from '../catalogue/client';
 
 /**
- * Freelancer katalogi — server tomonda.
+ * Freelancer katalogi — server tomonda, haqiqiy backenddan.
  *
  * Bu sahifa Google uchun ochiq, shuning uchun ro'yxat RTK Query bilan
  * emas, Server Component'da olinadi: bot bo'sh HTML emas, to'ldirilgan
@@ -13,26 +14,30 @@ import { freelancers } from './seed';
  * ro'yxat ustida bajariladi.
  */
 
-export async function getFreelancers(): Promise<FreelancerProfile[]> {
-  return freelancers;
+export async function getFreelancers(): Promise<PublicFreelancer[]> {
+  const page = await request<ApiPaginated<PublicFreelancer>>('/freelance/freelancers/', {
+    page_size: 100,
+    ordering: '-rating',
+  });
+  return page.results;
 }
 
-/** Filter uchun institut variantlari — faqat freelanceri bor institutlar. */
-export async function getFreelancerInstitutes(): Promise<
-  { slug: string; shortName: string; count: number }[]
-> {
-  const counts = new Map<string, { slug: string; shortName: string; count: number }>();
+/**
+ * Filtr uchun shaharlar — faqat freelanceri bor shaharlar.
+ *
+ * Ilgari bu yerda institutlar bo'lgan, lekin backend freelancer
+ * profilida OTM emas, shaharni beradi.
+ */
+export async function getFreelancerCities(): Promise<{ city: string; count: number }[]> {
+  const freelancers = await getFreelancers();
+  const counts = new Map<string, number>();
 
   for (const item of freelancers) {
-    const existing = counts.get(item.universitySlug);
-    if (existing) existing.count += 1;
-    else
-      counts.set(item.universitySlug, {
-        slug: item.universitySlug,
-        shortName: item.universityShortName,
-        count: 1,
-      });
+    if (!item.city) continue;
+    counts.set(item.city, (counts.get(item.city) ?? 0) + 1);
   }
 
-  return [...counts.values()].sort((a, b) => a.shortName.localeCompare(b.shortName, 'uz'));
+  return [...counts.entries()]
+    .map(([city, count]) => ({ city, count }))
+    .sort((a, b) => a.city.localeCompare(b.city, 'uz'));
 }

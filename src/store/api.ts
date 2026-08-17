@@ -64,6 +64,8 @@ export const baseApi = createApi({
     'Library',
     'Review',
     'MySolution',
+    'PublicFreelancer',
+    'FreelancerApplication',
   ],
   endpoints: () => ({}),
 });

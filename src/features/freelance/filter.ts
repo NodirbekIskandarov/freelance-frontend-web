@@ -1,4 +1,4 @@
-import type { FreelancerAvailability, FreelancerProfile } from '@/shared/types/freelance';
+import type { Availability, PublicFreelancer } from '@/shared/types/publicFreelance';
 
 /**
  * Katalog filtri — sof funksiyalar, React'siz.
@@ -17,62 +17,60 @@ export const FREELANCE_SORT_OPTIONS = [
 export type FreelanceSortId = (typeof FREELANCE_SORT_OPTIONS)[number]['id'];
 
 export interface FreelanceFilterState {
-  institute: string;
-  availability: FreelancerAvailability | 'all';
-  onlineOnly: boolean;
+  city: string;
+  availability: Availability | 'all';
+  direction: string;
 }
 
 export const DEFAULT_FREELANCE_FILTERS: FreelanceFilterState = {
-  institute: 'all',
+  city: 'all',
   availability: 'all',
-  onlineOnly: false,
+  direction: 'all',
 };
 
 export function countActiveFilters(filters: FreelanceFilterState): number {
   let count = 0;
-  if (filters.institute !== 'all') count += 1;
+  if (filters.city !== 'all') count += 1;
   if (filters.availability !== 'all') count += 1;
-  if (filters.onlineOnly) count += 1;
+  if (filters.direction !== 'all') count += 1;
   return count;
 }
 
-function matchesQuery(freelancer: FreelancerProfile, query: string): boolean {
+function matchesQuery(freelancer: PublicFreelancer, query: string): boolean {
   const needle = query.trim().toLowerCase();
   if (!needle) return true;
 
-  const haystack = [
-    freelancer.name,
-    freelancer.primarySkill,
-    freelancer.universityShortName,
-    freelancer.universityFullName,
-    ...freelancer.skills,
-  ];
+  const haystack = [freelancer.full_name, freelancer.city, freelancer.bio, ...freelancer.skills];
 
-  return haystack.some((value) => value.toLowerCase().includes(needle));
+  return haystack.some((value) => value?.toLowerCase().includes(needle));
 }
 
-const comparators: Record<FreelanceSortId, (a: FreelancerProfile, b: FreelancerProfile) => number> =
-  {
-    rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
-    newest: (a, b) => b.joinedAt.localeCompare(a.joinedAt),
-    price_asc: (a, b) => a.priceFrom - b.priceFrom,
-    price_desc: (a, b) => b.priceFrom - a.priceFrom,
-  };
+/** Narx `null` bo'lishi mumkin — kelishuv asosida ishlaydiganlar. */
+function priceOf(freelancer: PublicFreelancer): number {
+  const parsed = Number(freelancer.price_from);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+const comparators: Record<FreelanceSortId, (a: PublicFreelancer, b: PublicFreelancer) => number> = {
+  rating: (a, b) => Number(b.rating) - Number(a.rating) || b.completed_jobs - a.completed_jobs,
+  newest: (a, b) => (b.approved_at ?? '').localeCompare(a.approved_at ?? ''),
+  price_asc: (a, b) => priceOf(a) - priceOf(b),
+  price_desc: (a, b) => priceOf(b) - priceOf(a),
+};
 
 export function filterFreelancers(
-  freelancers: FreelancerProfile[],
+  freelancers: PublicFreelancer[],
   options: { query: string; filters: FreelanceFilterState; sortId: FreelanceSortId },
-): FreelancerProfile[] {
+): PublicFreelancer[] {
   const { query, filters, sortId } = options;
 
   const matched = freelancers.filter((freelancer) => {
     if (!matchesQuery(freelancer, query)) return false;
-    if (filters.institute !== 'all' && freelancer.universitySlug !== filters.institute)
-      return false;
+    if (filters.city !== 'all' && freelancer.city !== filters.city) return false;
+    if (filters.direction !== 'all' && freelancer.direction !== filters.direction) return false;
     if (filters.availability !== 'all' && freelancer.availability !== filters.availability) {
       return false;
     }
-    if (filters.onlineOnly && !freelancer.isOnline) return false;
     return true;
   });
 

@@ -7,11 +7,12 @@ import { useState } from 'react';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { isFreelancer } from '@/shared/types/auth';
+import type { WorkDirection } from '@/shared/types/publicFreelance';
 import type { FreelancerApplicationDraft } from '@/shared/types/freelancerApplication';
 import { selectAuthHydrated, selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
 
-import { useSubmitApplicationMutation } from './applicationApi';
+import { useGetMyApplicationQuery, useSubmitApplicationMutation } from '../publicFreelancersApi';
 import { STEP_FIELDS } from './ApplyStepFields';
 import { ApplyStepper } from './ApplyStepper';
 import { APPLY_STEPS, EMPTY_DRAFT, type DraftErrors } from './steps';
@@ -25,6 +26,13 @@ export function ApplyWizard() {
   const [errors, setErrors] = useState<DraftErrors>({});
 
   const [submitApplication, { data: submitted, isLoading, error }] = useSubmitApplicationMutation();
+
+  /*
+   * Mavjud arizani olamiz. Ariza yuborilmagan bo'lsa backend 404
+   * qaytaradi — bu xato emas, "hali ariza yo'q" degani, shuning uchun
+   * xato holati alohida ko'rsatilmaydi.
+   */
+  const { data: existing } = useGetMyApplicationQuery(undefined, { skip: !user });
 
   if (!hydrated) {
     return <p className="py-10 text-center text-sm text-muted-foreground">Yuklanmoqda...</p>;
@@ -67,7 +75,7 @@ export function ApplyWizard() {
   {
     /* Ariza yuborilgan, lekin hali ko'rib chiqilmagan holat. */
   }
-  if (user.freelancer_profile?.status === 'pending') {
+  if (user.freelancer_profile?.status === 'pending' || existing?.status === 'pending') {
     return (
       <div className="rounded-2xl border border-amber-500/30 bg-card p-8 text-center">
         <Clock className="mx-auto size-10 text-amber-500" />
@@ -89,7 +97,7 @@ export function ApplyWizard() {
         </span>
         <h2 className="mt-4 text-2xl font-bold text-foreground">Arizangiz yuborildi</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Arizangiz {submitted.reviewDays} ish kuni ichida admin tomonidan ko&apos;rib chiqiladi.
+          Arizangiz {submitted.review_days} ish kuni ichida admin tomonidan ko&apos;rib chiqiladi.
           Natija haqida xabar beramiz.
         </p>
         <ButtonLink href="/" variant="outline" className="mt-6">
@@ -130,7 +138,38 @@ export function ApplyWizard() {
     }
 
     try {
-      await submitApplication(draft).unwrap();
+      await submitApplication({
+        first_name: draft.firstName.trim(),
+        last_name: draft.lastName.trim(),
+        contact_phone: draft.phone.trim(),
+        telegram: draft.telegram.trim(),
+        document_type: draft.documentType,
+        ...(draft.documentType === 'passport'
+          ? {
+              passport_series: draft.passportSeries.trim(),
+              passport_number: draft.passportNumber.trim(),
+            }
+          : { id_card_number: draft.idCardNumber.trim() }),
+        city: draft.city.trim(),
+        university: draft.university.trim(),
+        faculty: draft.faculty.trim(),
+        course: draft.course.trim() ? Number(draft.course) : null,
+        major: draft.major.trim(),
+        about: draft.about.trim(),
+        motivation: draft.motivation.trim(),
+        availability_note: draft.availability.trim(),
+        direction: draft.direction as WorkDirection,
+        experience_level: draft.experienceLevel,
+        // Backend MASSIV kutadi — formada vergul bilan yoziladi.
+        skills: draft.skills
+          .split(',')
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+        portfolio_url: draft.portfolioUrl.trim(),
+        data_confirmed: draft.dataConfirmed,
+        documents_confirmed: draft.documentsConfirmed,
+        rules_accepted: draft.rulesAccepted,
+      }).unwrap();
     } catch {
       // Xato quyida ko'rsatiladi; to'ldirilgan forma saqlanib qoladi.
     }

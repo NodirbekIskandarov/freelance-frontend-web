@@ -6,16 +6,19 @@ import { Button } from '@/components/ui/Button';
 import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { WORK_DIRECTIONS } from '@/shared/types/freelance';
 import {
-  DOCUMENT_TYPE_LABELS,
-  DOCUMENT_TYPES,
-  EXPERIENCE_LEVEL_LABELS,
-  EXPERIENCE_LEVELS,
-  type FreelancerApplicationDraft,
-} from '@/shared/types/freelancerApplication';
+  EXPERIENCE_LEVELS as REAL_EXPERIENCE_LEVELS,
+  EXPERIENCE_LEVEL_LABELS as REAL_EXPERIENCE_LABELS,
+  WORK_DIRECTIONS,
+  WORK_DIRECTION_LABELS,
+} from '@/shared/types/publicFreelance';
+import { DOCUMENT_TYPE_LABELS, DOCUMENT_TYPES } from '@/shared/types/publicFreelance';
+import type { FreelancerApplicationDraft } from '@/shared/types/freelancerApplication';
 
-import { useSendPhoneCodeMutation, useVerifyPhoneCodeMutation } from './applicationApi';
+import {
+  useSendApplicationPhoneCodeMutation,
+  useVerifyApplicationPhoneMutation,
+} from '../publicFreelancersApi';
 import type { DraftErrors } from './steps';
 
 export interface StepFieldsProps {
@@ -24,14 +27,14 @@ export interface StepFieldsProps {
   update: (patch: Partial<FreelancerApplicationDraft>) => void;
 }
 
-const directionOptions = WORK_DIRECTIONS.map((item) => ({
-  value: item.value,
-  label: item.label,
+const directionOptions = WORK_DIRECTIONS.map((value) => ({
+  value,
+  label: WORK_DIRECTION_LABELS[value],
 }));
 
-const experienceOptions = EXPERIENCE_LEVELS.map((level) => ({
+const experienceOptions = REAL_EXPERIENCE_LEVELS.map((level) => ({
   value: level,
-  label: EXPERIENCE_LEVEL_LABELS[level],
+  label: REAL_EXPERIENCE_LABELS[level],
 }));
 
 function Grid({ children }: { children: React.ReactNode }) {
@@ -40,8 +43,9 @@ function Grid({ children }: { children: React.ReactNode }) {
 
 function PersonalStep({ draft, errors, update }: StepFieldsProps) {
   const [sendCode, { data: codeData, error: sendError, isLoading: isSending }] =
-    useSendPhoneCodeMutation();
-  const [verifyCode, { error: verifyError, isLoading: isVerifying }] = useVerifyPhoneCodeMutation();
+    useSendApplicationPhoneCodeMutation();
+  const [verifyCode, { error: verifyError, isLoading: isVerifying }] =
+    useVerifyApplicationPhoneMutation();
   const [code, setCode] = useState('');
 
   async function handleVerify() {
@@ -94,9 +98,10 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
         </Button>
       </div>
 
-      {codeData && (
+      {/* Demo kod faqat sinov muhitida qaytariladi. */}
+      {codeData?.demo_code && (
         <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
-          Demo kod: <strong>{codeData.demoCode}</strong>
+          Demo kod: <strong>{codeData.demo_code}</strong>
         </p>
       )}
       {sendError && <p className="text-xs text-destructive">{getApiErrorMessage(sendError)}</p>}
@@ -355,7 +360,7 @@ function ConfirmStep({ draft, errors, update }: StepFieldsProps) {
     { label: 'OTM', value: draft.university },
     { label: 'Fakultet', value: draft.faculty },
     { label: "Yo'nalish", value: draft.major || '—' },
-    { label: 'Tajriba', value: EXPERIENCE_LEVEL_LABELS[draft.experienceLevel] },
+    { label: 'Tajriba', value: REAL_EXPERIENCE_LABELS[draft.experienceLevel] },
     { label: "Ko'nikmalar", value: draft.skills },
   ];
 

@@ -7,7 +7,6 @@ import {
   type ExchangeOffer,
   type ExchangeTask,
 } from '../types/freelance';
-import type { FreelancerApplicationResponse } from '../types/freelancerApplication';
 import type {
   FreelancerDashboard,
   FreelancerEarnings,
@@ -25,9 +24,6 @@ import { mockStudentDashboard, mockStudentOrders } from './student';
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
 const LATENCY_MS = 300;
-
-/** Mock SMS kodi — foydalanuvchiga formada ochiq ko'rsatiladi. */
-const DEMO_SMS_CODE = '111111';
 
 /**
  * Handler'lar API manziliga bog'lab yaratiladi — `createHandlers(baseUrl)`.
@@ -152,35 +148,6 @@ export function createHandlers(baseUrl: string) {
       // Ro'yxat boshiga — birja `createdAt` kamayish tartibida ko'rsatiladi.
       tasks.unshift(created);
       return HttpResponse.json<ExchangeTask>(created, { status: 201 });
-    }),
-
-    http.post(path('freelancer-applications/phone-code'), async () => {
-      await delay(LATENCY_MS);
-      return HttpResponse.json({ demoCode: DEMO_SMS_CODE });
-    }),
-
-    http.post(path('freelancer-applications/phone-verify'), async ({ request }) => {
-      await delay(LATENCY_MS);
-
-      const body = (await request.json()) as { code?: string };
-      if (body.code !== DEMO_SMS_CODE) {
-        return HttpResponse.json({ message: "Kod noto'g'ri" }, { status: 400 });
-      }
-
-      return HttpResponse.json({ verified: true });
-    }),
-
-    http.post(path('freelancer-applications'), async () => {
-      await delay(LATENCY_MS * 2);
-      return HttpResponse.json<FreelancerApplicationResponse>(
-        {
-          id: `app-${Date.now()}`,
-          status: 'pending',
-          submittedAt: new Date().toISOString(),
-          reviewDays: 3,
-        },
-        { status: 201 },
-      );
     }),
 
     http.get(path('exchange/tasks/:taskId/offers'), async ({ params }) => {

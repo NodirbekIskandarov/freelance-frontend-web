@@ -1,64 +1,10 @@
 /**
- * Freelance domeni — mutaxassis profillari va birjaga joylanadigan
- * topshiriqlar. Eski ilovadagi `types/freelance.ts` va
- * `types/freelance-exchange.ts` fayllari shu yerda birlashtirilgan:
- * ikkalasi ham bitta oqimning qismlari (freelancer topiladi → topshiriq
- * beriladi → taklif keladi), shuning uchun ularni ajratish sun'iy bo'lardi.
+ * Birja domeni — topshiriqlar va takliflar. HALI MOCK: backendda birja
+ * endpoint'lari yo'q.
+ *
+ * Freelancer profillari bu yerdan olib tashlandi — ular haqiqiy API'ga
+ * ko'chdi (`shared/types/publicFreelance.ts`).
  */
-
-export const FREELANCER_BADGES = ['top', 'pro', 'new'] as const;
-export type FreelancerBadge = (typeof FREELANCER_BADGES)[number];
-
-export const FREELANCER_BADGE_LABELS: Record<FreelancerBadge, string> = {
-  top: 'Top',
-  pro: 'Pro',
-  new: 'Yangi',
-};
-
-export const FREELANCER_LEVELS = ['intern', 'middle', 'senior', 'expert'] as const;
-export type FreelancerLevel = (typeof FREELANCER_LEVELS)[number];
-
-export const FREELANCER_LEVEL_LABELS: Record<FreelancerLevel, string> = {
-  intern: 'Intern',
-  middle: 'Middle',
-  senior: 'Senior',
-  expert: 'Expert',
-};
-
-export const FREELANCER_AVAILABILITIES = ['available', 'busy'] as const;
-export type FreelancerAvailability = (typeof FREELANCER_AVAILABILITIES)[number];
-
-export const FREELANCER_AVAILABILITY_LABELS: Record<FreelancerAvailability, string> = {
-  available: "Bo'sh",
-  busy: 'Band',
-};
-
-export interface FreelancerProfile {
-  id: string;
-  slug: string;
-  name: string;
-  badge: FreelancerBadge;
-  level: FreelancerLevel;
-  rating: number;
-  reviews: number;
-  primarySkill: string;
-  skills: string[];
-  completedWorks: number;
-  successRate: number;
-  priceFrom: number;
-  isOnline: boolean;
-  availability: FreelancerAvailability;
-  /** Band bo'lganda nima ustida ishlayotgani — kartada tushuntirish uchun. */
-  activeOrderTitle?: string;
-  joinedAt: string;
-  bio: string;
-  universityId: string;
-  universitySlug: string;
-  universityShortName: string;
-  universityFullName: string;
-  /** Avatar rasmi yo'q — ism harflaridan yasaladi. */
-  avatarGradient: string;
-}
 
 /**
  * Ish yo'nalishlari — birjada ham, ariza formasida ham shu ro'yxat.
