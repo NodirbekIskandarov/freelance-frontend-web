@@ -10,6 +10,7 @@ import { TextField } from '@/components/ui/Field';
 import { getApiErrorMessage } from '@/shared/api';
 
 import { useLoginMutation } from './authApi';
+import { GoogleLoginButton } from './GoogleLoginButton';
 import { cabinetPathFor } from './cabinetPath';
 
 export function LoginForm() {
@@ -79,6 +80,8 @@ export function LoginForm() {
           {isLoading ? 'Kirilmoqda...' : 'Kirish'}
         </Button>
       </form>
+
+      <GoogleLoginButton />
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Hisobingiz yo&apos;qmi?{' '}

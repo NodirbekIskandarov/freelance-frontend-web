@@ -89,6 +89,18 @@ export const authApi = baseApi.injectEndpoints({
         persistSession(queryFulfilled, dispatch),
     }),
 
+    /**
+     * Google ID token bilan kirish (yoki ro'yxatdan o'tish).
+     *
+     * Token brauzerda Google Identity Services SDK'si tomonidan
+     * beriladi — bu yerda faqat uni backendga uzatamiz.
+     */
+    loginWithGoogle: build.mutation<AuthResponse, { id_token: string }>({
+      query: (body) => ({ url: '/auth/google/', method: 'POST', body }),
+      onQueryStarted: (_arg, { dispatch, queryFulfilled }) =>
+        persistSession(queryFulfilled, dispatch),
+    }),
+
     /** SMS kodi yuboriladi — kod bilan kirish va ro'yxatdan o'tish uchun. */
     sendPhoneCode: build.mutation<void, PhoneCodeRequest>({
       query: (body) => ({ url: '/auth/phone/send-code/', method: 'POST', body }),
@@ -123,6 +135,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useLoginWithGoogleMutation,
   useSendPhoneCodeMutation,
   useVerifyPhoneCodeMutation,
   useChangePasswordMutation,

@@ -1,4 +1,4 @@
-import type { DownloadItem, StudentDashboard, StudentOrder } from '@/shared/types/orders';
+import type { StudentDashboard, StudentOrder } from '@/shared/types/orders';
 import { baseApi } from '@/store/api';
 
 /**
@@ -17,15 +17,7 @@ export const studentApi = baseApi.injectEndpoints({
       query: () => ({ url: '/student/orders' }),
       providesTags: ['Order'],
     }),
-
-    getStudentDownloads: build.query<DownloadItem[], void>({
-      query: () => ({ url: '/student/downloads' }),
-    }),
   }),
 });
 
-export const {
-  useGetStudentDashboardQuery,
-  useGetStudentOrdersQuery,
-  useGetStudentDownloadsQuery,
-} = studentApi;
+export const { useGetStudentDashboardQuery, useGetStudentOrdersQuery } = studentApi;

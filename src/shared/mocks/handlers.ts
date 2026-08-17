@@ -13,7 +13,7 @@ import type {
   FreelancerEarnings,
   FreelancerOrder,
 } from '../types/freelancerCabinet';
-import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
+import type { StudentDashboard, StudentOrder } from '../types/orders';
 import { mockAppeals, mockSavedItems, mockWallet } from './account';
 import { mockExchangeOffers, mockExchangeTasks } from './exchange';
 import {
@@ -21,7 +21,7 @@ import {
   mockFreelancerEarnings,
   mockFreelancerOrders,
 } from './freelancerCabinet';
-import { mockDownloads, mockStudentDashboard, mockStudentOrders } from './student';
+import { mockStudentDashboard, mockStudentOrders } from './student';
 
 /** Tarmoq kechikishini taqlid qiladi — loading holatlari real ko'rinsin. */
 const LATENCY_MS = 300;
@@ -63,11 +63,6 @@ export function createHandlers(baseUrl: string) {
     http.get(path('student/orders'), async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json<StudentOrder[]>(mockStudentOrders);
-    }),
-
-    http.get(path('student/downloads'), async () => {
-      await delay(LATENCY_MS);
-      return HttpResponse.json<DownloadItem[]>(mockDownloads);
     }),
 
     http.get(path('account/saved'), async () => {
