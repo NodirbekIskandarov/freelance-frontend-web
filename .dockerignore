@@ -1,0 +1,33 @@
+# Docker build kontekstiga tushmasligi kerak bo'lgan fayllar.
+# node_modules image ichida `npm ci` orqali yangidan o'rnatiladi —
+# host'dagi nusxa platformaga mos bo'lmasligi mumkin.
+node_modules
+.next
+out
+dist
+build
+coverage
+
+.git
+.gitignore
+.gitattributes
+
+# env fayllari image ichiga yozilmaydi — qiymatlar compose orqali beriladi
+.env
+.env.local
+.env.*.local
+
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+.turbo
+.eslintcache
+*.tsbuildinfo
+next-env.d.ts

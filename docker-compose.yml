@@ -1,0 +1,32 @@
+services:
+  web:
+    build:
+      context: .
+      target: runner
+      args:
+        # NEXT_PUBLIC_* build paytida bundle'ga yoziladi — o'zgartirsangiz
+        # `docker compose build --no-cache web` kerak bo'ladi.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8090/api}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:8090}
+        NEXT_PUBLIC_ENABLE_MOCKS: ${NEXT_PUBLIC_ENABLE_MOCKS:-false}
+    image: yopamiz-web:latest
+    container_name: yopamiz-web
+    restart: unless-stopped
+    ports:
+      - '8090:8090'
+    environment:
+      NODE_ENV: production
+      PORT: 8090
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8090/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

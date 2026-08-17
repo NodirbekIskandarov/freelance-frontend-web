@@ -1,0 +1,25 @@
+# Development rejimi: `next dev`, hot reload va MSW mock API ishlaydi.
+# Ishga tushirish:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+services:
+  web:
+    build:
+      target: dev
+    image: yopamiz-web:dev
+    container_name: yopamiz-web-dev
+    environment:
+      NODE_ENV: development
+      PORT: 8090
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8090/api}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:8090}
+      NEXT_PUBLIC_ENABLE_MOCKS: ${NEXT_PUBLIC_ENABLE_MOCKS:-true}
+      # Alpine + bind mount'da fayl o'zgarishi har doim ham sezilmaydi.
+      WATCHPACK_POLLING: 'true'
+    volumes:
+      # Kod host'dan ulanadi, node_modules va .next konteyner ichida qoladi.
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    healthcheck:
+      disable: true
