@@ -124,6 +124,30 @@ Runner ishlaydigan foydalanuvchi: `docker` guruhida bo'lishi, yuqoridagi
 katalogga yozish huquqiga va `git pull` uchun deploy key'ga (`~/.ssh/gh_web`)
 ega bo'lishi kerak.
 
+### Zaxira deploy (cron)
+
+Actions ishlamay qolsa (billing bloki va h.k.) `scripts/autodeploy.sh` serverda
+cron orqali ishlaydi: `origin/main` da yangi commit bo'lsa deploy qiladi va
+natijani Telegram'ga yuboradi. Bir martalik sozlash:
+
+```bash
+# Telegram sozlamalari (repoga tushmaydi)
+cat > /etc/yopamiz-web-deploy.env <<'EOF'
+TG_TOKEN=<bot tokeni>
+TG_CHAT=<chat id>
+TG_THREAD=<thread id yoki bo'sh>
+EOF
+chmod 600 /etc/yopamiz-web-deploy.env
+
+# Har 2 daqiqada tekshirish
+( crontab -l 2>/dev/null
+  echo "*/2 * * * * /var/www/yopamiz-front/freelance-frontend-web/scripts/autodeploy.sh" ) | crontab -
+```
+
+Log: `/var/log/yopamiz-web-deploy.log`. Actions qayta ishlay boshlagach cron'ni
+`crontab -e` bilan o'chirib qo'ying — aks holda ikkalasi bir vaqtda deploy
+qilishga urinadi (skriptdagi `flock` to'qnashuvdan saqlaydi, lekin ortiqcha).
+
 `.env` dagi `NEXT_PUBLIC_*` qiymatlari build paytida bundle'ga yoziladi —
 o'zgartirgandan keyin qayta build kerak (deploy `--build` bilan ishlaydi,
 qo'lda esa `docker compose -f docker-compose.prod.yml up -d --build`).
