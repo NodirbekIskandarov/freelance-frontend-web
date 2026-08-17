@@ -24,7 +24,8 @@ export function ApplyStepper({ current }: { current: number }) {
                 className={cn(
                   'mx-auto grid size-8 shrink-0 place-items-center rounded-full border text-xs font-bold',
                   isDone && 'border-emerald-600 bg-emerald-600 text-white',
-                  isCurrent && 'border-emerald-600 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+                  isCurrent &&
+                    'border-emerald-600 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
                   !isDone && !isCurrent && 'border-border bg-muted text-muted-foreground',
                 )}
               >

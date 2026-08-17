@@ -35,8 +35,8 @@ export default function FreelanceApplyPage() {
             Freelancer bo&apos;lish uchun ariza yuborish
           </h1>
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-            Ma&apos;lumotlaringizni to&apos;ldiring. Arizangiz admin tomonidan tekshiriladi va
-            1–3 ish kuni ichida javob beriladi. Tasdiqlangach birjadagi ochiq ishlarga taklif
+            Ma&apos;lumotlaringizni to&apos;ldiring. Arizangiz admin tomonidan tekshiriladi va 1–3
+            ish kuni ichida javob beriladi. Tasdiqlangach birjadagi ochiq ishlarga taklif
             yuborishingiz mumkin bo&apos;ladi.
           </p>
         </header>

@@ -80,8 +80,7 @@ export function WalletView() {
                       {transaction.description}
                     </h3>
                     <p className="mt-0.5 text-xs text-muted-foreground">
-                      {WALLET_TRANSACTION_LABELS[transaction.type]} &middot;{' '}
-                      {transaction.createdAt}
+                      {WALLET_TRANSACTION_LABELS[transaction.type]} &middot; {transaction.createdAt}
                     </p>
                   </div>
 

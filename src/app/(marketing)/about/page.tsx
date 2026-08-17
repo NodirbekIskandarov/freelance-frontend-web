@@ -32,7 +32,7 @@ const values = [
   {
     icon: Sparkles,
     title: 'Tezlik',
-    body: "Tayyor materialni darhol yuklab olasiz, birjaga joylangan topshiriqqa esa odatda bir necha soatda taklif keladi.",
+    body: 'Tayyor materialni darhol yuklab olasiz, birjaga joylangan topshiriqqa esa odatda bir necha soatda taklif keladi.',
   },
   {
     icon: HeartHandshake,

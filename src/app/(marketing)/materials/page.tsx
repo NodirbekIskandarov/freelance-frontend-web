@@ -2,7 +2,7 @@ import { UniversityCard } from '@/components/materials/UniversityCard';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
-import { getUniversities } from '@/server/materials/catalog';
+import { getSubjectsByUniversity, getUniversities, universitySlug } from '@/server/catalogue';
 
 export const metadata = buildMetadata({
   title: 'Tayyor materiallar — universitetlar bo‘yicha topshiriqlar',
@@ -19,8 +19,13 @@ const crumbs = [
 export default async function MaterialsPage() {
   const universities = await getUniversities();
 
-  const totalSubjects = universities.reduce((sum, item) => sum + item.subjectCount, 0);
-  const totalTasks = universities.reduce((sum, item) => sum + item.taskCount, 0);
+  // Har bir universitet uchun fanlar soni — kartada ko'rsatiladi.
+  // Universitetlar kam, shuning uchun parallel so'rov yetarli.
+  const subjectCounts = await Promise.all(
+    universities.map(async (university) => (await getSubjectsByUniversity(university.id)).length),
+  );
+
+  const totalSubjects = subjectCounts.reduce((sum, count) => sum + count, 0);
 
   return (
     <>
@@ -34,17 +39,28 @@ export default async function MaterialsPage() {
             Tayyor materiallar
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            {universities.length} ta universitet, {totalSubjects} ta fan va{' '}
-            {totalTasks.toLocaleString('ru-RU').replace(/ /g, ' ')} dan ortiq topshiriq.
-            Universitetni tanlang va fanlar ro&apos;yxatiga o&apos;ting.
+            {universities.length} ta universitet va {totalSubjects} ta fan. Universitetni tanlang va
+            fanlar ro&apos;yxatiga o&apos;ting.
           </p>
         </header>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {universities.map((university) => (
-            <UniversityCard key={university.id} university={university} />
-          ))}
-        </div>
+        {universities.length === 0 ? (
+          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
+            Katalog hozircha to&apos;ldirilmoqda. Tez orada bu yerda universitetlar paydo
+            bo&apos;ladi.
+          </p>
+        ) : (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {universities.map((university, index) => (
+              <UniversityCard
+                key={university.id}
+                university={university}
+                href={`/materials/${universitySlug(university)}`}
+                subjectCount={subjectCounts[index]}
+              />
+            ))}
+          </div>
+        )}
       </Container>
     </>
   );

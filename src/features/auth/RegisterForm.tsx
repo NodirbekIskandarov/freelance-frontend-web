@@ -42,7 +42,9 @@ export function RegisterForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">Ro&apos;yxatdan o&apos;tish</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        Ro&apos;yxatdan o&apos;tish
+      </h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Bir daqiqada hisob oching va topshiriqlarga kirish oling.
       </p>
@@ -80,12 +82,21 @@ export function RegisterForm() {
         />
 
         {error && (
-          <p role="alert" className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+          <p
+            role="alert"
+            className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
+          >
             {getApiErrorMessage(error)}
           </p>
         )}
 
-        <Button type="submit" variant="emerald" size="lg" disabled={isLoading} className="mt-2 w-full">
+        <Button
+          type="submit"
+          variant="emerald"
+          size="lg"
+          disabled={isLoading}
+          className="mt-2 w-full"
+        >
           {isLoading && <Loader2 className="size-4 animate-spin" />}
           {isLoading ? 'Yaratilmoqda...' : "Ro'yxatdan o'tish"}
         </Button>
@@ -93,7 +104,10 @@ export function RegisterForm() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Hisobingiz bormi?{' '}
-        <Link href="/login" className="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
+        <Link
+          href="/login"
+          className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+        >
           Kiring
         </Link>
       </p>

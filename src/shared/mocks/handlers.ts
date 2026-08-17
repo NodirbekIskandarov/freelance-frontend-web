@@ -143,7 +143,7 @@ export function createHandlers(baseUrl: string) {
       const body = (await request.json()) as { refreshToken?: string };
       const userId = body.refreshToken?.replace('mock-refresh-token.', '');
       if (!userId || !mockUsers.some((candidate) => candidate.id === userId)) {
-        return HttpResponse.json({ message: "Refresh token yaroqsiz" }, { status: 401 });
+        return HttpResponse.json({ message: 'Refresh token yaroqsiz' }, { status: 401 });
       }
 
       return HttpResponse.json<AuthTokens>(tokensFor(userId));

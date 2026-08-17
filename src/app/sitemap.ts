@@ -1,15 +1,15 @@
 import type { MetadataRoute } from 'next';
 
 import { siteConfig } from '@/config/site';
-import { getAllCatalogPaths } from '@/server/materials/catalog';
+import { getAllCataloguePaths } from '@/server/catalogue';
 
 /**
- * Katalog yo'llari bir joydan (`getAllCatalogPaths`) keladi — sitemap ham,
- * `generateStaticParams` ham. Yangi universitet qo'shilganda ikkalasi
- * birdan yangilanadi, biri esdan chiqib qolmaydi.
+ * Katalog yo'llari bir joydan (`getAllCataloguePaths`) keladi — sitemap
+ * ham, `generateStaticParams` ham. Yangi universitet qo'shilganda
+ * ikkalasi birdan yangilanadi, biri esdan chiqib qolmaydi.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { universities, subjects } = await getAllCatalogPaths();
+  const { universities, subjects, assignments } = await getAllCataloguePaths();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: 'daily', priority: 1 },
@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const universityRoutes: MetadataRoute.Sitemap = universities.map((item) => ({
-    url: `${siteConfig.url}/materials/${item.slug}`,
+    url: `${siteConfig.url}/materials/${item.universitySlug}`,
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
@@ -35,5 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...universityRoutes, ...subjectRoutes];
+  const assignmentRoutes: MetadataRoute.Sitemap = assignments.map((item) => ({
+    url: `${siteConfig.url}/materials/${item.universitySlug}/${item.subjectSlug}/${item.assignmentSlug}`,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...universityRoutes, ...subjectRoutes, ...assignmentRoutes];
 }

@@ -8,7 +8,13 @@ const tones: Record<OrderStatus, string> = {
   cancelled: 'bg-destructive/12 text-destructive',
 };
 
-export function OrderStatusBadge({ status, className }: { status: OrderStatus; className?: string }) {
+export function OrderStatusBadge({
+  status,
+  className,
+}: {
+  status: OrderStatus;
+  className?: string;
+}) {
   return (
     <span
       className={cn(

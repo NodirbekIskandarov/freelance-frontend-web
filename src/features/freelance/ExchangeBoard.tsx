@@ -41,7 +41,10 @@ export function ExchangeBoard() {
 
   if (error) {
     return (
-      <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+      <p
+        role="alert"
+        className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+      >
         {getApiErrorMessage(error)}
       </p>
     );
@@ -107,10 +110,7 @@ export function ExchangeBoard() {
         ) : tasks && tasks.length > 0 ? (
           <div className="lg:grid lg:min-h-[480px] lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
             <div
-              className={cn(
-                'border-border p-3 sm:p-4 lg:border-r',
-                selected && 'hidden lg:block',
-              )}
+              className={cn('border-border p-3 sm:p-4 lg:border-r', selected && 'hidden lg:block')}
             >
               <p className="px-1 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                 Mening topshiriqlarim
@@ -250,7 +250,7 @@ function OffersPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-background">
       <header className="border-b border-border px-4 py-3.5">
-        <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 mb-2 lg:hidden">
+        <Button variant="ghost" size="sm" onClick={onBack} className="mb-2 -ml-2 lg:hidden">
           <ArrowLeft className="size-4" />
           Topshiriqlar
         </Button>

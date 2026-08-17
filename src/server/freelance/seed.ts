@@ -1,14 +1,67 @@
 import type { FreelancerProfile } from '@/shared/types/freelance';
 
-import { seed as materialsSeed } from '../materials/seed';
-
 /**
  * Freelancer katalogi urug'i.
  *
- * Universitet nomlari bu yerda TAKRORLANMAYDI — materiallar urug'idan
- * `universityId` orqali olinadi. Aks holda "TATU" bir faylda o'zgarib,
- * ikkinchisida eskicha qolib ketardi.
+ * Materiallar katalogi haqiqiy backendga o'tgach bu fayl o'zining
+ * universitet ro'yxatiga ega bo'ldi. Backendda freelancer profillari
+ * hali yo'q, shuning uchun bu bo'lim urug'da qoladi — u yerda paydo
+ * bo'lgach, universitet ham `/universities/` dan olinadi.
  */
+
+/** Faqat ko'rsatish uchun — freelancer qaysi OTMda o'qishi. */
+const universities: Record<string, { slug: string; shortName: string; fullName: string }> = {
+  'uni-tatu': {
+    slug: 'tatu',
+    shortName: 'TATU',
+    fullName: 'Toshkent axborot texnologiyalari universiteti',
+  },
+  'uni-tdtu': {
+    slug: 'tdtu',
+    shortName: 'TDTU',
+    fullName: 'Toshkent davlat texnika universiteti',
+  },
+  'uni-tdiu': {
+    slug: 'tdiu',
+    shortName: 'TDIU',
+    fullName: 'Toshkent davlat iqtisodiyot universiteti',
+  },
+  'uni-ozmu': {
+    slug: 'ozmu',
+    shortName: "O'zMU",
+    fullName: "O'zbekiston Milliy universiteti",
+  },
+  'uni-tsul': {
+    slug: 'tsul',
+    shortName: 'TSUL',
+    fullName: 'Toshkent davlat yuridik universiteti',
+  },
+  'uni-tma': {
+    slug: 'tma',
+    shortName: 'TMA',
+    fullName: 'Toshkent tibbiyot akademiyasi',
+  },
+  'uni-wiut': {
+    slug: 'wiut',
+    shortName: 'WIUT',
+    fullName: 'Westminster International University in Tashkent',
+  },
+  'uni-inha': {
+    slug: 'inha',
+    shortName: 'INHA',
+    fullName: 'Inha University in Tashkent',
+  },
+  'uni-samdu': {
+    slug: 'samdu',
+    shortName: 'SamDU',
+    fullName: 'Samarqand davlat universiteti',
+  },
+  'uni-buxdu': {
+    slug: 'buxdu',
+    shortName: 'BuxDU',
+    fullName: 'Buxoro davlat universiteti',
+  },
+};
 
 interface FreelancerSeedRow {
   id: string;
@@ -247,7 +300,7 @@ const rows: FreelancerSeedRow[] = [
     availability: 'busy',
     activeOrderTitle: 'Landing page dizayni',
     joinedAt: '2023-12-05',
-    bio: "Taqdimot dizayni, plakat, infografika va UI maketlar.",
+    bio: 'Taqdimot dizayni, plakat, infografika va UI maketlar.',
     avatarGradient: 'from-fuchsia-500 to-violet-600',
   },
   {
@@ -308,10 +361,8 @@ function successRateFor(rating: number): number {
   return Math.round(78 + (rating - 4.4) * 33);
 }
 
-const universityById = new Map(materialsSeed.universities.map((item) => [item.id, item]));
-
 export const freelancers: FreelancerProfile[] = rows.map((row) => {
-  const university = universityById.get(row.universityId);
+  const university = universities[row.universityId];
   if (!university) {
     throw new Error(`Freelancer urug'ida noma'lum universitet: ${row.universityId}`);
   }

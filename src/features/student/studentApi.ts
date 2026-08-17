@@ -24,5 +24,8 @@ export const studentApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetStudentDashboardQuery, useGetStudentOrdersQuery, useGetStudentDownloadsQuery } =
-  studentApi;
+export const {
+  useGetStudentDashboardQuery,
+  useGetStudentOrdersQuery,
+  useGetStudentDownloadsQuery,
+} = studentApi;

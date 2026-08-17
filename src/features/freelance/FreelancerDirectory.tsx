@@ -237,9 +237,7 @@ export function FreelancerDirectory({
           {(activeCount > 0 || query) && (
             <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
               <span className="text-[11px] font-medium text-muted-foreground">Faol:</span>
-              {query && (
-                <ActiveChip label={`Qidiruv: ${query}`} onClear={() => setQuery('')} />
-              )}
+              {query && <ActiveChip label={`Qidiruv: ${query}`} onClear={() => setQuery('')} />}
               {filters.institute !== 'all' && (
                 <ActiveChip
                   label={

@@ -1,31 +1,28 @@
-import { CircleCheck, CircleDashed, Layers } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
-import { TASK_TYPE_LABELS } from '@/shared/types/materials';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
+import { toSlugId } from '@/lib/slug';
 import {
-  getAllCatalogPaths,
-  getSubjectBySlug,
-  getTasksBySubject,
+  getAllCataloguePaths,
+  getAssignmentsBySubject,
+  getSubjectBySlugId,
   getUniversityBySlug,
-} from '@/server/materials/catalog';
+} from '@/server/catalogue';
 
 export async function generateStaticParams() {
-  const { subjects } = await getAllCatalogPaths();
-  return subjects.map((item) => ({
-    universitySlug: item.universitySlug,
-    subjectSlug: item.subjectSlug,
-  }));
+  const { subjects } = await getAllCataloguePaths();
+  return subjects;
 }
 
 async function loadSubject(universitySlug: string, subjectSlug: string) {
   const university = await getUniversityBySlug(universitySlug);
   if (!university) return null;
 
-  const subject = await getSubjectBySlug(university.id, subjectSlug);
+  const subject = await getSubjectBySlugId(university.id, subjectSlug);
   if (!subject) return null;
 
   return { university, subject };
@@ -47,11 +44,14 @@ export async function generateMetadata(
   }
 
   const { university, subject } = data;
+  const assignments = await getAssignmentsBySubject(subject.id);
+
+  const course = subject.course === null ? '' : ` ${subject.course}-kurs.`;
 
   return buildMetadata({
-    title: `${subject.name} — ${university.shortName} topshiriqlari`,
-    description: `${university.shortName} ${subject.name} fani bo'yicha ${subject.taskCount} ta tayyor topshiriq: mustaqil ish, amaliy ish va laboratoriya ishlari. ${subject.course}-kurs, ${subject.semester}-semestr.`,
-    path: `/materials/${university.slug}/${subject.slug}`,
+    title: `${subject.name} — ${university.short_name} topshiriqlari`,
+    description: `${university.short_name} ${subject.name} fani bo'yicha ${assignments.length} ta tayyor topshiriq: mustaqil ish, amaliy ish va laboratoriya ishlari.${course}`,
+    path: `/materials/${universitySlug}/${subjectSlug}`,
   });
 }
 
@@ -64,13 +64,13 @@ export default async function SubjectPage(
   if (!data) notFound();
 
   const { university, subject } = data;
-  const tasks = await getTasksBySubject(subject.id);
+  const assignments = await getAssignmentsBySubject(subject.id);
 
   const crumbs = [
     { name: 'Bosh sahifa', path: '/' },
     { name: 'Tayyor materiallar', path: '/materials' },
-    { name: university.shortName, path: `/materials/${university.slug}` },
-    { name: subject.name, path: `/materials/${university.slug}/${subject.slug}` },
+    { name: university.short_name, path: `/materials/${universitySlug}` },
+    { name: subject.name, path: `/materials/${universitySlug}/${subjectSlug}` },
   ];
 
   /**
@@ -80,13 +80,15 @@ export default async function SubjectPage(
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${university.shortName} — ${subject.name} topshiriqlari`,
-    numberOfItems: tasks.length,
-    itemListElement: tasks.map((task, index) => ({
+    name: `${university.short_name} — ${subject.name} topshiriqlari`,
+    numberOfItems: assignments.length,
+    itemListElement: assignments.map((assignment, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      name: task.title,
-      url: absoluteUrl(`/materials/${university.slug}/${subject.slug}#${task.slug}`),
+      name: assignment.title,
+      url: absoluteUrl(
+        `/materials/${universitySlug}/${subjectSlug}/${toSlugId(assignment.title, assignment.id)}`,
+      ),
     })),
   };
 
@@ -103,62 +105,42 @@ export default async function SubjectPage(
             {subject.name}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {university.fullName} &middot; {subject.course}-kurs &middot; {subject.semester}-semestr
-            &middot; {tasks.length} ta topshiriq
+            {university.name}
+            {subject.course !== null && <> &middot; {subject.course}-kurs</>}
+            {subject.direction_name && <> &middot; {subject.direction_name}</>} &middot;{' '}
+            {assignments.length} ta topshiriq
           </p>
         </header>
 
-        <div className="mt-8 grid gap-3">
-          {tasks.map((task) => (
-            <article
-              key={task.id}
-              id={task.slug}
-              className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 transition-colors hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70"
-            >
-              <div className="min-w-0 flex-1">
-                <h2 className="text-[15px] font-bold text-foreground">{task.title}</h2>
-
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Layers className="size-3.5" />
-                    {TASK_TYPE_LABELS[task.taskType]}
-                  </span>
-
-                  {task.hasVariants ? (
-                    <span className="inline-flex items-center gap-1.5">
-                      <CircleCheck className="size-3.5 text-emerald-500" />
-                      {task.variantCount} ta variant
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5">
-                      <CircleDashed className="size-3.5" />
-                      Variantsiz
-                    </span>
-                  )}
-
-                  {task.status === 'partial' && (
-                    <span className="rounded-full bg-amber-500/12 px-2 py-0.5 font-medium text-amber-700 dark:text-amber-400">
-                      Qisman to&apos;ldirilgan
-                    </span>
+        {assignments.length === 0 ? (
+          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
+            Bu fan uchun topshiriqlar hozircha qo&apos;shilmagan.
+          </p>
+        ) : (
+          <div className="mt-8 grid gap-3">
+            {assignments.map((assignment) => (
+              <Link
+                key={assignment.id}
+                href={`/materials/${universitySlug}/${subjectSlug}/${toSlugId(assignment.title, assignment.id)}`}
+                className="group flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 transition-colors hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70"
+              >
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-[15px] font-bold text-foreground">{assignment.title}</h2>
+                  {assignment.description && (
+                    <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                      {assignment.description}
+                    </p>
                   )}
                 </div>
-              </div>
 
-              <div className="flex shrink-0 items-center gap-4">
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Narxi</div>
-                  <div className="text-sm font-bold text-foreground">
-                    {task.priceFrom.toLocaleString('ru-RU').replace(/ /g, ' ')} so&apos;m
-                  </div>
-                </div>
-
-                <ButtonLink href="/login" variant="emerald" size="sm">
-                  Ochish
-                </ButtonLink>
-              </div>
-            </article>
-          ))}
-        </div>
+                <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-600 transition-all group-hover:gap-2 dark:text-emerald-400">
+                  Variantlar
+                  <ArrowRight className="size-4" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </Container>
     </>
   );

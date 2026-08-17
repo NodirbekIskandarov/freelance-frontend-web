@@ -51,15 +51,13 @@ function matchesQuery(freelancer: FreelancerProfile, query: string): boolean {
   return haystack.some((value) => value.toLowerCase().includes(needle));
 }
 
-const comparators: Record<
-  FreelanceSortId,
-  (a: FreelancerProfile, b: FreelancerProfile) => number
-> = {
-  rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
-  newest: (a, b) => b.joinedAt.localeCompare(a.joinedAt),
-  price_asc: (a, b) => a.priceFrom - b.priceFrom,
-  price_desc: (a, b) => b.priceFrom - a.priceFrom,
-};
+const comparators: Record<FreelanceSortId, (a: FreelancerProfile, b: FreelancerProfile) => number> =
+  {
+    rating: (a, b) => b.rating - a.rating || b.reviews - a.reviews,
+    newest: (a, b) => b.joinedAt.localeCompare(a.joinedAt),
+    price_asc: (a, b) => a.priceFrom - b.priceFrom,
+    price_desc: (a, b) => b.priceFrom - a.priceFrom,
+  };
 
 export function filterFreelancers(
   freelancers: FreelancerProfile[],
@@ -69,7 +67,8 @@ export function filterFreelancers(
 
   const matched = freelancers.filter((freelancer) => {
     if (!matchesQuery(freelancer, query)) return false;
-    if (filters.institute !== 'all' && freelancer.universitySlug !== filters.institute) return false;
+    if (filters.institute !== 'all' && freelancer.universitySlug !== filters.institute)
+      return false;
     if (filters.availability !== 'all' && freelancer.availability !== filters.availability) {
       return false;
     }

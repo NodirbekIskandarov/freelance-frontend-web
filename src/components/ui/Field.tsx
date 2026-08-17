@@ -74,8 +74,10 @@ export function TextField({ label, hint, error, className, required, ...props }:
   );
 }
 
-interface SelectFieldProps
-  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id' | 'className'> {
+interface SelectFieldProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  'id' | 'className'
+> {
   label: string;
   options: { value: string; label: string }[];
   hint?: ReactNode;
@@ -121,8 +123,10 @@ export function SelectField({
   );
 }
 
-interface TextAreaFieldProps
-  extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id' | 'className'> {
+interface TextAreaFieldProps extends Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'id' | 'className'
+> {
   label: string;
   hint?: ReactNode;
   error?: string;

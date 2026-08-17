@@ -20,7 +20,7 @@ const sections = [
     id: 'umumiy',
     title: '1. Umumiy qoidalar',
     paragraphs: [
-      "Ushbu shartlar Yopamiz.uz platformasidan foydalanish tartibini belgilaydi. Saytdan foydalanish orqali siz quyidagi qoidalarga rozilik bildirasiz.",
+      'Ushbu shartlar Yopamiz.uz platformasidan foydalanish tartibini belgilaydi. Saytdan foydalanish orqali siz quyidagi qoidalarga rozilik bildirasiz.',
       "Platforma talabalar va mustaqil mutaxassislarni bog'lovchi vositachi sifatida ishlaydi. Ish sifati uchun bevosita javobgarlik uni bajargan freelancer zimmasida bo'ladi, platforma esa nizolarni ko'rib chiqish va mablag'ni himoyalash bilan shug'ullanadi.",
     ],
   },
@@ -99,7 +99,7 @@ export default function LegalPage() {
             </ul>
           </nav>
 
-          <div className="min-w-0 max-w-2xl flex-1 space-y-8 lg:order-1">
+          <div className="max-w-2xl min-w-0 flex-1 space-y-8 lg:order-1">
             {sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-24">
                 <h2 className="text-lg font-bold tracking-tight text-foreground">

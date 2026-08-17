@@ -99,9 +99,7 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
           Demo kod: <strong>{codeData.demoCode}</strong>
         </p>
       )}
-      {sendError && (
-        <p className="text-xs text-destructive">{getApiErrorMessage(sendError)}</p>
-      )}
+      {sendError && <p className="text-xs text-destructive">{getApiErrorMessage(sendError)}</p>}
 
       <div className="flex items-end gap-2">
         <TextField
@@ -313,7 +311,9 @@ function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
           options={experienceOptions}
           value={draft.experienceLevel}
           onChange={(event) =>
-            update({ experienceLevel: event.target.value as FreelancerApplicationDraft['experienceLevel'] })
+            update({
+              experienceLevel: event.target.value as FreelancerApplicationDraft['experienceLevel'],
+            })
           }
         />
       </Grid>
