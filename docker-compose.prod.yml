@@ -1,0 +1,40 @@
+# Production rejimi (serverda CI/CD shu faylni ishlatadi):
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Barcha sozlamalar server'dagi `.env` faylidan olinadi (compose uni avtomatik
+# o'qiydi). NEXT_PUBLIC_* qiymatlari build paytida bundle ichiga yoziladi —
+# ya'ni `.env` o'zgarsa, konteynerni qayta *build* qilish shart (deploy shuni
+# qiladi), faqat restart yetarli emas.
+services:
+  web:
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?.env da NEXT_PUBLIC_API_URL ko'rsatilmagan}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?.env da NEXT_PUBLIC_APP_URL ko'rsatilmagan}
+        # Productionda mock API hech qachon yoqilmaydi.
+        NEXT_PUBLIC_ENABLE_MOCKS: 'false'
+    image: yopamiz-web:prod
+    container_name: yopamiz-web
+    restart: unless-stopped
+    ports:
+      # Host porti .env dagi WEB_PORT bilan boshqariladi. Default 8092 —
+      # 8090 ni backend (yopamiz-back), 8091 ni admin panel egallagan.
+      - '${WEB_PORT:-8092}:8090'
+    environment:
+      NODE_ENV: production
+      PORT: 8090
+      HOSTNAME: 0.0.0.0
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8090/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
