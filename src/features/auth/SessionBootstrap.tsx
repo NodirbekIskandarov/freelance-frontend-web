@@ -2,11 +2,10 @@
 
 import { useEffect } from 'react';
 
+import { useGetProfileQuery } from '@/features/profile/profileApi';
 import { tokenStore } from '@/store/api';
 import { useAppDispatch } from '@/store/hooks';
-import { clearCurrentUser, setCurrentUser } from '@/store/slices/authSlice';
-
-import { readStoredUser } from './authApi';
+import { clearCurrentUser } from '@/store/slices/authSlice';
 
 /**
  * Sahifa to'liq qayta yuklanganda seansni tiklaydi.
@@ -15,24 +14,24 @@ import { readStoredUser } from './authApi';
  * qoladi. Bu komponent bo'lmasa foydalanuvchi kirgan bo'lsa ham header
  * "Kirish" tugmasini ko'rsatib turadi — brauzerda aynan shu kuzatilgan.
  *
- * Backendda "joriy foydalanuvchi" endpoint'i yo'q, shuning uchun
- * foydalanuvchi login javobidan saqlangan nusxadan tiklanadi. Token
- * yaroqsiz bo'lsa birinchi himoyalangan so'rov 401 beradi va
- * `baseQuery` seansni tozalaydi — ya'ni bu nusxa ruxsat bermaydi,
- * faqat ekranni to'ldiradi.
+ * Foydalanuvchi `GET /profile/` dan olinadi, saqlangan nusxadan emas:
+ * profil boshqa qurilmada o'zgargan bo'lishi mumkin, token yaroqsiz
+ * bo'lsa esa so'rov 401 beradi va `baseQuery` seansni o'zi tozalaydi.
+ * `getProfile` store'ni ham to'ldiradi (`profileApi` ga qarang).
  *
  * Hech narsa render qilmaydi.
  */
 export function SessionBootstrap() {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const hasToken = tokenStore.getAccessToken() !== null;
-    const user = hasToken ? readStoredUser() : null;
+  // Token yo'q bo'lsa serverga so'rov yubormaymiz — mehmon uchun ortiqcha 401.
+  const hasToken = typeof window !== 'undefined' && tokenStore.getAccessToken() !== null;
 
-    if (user) dispatch(setCurrentUser(user));
-    else dispatch(clearCurrentUser());
-  }, [dispatch]);
+  useGetProfileQuery(undefined, { skip: !hasToken });
+
+  useEffect(() => {
+    if (!hasToken) dispatch(clearCurrentUser());
+  }, [hasToken, dispatch]);
 
   return null;
 }
