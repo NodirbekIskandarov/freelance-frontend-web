@@ -91,8 +91,11 @@ vaqtinchalik qiymatlar, `design/tokens/tokens.md` to'lgach almashtiriladi.
 ## Deploy (CI/CD)
 
 `main` ga push bo'lishi bilan `.github/workflows/deploy.yml` ishga tushadi:
-SSH orqali serverga kiradi, kodni tortadi va konteynerni qayta quradi.
-Natija (muvaffaqiyat yoki xatolik) Telegram guruhiga yuboriladi.
+kodni tortadi va konteynerni qayta quradi. Natija (muvaffaqiyat yoki xatolik)
+Telegram guruhiga yuboriladi.
+
+Job **self-hosted runner** da, ya'ni serverning o'zida bajariladi — GitHub
+Actions daqiqalari sarflanmaydi va SSH kaliti kerak emas.
 
 Server manzili: `/var/www/yopamiz-front/freelance-frontend-web`
 
@@ -100,9 +103,6 @@ GitHub repo secrets (Settings → Secrets and variables → Actions):
 
 | Secret | Nima |
 | --- | --- |
-| `SERVER_HOST` | VPS IP yoki domen |
-| `SERVER_USER` | SSH foydalanuvchi |
-| `SSH_PRIVATE_KEY` | SSH maxfiy kalit (to'liq, `-----BEGIN...` bilan) |
 | `TELEGRAM_BOT_TOKEN` | Bot tokeni |
 | `TELEGRAM_CHAT_ID` | Guruh/chat id |
 | `TELEGRAM_THREAD_ID` | Forum mavzusi id — ixtiyoriy, bo'sh qoldirilsa ishlatilmaydi |
@@ -112,11 +112,17 @@ Serverda bir martalik tayyorgarlik:
 ```bash
 mkdir -p /var/www/yopamiz-front
 cd /var/www/yopamiz-front
-git clone https://github.com/NodirbekIskandarov/freelance-frontend-web.git
+git clone git@github-web:NodirbekIskandarov/freelance-frontend-web.git
 cd freelance-frontend-web
 cp .env.prod.example .env   # qiymatlarni to'ldiring
 docker compose -f docker-compose.prod.yml up -d --build
 ```
+
+Bunga qo'shimcha ravishda self-hosted runner o'rnatiladi (Settings → Actions →
+Runners → New self-hosted runner), va `svc.sh install` bilan servis qilinadi.
+Runner ishlaydigan foydalanuvchi: `docker` guruhida bo'lishi, yuqoridagi
+katalogga yozish huquqiga va `git pull` uchun deploy key'ga (`~/.ssh/gh_web`)
+ega bo'lishi kerak.
 
 `.env` dagi `NEXT_PUBLIC_*` qiymatlari build paytida bundle'ga yoziladi —
 o'zgartirgandan keyin qayta build kerak (deploy `--build` bilan ishlaydi,
