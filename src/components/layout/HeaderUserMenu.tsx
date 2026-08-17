@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { clearSession, useLogoutMutation } from '@/features/auth/authApi';
 import { cabinetPathFor } from '@/features/auth/cabinetPath';
 import { cn } from '@/lib/cn';
-import type { AppUser } from '@/shared/types/auth';
+import { displayName, type AppUser } from '@/shared/types/auth';
 import { baseApi, tokenStore } from '@/store/api';
 import { clearCurrentUser } from '@/store/slices/authSlice';
 import { useAppDispatch } from '@/store/hooks';
@@ -25,12 +26,23 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [logout] = useLogoutMutation();
+
+  const name = displayName(user);
 
   function handleLogout() {
+    /*
+     * Server refresh token'ni qora ro'yxatga qo'shadi. Javobini
+     * KUTMAYMIZ: chiqish lokal holatga bog'liq bo'lishi kerak — tarmoq
+     * uzilgan bo'lsa ham foydalanuvchi chiqa olishi shart.
+     */
+    const refresh = tokenStore.getRefreshToken();
+    if (refresh) void logout({ refresh });
+
     // Uchala qadam ham zarur: token saqlanib qolsa `SessionBootstrap`
     // keyingi yuklashda foydalanuvchini qaytarib qo'yadi; RTK Query keshi
     // tozalanmasa esa oldingi foydalanuvchi ma'lumoti ekranda qoladi.
-    tokenStore.clear();
+    clearSession();
     dispatch(clearCurrentUser());
     dispatch(baseApi.util.resetApiState());
 
@@ -69,10 +81,10 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
         className="flex items-center gap-2 rounded-full border border-border py-1 pr-3 pl-1 transition-colors hover:bg-muted"
       >
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500 text-xs font-bold text-white">
-          {initialsOf(user.fullName)}
+          {initialsOf(name)}
         </span>
         <span className="max-w-[120px] truncate text-sm font-medium text-foreground">
-          {user.fullName.split(' ')[0]}
+          {name.split(' ')[0]}
         </span>
       </button>
 

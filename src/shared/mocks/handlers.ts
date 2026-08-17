@@ -1,8 +1,6 @@
 import { delay, http, HttpResponse } from 'msw';
 
 import type { Appeal, CreateAppealInput, SavedItem, Wallet } from '../types/account';
-import type { AuthTokens } from '../types/api';
-import type { AppUser, AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
 import {
   WORK_DIRECTION_LABELS,
   type CreateExchangeTaskInput,
@@ -17,7 +15,6 @@ import type {
 } from '../types/freelancerCabinet';
 import type { DownloadItem, StudentDashboard, StudentOrder } from '../types/orders';
 import { mockAppeals, mockSavedItems, mockWallet } from './account';
-import { mockUsers } from './data';
 import { mockExchangeOffers, mockExchangeTasks } from './exchange';
 import {
   mockFreelancerDashboard,
@@ -33,137 +30,31 @@ const LATENCY_MS = 300;
 const DEMO_SMS_CODE = '111111';
 
 /**
- * Token foydalanuvchi id'sini o'z ichiga oladi.
- *
- * Ilgari token barcha uchun bir xil edi va `/auth/me` doim birinchi
- * foydalanuvchini qaytarardi — freelancer sifatida kirib sahifani
- * yangilagan odam talabaga aylanib qolardi. Haqiqiy backend'da bu ish
- * JWT ichidagi `sub` bilan bajariladi; mock shu xatti-harakatni
- * eng sodda ko'rinishda takrorlaydi.
- */
-function tokensFor(userId: string): AuthTokens {
-  return {
-    accessToken: `mock-access-token.${userId}`,
-    refreshToken: `mock-refresh-token.${userId}`,
-  };
-}
-
-function userIdFromAuthHeader(request: Request): string | null {
-  const header = request.headers.get('Authorization');
-  const prefix = 'Bearer mock-access-token.';
-  if (!header?.startsWith(prefix)) return null;
-  return header.slice(prefix.length) || null;
-}
-
-function stripPassword(user: (typeof mockUsers)[number]): AppUser {
-  const { password: _password, ...rest } = user;
-  return rest;
-}
-
-/**
  * Handler'lar API manziliga bog'lab yaratiladi — `createHandlers(baseUrl)`.
  *
  * Wildcard (`*`) yo'llar ATAYLAB ishlatilmaydi: `admin/` loyihasida
  * `*[/]users/:id` naqshi Vite'ning dev modul so'rovini ushlab qolib,
  * "Failed to fetch dynamically imported module" xatosiga olib kelgan edi.
- * To'liq manzilga bog'langanda handler faqat haqiqiy API so'rovlarini ushlaydi.
+ *
+ * Auth handler'lari OLIB TASHLANDI — kirish, ro'yxatdan o'tish, telefon
+ * tasdiqlash va parol tiklash endi haqiqiy backendga ketadi
+ * (`/api/v1/auth/...`). Ular qolganda mock soxta token qaytarib,
+ * haqiqiy endpoint'lar 401 bilan yiqilardi. Bu yerda qolgan yo'llar —
+ * backendda hali mavjud bo'lmagan bo'limlar (kabinet, birja, hamyon).
  */
 export function createHandlers(baseUrl: string) {
   const path = (suffix: string) => `${baseUrl.replace(/\/$/, '')}/${suffix}`;
 
   /*
-   * Nusxa, urug'ning o'zi emas: yaratilgan topshiriq shu ro'yxatga
-   * qo'shiladi va keyingi `GET`da qaytadi — POST'dan keyin ro'yxat
-   * yangilanishini mock ham to'g'ri ko'rsatadi. Sahifa yangilanganda
-   * urug' holatiga qaytadi, bu mock uchun kutilgan xatti-harakat.
+   * Nusxa, urug'ning o'zi emas: yaratilgan yozuv shu ro'yxatga qo'shiladi
+   * va keyingi `GET`da qaytadi. Sahifa yangilanganda urug' holatiga
+   * qaytadi — bu mock uchun kutilgan xatti-harakat.
    */
   const tasks: ExchangeTask[] = [...mockExchangeTasks];
   const savedItems: SavedItem[] = [...mockSavedItems];
   const appeals: Appeal[] = [...mockAppeals];
 
   return [
-    http.post(path('auth/login'), async ({ request }) => {
-      await delay(LATENCY_MS);
-
-      const body = (await request.json()) as Partial<LoginRequest>;
-      const user = mockUsers.find((candidate) => candidate.phone === body.phone);
-
-      if (!user || user.password !== body.password) {
-        return HttpResponse.json(
-          { message: "Telefon raqam yoki parol noto'g'ri" },
-          { status: 401 },
-        );
-      }
-
-      return HttpResponse.json<AuthResponse>({
-        ...tokensFor(user.id),
-        user: stripPassword(user),
-      });
-    }),
-
-    http.post(path('auth/register'), async ({ request }) => {
-      await delay(LATENCY_MS);
-
-      const body = (await request.json()) as Partial<RegisterRequest>;
-      if (mockUsers.some((candidate) => candidate.phone === body.phone)) {
-        return HttpResponse.json(
-          { message: 'Bu telefon raqam bilan foydalanuvchi allaqachon mavjud' },
-          { status: 409 },
-        );
-      }
-
-      const user = {
-        id: String(mockUsers.length + 1),
-        publicId: `USR-${100000 + mockUsers.length + 1}`,
-        fullName: body.fullName ?? '',
-        phone: body.phone ?? '',
-        email: null,
-        avatarUrl: null,
-        status: 'student' as const,
-        createdAt: new Date().toISOString(),
-        password: body.password ?? '',
-      };
-
-      /*
-       * Ro'yxatga QO'SHILADI: aks holda yangi foydalanuvchi kabinetga
-       * kirardi-yu, sahifani yangilashi bilan `/auth/me` uni topolmay
-       * seansdan chiqarib yuborardi.
-       */
-      mockUsers.push(user);
-
-      return HttpResponse.json<AuthResponse>({
-        ...tokensFor(user.id),
-        user: stripPassword(user),
-      });
-    }),
-
-    http.post(path('auth/refresh'), async ({ request }) => {
-      await delay(LATENCY_MS);
-
-      const body = (await request.json()) as { refreshToken?: string };
-      const userId = body.refreshToken?.replace('mock-refresh-token.', '');
-      if (!userId || !mockUsers.some((candidate) => candidate.id === userId)) {
-        return HttpResponse.json({ message: 'Refresh token yaroqsiz' }, { status: 401 });
-      }
-
-      return HttpResponse.json<AuthTokens>(tokensFor(userId));
-    }),
-
-    /*
-     * Token tekshiruvi ataylab: `SessionBootstrap` eskirgan token bilan
-     * qanday yo'l tutishini shusiz sinab bo'lmaydi — mock hamma vaqt
-     * foydalanuvchi qaytarsa, 401 shoxi hech qachon ishlamaydi.
-     */
-    http.get(path('auth/me'), async ({ request }) => {
-      await delay(LATENCY_MS);
-
-      const userId = userIdFromAuthHeader(request);
-      const user = userId ? mockUsers.find((candidate) => candidate.id === userId) : undefined;
-
-      if (!user) return HttpResponse.json({ message: 'Seans tugagan' }, { status: 401 });
-      return HttpResponse.json<AppUser>(stripPassword(user));
-    }),
-
     http.get(path('student/dashboard'), async () => {
       await delay(LATENCY_MS);
       return HttpResponse.json<StudentDashboard>(mockStudentDashboard);

@@ -18,6 +18,7 @@ import type { ReactNode } from 'react';
 
 import { Container } from '@/components/ui/Container';
 import { cn } from '@/lib/cn';
+import { isFreelancer } from '@/shared/types/auth';
 import { selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
 
@@ -81,7 +82,7 @@ export function CabinetShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const user = useAppSelector(selectCurrentUser);
 
-  const variant: CabinetVariant = user?.status === 'freelancer' ? 'freelancer' : 'student';
+  const variant: CabinetVariant = user && isFreelancer(user) ? 'freelancer' : 'student';
   const { title, items } = NAV[variant];
 
   return (

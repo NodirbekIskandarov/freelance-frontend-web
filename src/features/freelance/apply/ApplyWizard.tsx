@@ -1,11 +1,12 @@
 'use client';
 
-import { CheckCircle2, Shield } from 'lucide-react';
+import { CheckCircle2, Clock, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { getApiErrorMessage } from '@/shared/api/errors';
+import { isFreelancer } from '@/shared/types/auth';
 import type { FreelancerApplicationDraft } from '@/shared/types/freelancerApplication';
 import { selectAuthHydrated, selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
@@ -49,7 +50,7 @@ export function ApplyWizard() {
     );
   }
 
-  if (user.status === 'freelancer') {
+  if (isFreelancer(user)) {
     return (
       <div className="rounded-2xl border border-emerald-500/25 bg-card p-8 text-center">
         <CheckCircle2 className="mx-auto size-10 text-emerald-500" />
@@ -59,6 +60,23 @@ export function ApplyWizard() {
         <ButtonLink href="/freelancer/dashboard" variant="emerald" className="mt-5">
           Kabinetga o&apos;tish
         </ButtonLink>
+      </div>
+    );
+  }
+
+  {
+    /* Ariza yuborilgan, lekin hali ko'rib chiqilmagan holat. */
+  }
+  if (user.freelancer_profile?.status === 'pending') {
+    return (
+      <div className="rounded-2xl border border-amber-500/30 bg-card p-8 text-center">
+        <Clock className="mx-auto size-10 text-amber-500" />
+        <h2 className="mt-3 text-lg font-semibold text-foreground">
+          Ariza ko&apos;rib chiqilmoqda
+        </h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+          Arizangiz 1–3 ish kuni ichida admin tomonidan tekshiriladi. Natija haqida xabar beramiz.
+        </p>
       </div>
     );
   }

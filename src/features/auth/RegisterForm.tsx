@@ -32,8 +32,23 @@ export function RegisterForm() {
     }
     setPasswordError(undefined);
 
+    /*
+     * Backend ismni bitta maydonda emas, `first_name` va `last_name`
+     * ko'rinishida kutadi. Foydalanuvchidan ikkita maydon so'ramaymiz —
+     * birinchi so'z ism, qolgani familiya deb bo'linadi. Bitta so'z
+     * yozilsa familiya bo'sh qoladi, backend buni qabul qiladi
+     * (ikkalasi ham ixtiyoriy).
+     */
+    const [firstName = '', ...rest] = fullName.trim().split(/\s+/);
+
     try {
-      const { user } = await register({ fullName, phone, password }).unwrap();
+      const { user } = await register({
+        phone,
+        password,
+        password_confirm: password,
+        first_name: firstName,
+        last_name: rest.join(' '),
+      }).unwrap();
       router.push(cabinetPathFor(user));
     } catch {
       // Server xatosi `error` orqali ko'rsatiladi.

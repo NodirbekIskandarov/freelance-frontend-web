@@ -28,12 +28,20 @@ ENV NODE_ENV=production
 # NEXT_PUBLIC_* qiymatlari build paytida bundle ichiga "inline" qilinadi,
 # shuning uchun ular ARG sifatida keladi — konteynerni ishga tushirishda
 # o'zgartirib bo'lmaydi, qayta build qilish kerak.
-ARG NEXT_PUBLIC_API_URL=http://localhost:8090/api
+ARG NEXT_PUBLIC_API_URL=http://localhost:8090/api/v1
 ARG NEXT_PUBLIC_APP_URL=http://localhost:8090
 ARG NEXT_PUBLIC_ENABLE_MOCKS=false
+
+# Ochiq katalog server tomonda o'qiladi (Server Component + ISR).
+# Build paytida SHART: `generateStaticParams` sahifalarni shu manzildan
+# yig'adi. Runner bosqichida ham qayta beriladi — ISR yangilanishi
+# konteyner ishlab turganda sodir bo'ladi.
+ARG CATALOGUE_API_URL=https://api.yopamiz.uz/api/v1
+
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
-    NEXT_PUBLIC_ENABLE_MOCKS=$NEXT_PUBLIC_ENABLE_MOCKS
+    NEXT_PUBLIC_ENABLE_MOCKS=$NEXT_PUBLIC_ENABLE_MOCKS \
+    CATALOGUE_API_URL=$CATALOGUE_API_URL
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -41,9 +49,11 @@ RUN npm run build
 
 # ---------- runner: production server ----------
 FROM base AS runner
+ARG CATALOGUE_API_URL=https://api.yopamiz.uz/api/v1
 ENV NODE_ENV=production \
     PORT=8090 \
-    HOSTNAME=0.0.0.0
+    HOSTNAME=0.0.0.0 \
+    CATALOGUE_API_URL=$CATALOGUE_API_URL
 
 # Root emas, alohida foydalanuvchi ostida ishlaydi.
 RUN addgroup -g 1001 -S nodejs && adduser -u 1001 -S nextjs -G nodejs

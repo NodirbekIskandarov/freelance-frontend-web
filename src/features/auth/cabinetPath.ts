@@ -1,4 +1,4 @@
-import type { AppUser } from '@/shared/types/auth';
+import { isFreelancer, type AppUser } from '@/shared/types/auth';
 
 /**
  * Foydalanuvchi roliga mos kabinet manzili.
@@ -6,7 +6,10 @@ import type { AppUser } from '@/shared/types/auth';
  * Kirish, ro'yxatdan o'tish va header menyusi — uchalasi ham shu
  * funksiyaga tayanadi. Ilgari kirish formasi `/student/dashboard`ni
  * qattiq yozib qo'ygan edi va freelancer ham talaba kabinetiga tushardi.
+ *
+ * Rol `user.status` dan EMAS, `freelancer_profile.status` dan aniqlanadi:
+ * birinchisi akkaunt holati (faol/bloklangan), rol emas.
  */
 export function cabinetPathFor(user: AppUser): string {
-  return user.status === 'freelancer' ? '/freelancer/dashboard' : '/student/dashboard';
+  return isFreelancer(user) ? '/freelancer/dashboard' : '/student/dashboard';
 }

@@ -1,7 +1,11 @@
 /**
- * Umumiy, domenga bog'liq bo'lmagan API shakllari (sahifalash, xato tanasi,
- * token juftligi). Domen tiplari (`AppUser`, `University`...) o'z fayllarida:
- * `shared/types/auth.ts`, `shared/types/materials.ts`.
+ * Umumiy, domenga bog'liq bo'lmagan API shakllari. Domen tiplari
+ * (`AppUser`, `University`...) o'z fayllarida: `shared/types/auth.ts`,
+ * `shared/types/catalogue.ts`.
+ *
+ * Bu yerdagi `Paginated`, `ListQuery` va `ApiErrorBody` — hali haqiqiy
+ * API'ga ko'chmagan mock bo'limlar (kabinet, birja) uchun. Katalog va
+ * auth allaqachon backend shaklidan foydalanadi.
  */
 
 /** Ro'yxat endpoint'lari uchun sahifalash meta ma'lumoti. */

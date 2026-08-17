@@ -1,15 +1,15 @@
 'use client';
 
-import { ErrorNotice } from '@/components/ui/ErrorNotice';
-
-import { useGetMeQuery } from '../auth/authApi';
+import { FREELANCER_STATUS_LABELS, displayName, type AppUser } from '@/shared/types/auth';
+import { useAppSelector } from '@/store/hooks';
+import { selectAuthHydrated, selectCurrentUser } from '@/store/slices/authSlice';
 
 /**
  * Profil kartasi — talaba va freelancer uchun bir xil.
  *
- * Ma'lumot `/auth/me` dan keladi va roldan qat'i nazar bir xil
- * maydonlardan iborat, shuning uchun ikki nusxa saqlashning ma'nosi
- * yo'q: rol farqi faqat "Holat" qatorida ko'rinadi.
+ * Ma'lumot store'dan olinadi, alohida so'rovdan emas: backendda "joriy
+ * foydalanuvchi" endpoint'i yo'q va yozuv login javobidan saqlanadi.
+ * Rol farqi faqat "Holat" qatorida ko'rinadi.
  */
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -20,23 +20,45 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+function rows(user: AppUser): { label: string; value: string }[] {
+  const profile = user.profile;
+
+  return [
+    { label: 'Ism familiya', value: displayName(user) },
+    { label: 'Telefon raqam', value: user.phone ?? '—' },
+    { label: 'Email', value: user.email || '—' },
+    { label: 'Universitet', value: profile?.university_display || '—' },
+    { label: 'Kurs', value: profile?.course ? `${profile.course}-kurs` : '—' },
+    { label: 'Telegram', value: profile?.telegram || '—' },
+    {
+      label: 'Holat',
+      value: FREELANCER_STATUS_LABELS[user.freelancer_profile?.status ?? 'none'],
+    },
+  ];
+}
+
 export function AccountProfile() {
-  const { data, isLoading, error } = useGetMeQuery();
+  const hydrated = useAppSelector(selectAuthHydrated);
+  const user = useAppSelector(selectCurrentUser);
 
-  if (error) return <ErrorNotice error={error} />;
-
-  if (isLoading || !data) {
+  if (!hydrated) {
     return <div className="h-64 animate-pulse rounded-xl bg-muted" />;
+  }
+
+  if (!user) {
+    return (
+      <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        Seans topilmadi. Qaytadan kiring.
+      </p>
+    );
   }
 
   return (
     <div className="rounded-xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
       <dl className="divide-y divide-border">
-        <Row label="Ism familiya" value={data.fullName} />
-        <Row label="Telefon raqam" value={data.phone} />
-        <Row label="Email" value={data.email ?? '—'} />
-        <Row label="Foydalanuvchi ID" value={data.publicId} />
-        <Row label="Holat" value={data.status === 'freelancer' ? 'Freelancer' : 'Talaba'} />
+        {rows(user).map((row) => (
+          <Row key={row.label} label={row.label} value={row.value} />
+        ))}
       </dl>
     </div>
   );
