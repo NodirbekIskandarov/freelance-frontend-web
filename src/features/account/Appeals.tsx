@@ -8,7 +8,13 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { TextAreaField, TextField } from '@/components/ui/Field';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { APPEAL_STATUS_LABELS, type AppealStatus } from '@/shared/types/account';
+import {
+  APPEAL_STATUS_LABELS,
+  APPEAL_TOPIC_LABELS,
+  APPEAL_TOPICS,
+  type AppealStatus,
+  type AppealTopic,
+} from '@/shared/types/account';
 
 import { useCreateAppealMutation, useGetAppealsQuery } from './accountApi';
 
@@ -18,10 +24,16 @@ const statusTones: Record<AppealStatus, string> = {
   resolved: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
 };
 
+function formatDate(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
+}
+
 export function Appeals() {
-  const { data, isLoading, error } = useGetAppealsQuery();
+  const { data, isLoading, error } = useGetAppealsQuery({ page_size: 30 });
   const [createAppeal, { isLoading: isSending, error: createError }] = useCreateAppealMutation();
 
+  const [topic, setTopic] = useState<AppealTopic>('other');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
@@ -29,7 +41,7 @@ export function Appeals() {
     event.preventDefault();
 
     try {
-      await createAppeal({ subject: subject.trim(), message: message.trim() }).unwrap();
+      await createAppeal({ topic, subject: subject.trim(), message: message.trim() }).unwrap();
     } catch {
       // Xato quyida ko'rsatiladi; yozilgan matn formada qoladi.
       return;
@@ -48,8 +60,23 @@ export function Appeals() {
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-foreground">Mavzu turi</span>
+            <select
+              value={topic}
+              onChange={(event) => setTopic(event.target.value as AppealTopic)}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground"
+            >
+              {APPEAL_TOPICS.map((item) => (
+                <option key={item} value={item}>
+                  {APPEAL_TOPIC_LABELS[item]}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <TextField
-            label="Mavzu"
+            label="Sarlavha"
             required
             maxLength={120}
             placeholder="Masalan: To'lov tasdiqlanmadi"
@@ -61,7 +88,7 @@ export function Appeals() {
             label="Xabar"
             required
             rows={4}
-            maxLength={1000}
+            maxLength={2000}
             placeholder="Muammoni batafsil yozing — buyurtma raqami bo'lsa uni ham qo'shing."
             value={message}
             onChange={(event) => setMessage(event.target.value)}
@@ -96,13 +123,13 @@ export function Appeals() {
               <div key={index} className="h-28 animate-pulse rounded-xl bg-muted" />
             ))}
           </div>
-        ) : data.length === 0 ? (
+        ) : data.results.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
             Hali murojaat yo&apos;q.
           </p>
         ) : (
           <div className="mt-4 grid gap-3">
-            {data.map((appeal) => (
+            {data.results.map((appeal) => (
               <article
                 key={appeal.id}
                 className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
@@ -110,8 +137,11 @@ export function Appeals() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="text-sm font-bold text-foreground">{appeal.subject}</h3>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {APPEAL_TOPIC_LABELS[appeal.topic] ?? appeal.topic}
+                    </p>
                     <p className="mt-0.5 font-mono text-xs text-muted-foreground/80">
-                      {appeal.reference} &middot; {appeal.createdAt}
+                      {appeal.reference} &middot; {formatDate(appeal.created_at)}
                     </p>
                   </div>
                   <span

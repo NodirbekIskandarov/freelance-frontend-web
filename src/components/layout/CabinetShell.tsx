@@ -3,10 +3,12 @@
 import {
   Bookmark,
   Briefcase,
+  ClipboardList,
   Coins,
   Download,
   LayoutDashboard,
   LifeBuoy,
+  Send,
   ShoppingBag,
   UserRound,
   Wallet,
@@ -59,7 +61,9 @@ const NAV: Record<CabinetVariant, { title: string; items: CabinetNavItem[] }> = 
     title: 'Freelancer kabineti',
     items: [
       { label: 'Bosh sahifa', href: '/freelancer/dashboard', icon: LayoutDashboard },
-      { label: 'Buyurtmalar', href: '/freelancer/orders', icon: Briefcase },
+      { label: 'Ochiq topshiriqlar', href: '/freelancer/board', icon: ClipboardList },
+      { label: 'Takliflarim', href: '/freelancer/offers', icon: Send },
+      { label: 'Ishlarim', href: '/freelancer/orders', icon: Briefcase },
       { label: 'Daromad', href: '/freelancer/earnings', icon: Coins },
       { label: 'Profil', href: '/freelancer/profile', icon: UserRound },
       ...SHARED_NAV,

@@ -8,3 +8,20 @@
 export function formatSom(value: number): string {
   return `${value.toLocaleString('ru-RU').replace(/ /g, ' ')} so'm`;
 }
+
+/**
+ * DRF `DecimalField` satrini o'qiladigan pul ko'rinishiga o'tkazadi:
+ * `"7310.00"` → `"7 310 so'm"`.
+ *
+ * Satr `Number`ga faqat KO'RSATISH uchun o'tkaziladi — hisob-kitob va
+ * API'ga qaytarish har doim satr ustida bo'ladi, aks holda katta
+ * summalarda float aniqligi yo'qoladi.
+ */
+export function formatDecimalSom(value: string | null): string {
+  if (value === null || value.trim() === '') return '—';
+
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) return value;
+
+  return formatSom(parsed);
+}

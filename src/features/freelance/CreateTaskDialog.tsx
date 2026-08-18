@@ -1,42 +1,41 @@
 'use client';
 
-import { X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
-import { TextField } from '@/components/ui/Field';
+import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
+import { Modal } from '@/components/ui/Modal';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import {
-  DEADLINE_OPTIONS,
-  WORK_DIRECTIONS,
-  formatDeadlineDays,
-  type WorkDirectionValue,
-} from '@/shared/types/freelance';
+import { DEADLINE_OPTIONS, type DeadlineDays } from '@/shared/types/exchange';
+import { WORK_DIRECTION_LABELS, WORK_DIRECTIONS } from '@/shared/types/publicFreelance';
+import type { WorkDirection } from '@/shared/types/publicFreelance';
 
-import { useCreateExchangeTaskMutation } from './exchangeApi';
+import { useCreateTaskMutation } from './exchangeApi';
 
-/**
- * Native `<dialog>` — fokus tuzog'i, Esc bilan yopilish va orqa fonni
- * o'chirish brauzerdan tekin keladi. Bularni React'da qo'lda yozish
- * ~150 satr va bir nechta a11y xatosi degani.
- */
+const directionOptions = WORK_DIRECTIONS.map((value) => ({
+  value,
+  label: WORK_DIRECTION_LABELS[value],
+}));
+
+const deadlineOptions = DEADLINE_OPTIONS.map((days) => ({
+  value: String(days),
+  label: `${days} kun`,
+}));
+
 export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const [createTask, { isLoading, error }] = useCreateExchangeTaskMutation();
+  const [createTask, { isLoading, error, reset }] = useCreateTaskMutation();
 
   const [title, setTitle] = useState('');
-  const [direction, setDirection] = useState<WorkDirectionValue>('programming');
-  const [deadline, setDeadline] = useState<string>('7');
-  const [comment, setComment] = useState('');
-  const [fileName, setFileName] = useState('');
+  const [direction, setDirection] = useState<WorkDirection>('programming');
+  const [deadline, setDeadline] = useState('7');
+  const [description, setDescription] = useState('');
+  const [budget, setBudget] = useState('');
+  const [file, setFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
+  function close() {
+    reset();
+    onClose();
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -45,126 +44,110 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
       await createTask({
         title: title.trim(),
         direction,
-        deadline,
-        comment: comment.trim() || undefined,
-        fileName: fileName.trim() || undefined,
+        deadline_days: Number(deadline) as DeadlineDays,
+        ...(description.trim() ? { description: description.trim() } : {}),
+        // Bo'sh budjet YUBORILMAYDI: backend `null`ni "kelishamiz" deb
+        // qabul qiladi, bo'sh satr esa validatsiya xatosi beradi.
+        ...(budget.trim() ? { budget: budget.trim() } : {}),
+        ...(file ? { task_file: file } : {}),
       }).unwrap();
     } catch {
-      // Xato quyida `error` orqali ko'rsatiladi; forma to'ldirilgancha qoladi.
+      // Xato quyida ko'rsatiladi; forma to'ldirilgancha qoladi.
       return;
     }
 
     setTitle('');
-    setComment('');
-    setFileName('');
-    onClose();
+    setDescription('');
+    setBudget('');
+    setFile(null);
+    close();
   }
 
   return (
-    <dialog
-      ref={dialogRef}
-      onClose={onClose}
-      onClick={(event) => {
-        // Fon bosilganda yopiladi: `<dialog>` o'zi butun ekranni egallaydi,
-        // shuning uchun bosish nishoni aynan dialog bo'lsa — bu fon.
-        if (event.target === dialogRef.current) onClose();
-      }}
-      className="m-auto w-[min(38rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-0 text-card-foreground backdrop:bg-black/50 backdrop:backdrop-blur-sm"
+    <Modal
+      open={open}
+      onClose={close}
+      title="Topshiriq yaratish"
+      description="Fayl, muddat va tavsif — freelancerlar taklif yuboradi."
+      className="w-[min(38rem,calc(100vw-2rem))]"
     >
-      <form onSubmit={handleSubmit} className="p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">Topshiriq yaratish</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Fayl, muddat va izoh — freelancerlar taklif yuboradi.
-            </p>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Yopish">
-            <X className="size-4" />
-          </Button>
-        </div>
+      <form id="create-task-form" onSubmit={handleSubmit} className="space-y-4">
+        <TextField
+          label="Topshiriq nomi"
+          required
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Masalan: Kurs ishi — ma'lumotlar bazasi loyihasi"
+          maxLength={200}
+        />
 
-        <div className="mt-5 space-y-4">
-          <TextField
-            label="Topshiriq nomi"
+        <div className="grid gap-4 sm:grid-cols-2">
+          <SelectField
+            label="Yo'nalish"
             required
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Masalan: Kurs ishi — ma'lumotlar bazasi loyihasi"
-            maxLength={120}
+            options={directionOptions}
+            value={direction}
+            onChange={(event) => setDirection(event.target.value as WorkDirection)}
           />
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-foreground">Yo&apos;nalish</span>
-              <select
-                value={direction}
-                onChange={(event) => setDirection(event.target.value as WorkDirectionValue)}
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-emerald-500/60"
-              >
-                {WORK_DIRECTIONS.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-foreground">Muddat</span>
-              <select
-                value={deadline}
-                onChange={(event) => setDeadline(event.target.value)}
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-emerald-500/60"
-              >
-                {DEADLINE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {formatDeadlineDays(option)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <TextField
-            label="Fayl nomi"
-            value={fileName}
-            onChange={(event) => setFileName(event.target.value)}
-            placeholder="topshiriq.pdf"
-            hint="Backend ulangach bu yerda haqiqiy fayl yuklash bo'ladi."
+          <SelectField
+            label="Muddat"
+            required
+            options={deadlineOptions}
+            value={deadline}
+            onChange={(event) => setDeadline(event.target.value)}
           />
-
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-foreground">Izoh</span>
-            <textarea
-              value={comment}
-              onChange={(event) => setComment(event.target.value)}
-              rows={4}
-              maxLength={500}
-              placeholder="Talablar, hajm, format va boshqa tafsilotlar..."
-              className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-emerald-500/60"
-            />
-            <span className="mt-1 block text-right text-xs text-muted-foreground">
-              {comment.length}/500
-            </span>
-          </label>
         </div>
+
+        <TextField
+          label="Budjet (so'm)"
+          type="number"
+          min={0}
+          step={1000}
+          value={budget}
+          onChange={(event) => setBudget(event.target.value)}
+          placeholder="300000"
+          hint="Bo'sh qoldirsangiz, narx takliflar orqali kelishiladi."
+        />
+
+        <TextAreaField
+          label="Tavsif"
+          rows={4}
+          maxLength={2000}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Talablar, hajm, format va boshqa tafsilotlar..."
+          hint={`${description.length}/2000`}
+        />
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-foreground">Topshiriq fayli</span>
+          <input
+            type="file"
+            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-foreground"
+          />
+        </label>
 
         {error && (
-          <p role="alert" className="mt-4 text-sm text-destructive">
+          <p role="alert" className="text-sm text-destructive">
             {getApiErrorMessage(error)}
           </p>
         )}
-
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>
-            Bekor qilish
-          </Button>
-          <Button type="submit" variant="emerald" disabled={isLoading || !title.trim()}>
-            {isLoading ? 'Yuborilmoqda...' : 'Joylashtirish'}
-          </Button>
-        </div>
       </form>
-    </dialog>
+
+      <div className="mt-6 flex justify-end gap-2">
+        <Button variant="outline" onClick={close}>
+          Bekor qilish
+        </Button>
+        <Button
+          type="submit"
+          form="create-task-form"
+          variant="emerald"
+          disabled={isLoading || !title.trim()}
+        >
+          {isLoading ? 'Yuborilmoqda...' : 'Joylashtirish'}
+        </Button>
+      </div>
+    </Modal>
   );
 }

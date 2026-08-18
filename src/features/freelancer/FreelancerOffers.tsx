@@ -2,30 +2,25 @@
 
 import { useState } from 'react';
 
+import { OfferStatusBadge } from '@/components/freelance/TaskStatusBadge';
+import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
+import { useGetMyOffersQuery, useWithdrawOfferMutation } from '@/features/freelance/exchangeApi';
 import { cn } from '@/lib/cn';
 import { formatDecimalSom } from '@/lib/format';
-import { ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from '@/shared/types/account';
+import { getApiErrorMessage } from '@/shared/api/errors';
+import { OFFER_STATUS_LABELS, OFFER_STATUSES, type OfferStatus } from '@/shared/types/exchange';
 
-import { useGetMyOrdersQuery } from '../account/accountApi';
-
-const statusTones: Record<OrderStatus, string> = {
-  paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
-  pending: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
-  failed: 'bg-destructive/12 text-destructive',
-  refunded: 'bg-blue-500/12 text-blue-700 dark:text-blue-400',
-};
-
-function formatDate(value: string | null): string {
-  if (!value) return '—';
+function formatDate(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
 }
 
-export function StudentOrders() {
-  const [status, setStatus] = useState<OrderStatus | 'all'>('all');
+export function FreelancerOffers() {
+  const [status, setStatus] = useState<OfferStatus | 'all'>('all');
+  const [withdrawOffer, withdraw] = useWithdrawOfferMutation();
 
-  const { data, isLoading, error } = useGetMyOrdersQuery({
+  const { data, isLoading, error } = useGetMyOffersQuery({
     page_size: 50,
     ordering: '-created_at',
     ...(status !== 'all' ? { status } : {}),
@@ -36,7 +31,7 @@ export function StudentOrders() {
   return (
     <>
       <div className="mb-4 flex flex-wrap gap-2">
-        {(['all', ...ORDER_STATUSES] as const).map((item) => (
+        {(['all', ...OFFER_STATUSES] as const).map((item) => (
           <button
             key={item}
             type="button"
@@ -49,10 +44,16 @@ export function StudentOrders() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : ORDER_STATUS_LABELS[item]}
+            {item === 'all' ? 'Barchasi' : OFFER_STATUS_LABELS[item]}
           </button>
         ))}
       </div>
+
+      {withdraw.error && (
+        <p role="alert" className="mb-3 text-sm text-destructive">
+          {getApiErrorMessage(withdraw.error)}
+        </p>
+      )}
 
       {isLoading || !data ? (
         <div className="grid gap-3">
@@ -62,41 +63,42 @@ export function StudentOrders() {
         </div>
       ) : data.results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
-          <p className="text-sm font-medium text-foreground">Buyurtma topilmadi</p>
+          <p className="text-sm font-medium text-foreground">Taklif topilmadi</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Katalogdan yechim tanlang va birinchi buyurtmangizni bering.
+            Ochiq topshiriqlar bo&apos;limidan topshiriq tanlab, birinchi taklifingizni yuboring.
           </p>
         </div>
       ) : (
         <div className="grid gap-3">
-          {data.results.map((order) => (
+          {data.results.map((offer) => (
             <article
-              key={order.id}
+              key={offer.id}
               className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
             >
               <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-bold text-foreground">{order.solution_title}</h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {order.university_short_name} &middot; {order.subject_name} &middot;{' '}
-                  {order.assignment_title} &middot; {order.variant_label}
-                </p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground/80">
-                  {order.reference} &middot; {formatDate(order.paid_at ?? order.created_at)}
+                <p className="text-xs leading-relaxed text-muted-foreground">{offer.message}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground/80">
+                  {offer.deadline_days} kun &middot; {formatDate(offer.created_at)}
                 </p>
               </div>
 
-              <span
-                className={cn(
-                  'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap',
-                  statusTones[order.status],
-                )}
-              >
-                {ORDER_STATUS_LABELS[order.status]}
-              </span>
+              <OfferStatusBadge status={offer.status} />
 
               <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                {formatDecimalSom(order.unit_price)}
+                {formatDecimalSom(offer.price)}
               </div>
+
+              {/* Qaytarib olish faqat hali javob kelmagan taklifda ma'noli. */}
+              {offer.status === 'pending' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={withdraw.isLoading}
+                  onClick={() => void withdrawOffer({ id: offer.id, taskId: offer.task })}
+                >
+                  Qaytarib olish
+                </Button>
+              )}
             </article>
           ))}
         </div>

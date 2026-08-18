@@ -24,7 +24,6 @@ Uch xil yechim bor edi:
 | `api/tokenStore.ts` | Token saqlash abstraksiyasi (localStorage / bo'sh) |
 | `api/errors.ts` | RTK Query xatosidan foydalanuvchiga matn ajratish |
 | `types/api.ts` | Backend DTO tiplari — **API shartnomasi kelgach birinchi shu yer o'zgaradi** |
-| `mocks/` | MSW handler'lari (backend tayyor bo'lgach o'chiriladi) |
 | `styles/tokens.css` | Tailwind v4 dizayn tokenlari |
 
 ## Sinxron saqlash

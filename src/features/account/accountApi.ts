@@ -1,57 +1,146 @@
-import type { Appeal, CreateAppealInput, SavedItem, Wallet } from '@/shared/types/account';
+import type {
+  Appeal,
+  AppealCreateRequest,
+  MyDashboard,
+  MyOrder,
+  OrderStatus,
+  SavedSolution,
+  Wallet,
+  WalletTransaction,
+  WithdrawalCreateRequest,
+  WithdrawalRequest,
+  TransactionType,
+  WithdrawalStatus,
+} from '@/shared/types/account';
+import type { ApiPaginated } from '@/shared/types/catalogue';
+import type { PublicFreelancer } from '@/shared/types/publicFreelance';
 import { baseApi } from '@/store/api';
 
+export interface SavedFreelancer {
+  id: string;
+  freelancer: PublicFreelancer;
+  created_at: string;
+}
+
+interface ListQuery {
+  page?: number;
+  page_size?: number;
+  ordering?: string;
+  search?: string;
+}
+
+/**
+ * Foydalanuvchi kabineti — HAQIQIY backend (`/api/v1/me/...`).
+ *
+ * Saqlanganlar ikki alohida ro'yxat: yechimlar va freelancerlar. Ular
+ * bitta ro'yxatga birlashtirilmagan, chunki o'chirish yo'li ham
+ * alohida (`/me/saved/solutions/{id}/` va `/me/saved/freelancers/{id}/`)
+ * va o'chirish kaliti — SAQLANGAN YOZUV emas, obyektning o'zi.
+ */
 export const accountApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getSavedItems: build.query<SavedItem[], void>({
-      query: () => ({ url: '/account/saved' }),
-      providesTags: ['Saved'],
+    getMyDashboard: build.query<MyDashboard, void>({
+      query: () => ({ url: '/me/dashboard/' }),
+      providesTags: ['Order', 'Library', 'Saved'],
     }),
 
-    removeSavedItem: build.mutation<void, string>({
-      query: (itemId) => ({ url: `/account/saved/${itemId}`, method: 'DELETE' }),
-      /*
-       * Optimistik yangilash: saqlanganlar ro'yxatidan o'chirish — bekor
-       * qilish oson bo'lgan, xavfsiz amal. Serverni kutish elementning
-       * yarim soniya "osilib" turishiga olib kelardi.
-       */
-      onQueryStarted: async (itemId, { dispatch, queryFulfilled }) => {
-        const patch = dispatch(
-          accountApi.util.updateQueryData('getSavedItems', undefined, (draft) => {
-            const index = draft.findIndex((item) => item.id === itemId);
-            if (index !== -1) draft.splice(index, 1);
-          }),
-        );
-
-        try {
-          await queryFulfilled;
-        } catch {
-          patch.undo();
-        }
-      },
+    getMyOrders: build.query<ApiPaginated<MyOrder>, ListQuery & { status?: OrderStatus }>({
+      query: (params) => ({ url: '/me/orders/', params }),
+      providesTags: ['Order'],
     }),
 
     getWallet: build.query<Wallet, void>({
-      query: () => ({ url: '/account/wallet' }),
+      query: () => ({ url: '/me/wallet/' }),
       providesTags: ['Wallet'],
     }),
 
-    getAppeals: build.query<Appeal[], void>({
-      query: () => ({ url: '/account/appeals' }),
+    getWalletTransactions: build.query<
+      ApiPaginated<WalletTransaction>,
+      ListQuery & { type?: TransactionType }
+    >({
+      query: (params) => ({ url: '/me/wallet/transactions/', params }),
+      providesTags: ['Wallet'],
+    }),
+
+    getWithdrawals: build.query<
+      ApiPaginated<WithdrawalRequest>,
+      ListQuery & { status?: WithdrawalStatus }
+    >({
+      query: (params) => ({ url: '/me/wallet/withdrawals/', params }),
+      providesTags: ['Withdrawal'],
+    }),
+
+    createWithdrawal: build.mutation<WithdrawalRequest, WithdrawalCreateRequest>({
+      query: (body) => ({ url: '/me/wallet/withdrawals/', method: 'POST', body }),
+      // Balans ham o'zgaradi: so'ralgan summa kutish holatiga o'tadi.
+      invalidatesTags: ['Withdrawal', 'Wallet'],
+    }),
+
+    getSavedSolutions: build.query<ApiPaginated<SavedSolution>, ListQuery>({
+      query: (params) => ({ url: '/me/saved/solutions/', params }),
+      providesTags: ['Saved'],
+    }),
+
+    saveSolution: build.mutation<SavedSolution, string>({
+      query: (solution) => ({ url: '/me/saved/solutions/', method: 'POST', body: { solution } }),
+      invalidatesTags: ['Saved'],
+    }),
+
+    unsaveSolution: build.mutation<void, string>({
+      query: (solutionId) => ({
+        url: `/me/saved/solutions/${solutionId}/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Saved'],
+    }),
+
+    getSavedFreelancers: build.query<ApiPaginated<SavedFreelancer>, ListQuery>({
+      query: (params) => ({ url: '/me/saved/freelancers/', params }),
+      providesTags: ['Saved'],
+    }),
+
+    saveFreelancer: build.mutation<SavedFreelancer, string>({
+      query: (freelancer) => ({
+        url: '/me/saved/freelancers/',
+        method: 'POST',
+        body: { freelancer },
+      }),
+      invalidatesTags: ['Saved'],
+    }),
+
+    unsaveFreelancer: build.mutation<void, string>({
+      query: (freelancerId) => ({
+        url: `/me/saved/freelancers/${freelancerId}/`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Saved'],
+    }),
+
+    getAppeals: build.query<ApiPaginated<Appeal>, ListQuery & { status?: string; topic?: string }>({
+      query: (params) => ({ url: '/me/appeals/', params }),
       providesTags: ['Appeal'],
     }),
 
-    createAppeal: build.mutation<Appeal, CreateAppealInput>({
-      query: (body) => ({ url: '/account/appeals', method: 'POST', body }),
+    createAppeal: build.mutation<Appeal, AppealCreateRequest>({
+      query: (body) => ({ url: '/me/appeals/', method: 'POST', body }),
       invalidatesTags: ['Appeal'],
     }),
   }),
 });
 
 export const {
-  useGetSavedItemsQuery,
-  useRemoveSavedItemMutation,
+  useGetMyDashboardQuery,
+  useGetMyOrdersQuery,
   useGetWalletQuery,
+  useGetWalletTransactionsQuery,
+  useGetWithdrawalsQuery,
+  useCreateWithdrawalMutation,
+  useGetSavedSolutionsQuery,
+  useSaveSolutionMutation,
+  useUnsaveSolutionMutation,
+  useGetSavedFreelancersQuery,
+  useSaveFreelancerMutation,
+  useUnsaveFreelancerMutation,
   useGetAppealsQuery,
   useCreateAppealMutation,
 } = accountApi;

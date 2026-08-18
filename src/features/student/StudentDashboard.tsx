@@ -1,46 +1,26 @@
 'use client';
 
-import { CircleCheck, Clock, Download, Wallet } from 'lucide-react';
+import { BookMarked, CircleCheck, Download, ShoppingBag, Wallet } from 'lucide-react';
 import Link from 'next/link';
 
-import { OrderStatusBadge } from '@/components/ui/StatusBadge';
-import { formatSom } from '@/lib/format';
-import { getApiErrorMessage } from '@/shared/api';
+import { ErrorNotice } from '@/components/ui/ErrorNotice';
+import { StatCard } from '@/components/ui/StatCard';
+import { formatDecimalSom } from '@/lib/format';
+import { ORDER_STATUS_LABELS } from '@/shared/types/account';
 
-import { useGetStudentDashboardQuery } from './studentApi';
+import { useGetMyDashboardQuery } from '../account/accountApi';
 
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  tone,
-}: {
-  label: string;
-  value: string;
-  icon: typeof Clock;
-  tone: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
-      <div className={`grid size-10 place-items-center rounded-lg ${tone}`}>
-        <Icon className="size-5" />
-      </div>
-      <div className="mt-3 text-xl font-bold text-foreground">{value}</div>
-      <div className="mt-0.5 text-xs text-muted-foreground">{label}</div>
-    </div>
-  );
-}
+const statusTones: Record<string, string> = {
+  paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
+  pending: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
+  failed: 'bg-destructive/12 text-destructive',
+  refunded: 'bg-blue-500/12 text-blue-700 dark:text-blue-400',
+};
 
 export function StudentDashboard() {
-  const { data, isLoading, error } = useGetStudentDashboardQuery();
+  const { data, isLoading, error } = useGetMyDashboardQuery();
 
-  if (error) {
-    return (
-      <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-        {getApiErrorMessage(error)}
-      </p>
-    );
-  }
+  if (error) return <ErrorNotice error={error} />;
 
   if (isLoading || !data) {
     return (
@@ -52,34 +32,60 @@ export function StudentDashboard() {
     );
   }
 
+  const { buying } = data;
+
   return (
     <>
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Faol buyurtmalar"
-          value={String(data.stats.activeOrders)}
-          icon={Clock}
+          label="Buyurtmalar"
+          value={String(buying.orders)}
+          icon={ShoppingBag}
           tone="bg-blue-500/12 text-blue-600 dark:text-blue-400"
         />
         <StatCard
-          label="Yakunlangan"
-          value={String(data.stats.completedOrders)}
+          label="To'langan"
+          value={String(buying.paid)}
           icon={CircleCheck}
           tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
         />
         <StatCard
-          label="Yuklamalar"
-          value={String(data.stats.downloads)}
+          label="Kutubxona"
+          value={String(buying.library_items)}
           icon={Download}
           tone="bg-violet-500/12 text-violet-600 dark:text-violet-400"
         />
         <StatCard
           label="Jami sarflangan"
-          value={formatSom(data.stats.spentTotal)}
+          value={formatDecimalSom(buying.spent_total)}
           icon={Wallet}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
         />
       </section>
+
+      {/* Sotuvchi ko'rsatkichlari faqat yechim yuklagan odamga ma'noli. */}
+      {data.selling.total > 0 && (
+        <section className="mt-4 grid gap-4 sm:grid-cols-3">
+          <StatCard
+            label="Yuklangan yechimlar"
+            value={String(data.selling.total)}
+            icon={BookMarked}
+            tone="bg-cyan-500/12 text-cyan-600 dark:text-cyan-400"
+          />
+          <StatCard
+            label="Sotuvlar"
+            value={String(data.selling.sales)}
+            icon={ShoppingBag}
+            tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
+          />
+          <StatCard
+            label="Ishlangan"
+            value={formatDecimalSom(data.selling.earned_total)}
+            icon={Wallet}
+            tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
+          />
+        </section>
+      )}
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-4">
@@ -92,25 +98,38 @@ export function StudentDashboard() {
           </Link>
         </div>
 
-        <div className="mt-4 grid gap-3">
-          {data.recentOrders.map((order) => (
-            <article
-              key={order.id}
-              className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
-            >
-              <div className="min-w-0 flex-1">
-                <h3 className="text-sm font-bold text-foreground">{order.title}</h3>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {order.universityShort} &middot; {order.subjectName} &middot; {order.reference}
-                </p>
-              </div>
-              <OrderStatusBadge status={order.status} />
-              <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                {formatSom(order.amount)}
-              </div>
-            </article>
-          ))}
-        </div>
+        {data.recent_orders.length === 0 ? (
+          <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
+            Hali buyurtma yo&apos;q. Katalogdan yechim tanlang.
+          </p>
+        ) : (
+          <div className="mt-4 grid gap-3">
+            {data.recent_orders.map((order) => (
+              <article
+                key={order.id}
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+              >
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-sm font-bold text-foreground">{order.solution_title}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {order.university_short_name} &middot; {order.subject_name} &middot;{' '}
+                    {order.reference}
+                  </p>
+                </div>
+
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${statusTones[order.status] ?? 'bg-muted text-muted-foreground'}`}
+                >
+                  {ORDER_STATUS_LABELS[order.status]}
+                </span>
+
+                <div className="text-sm font-semibold whitespace-nowrap text-foreground">
+                  {formatDecimalSom(order.unit_price)}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
