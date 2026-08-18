@@ -13,7 +13,7 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# ---------- dev: `next dev`, MSW mock API ishlaydi ----------
+# ---------- dev: `next dev` ----------
 FROM base AS dev
 ENV NODE_ENV=development
 COPY --from=deps /app/node_modules ./node_modules
@@ -30,7 +30,6 @@ ENV NODE_ENV=production
 # o'zgartirib bo'lmaydi, qayta build qilish kerak.
 ARG NEXT_PUBLIC_API_URL=http://localhost:8090/api/v1
 ARG NEXT_PUBLIC_APP_URL=http://localhost:8090
-ARG NEXT_PUBLIC_ENABLE_MOCKS=false
 
 # Ochiq katalog server tomonda o'qiladi (Server Component + ISR).
 # Build paytida SHART: `generateStaticParams` sahifalarni shu manzildan
@@ -40,7 +39,6 @@ ARG CATALOGUE_API_URL=https://api.yopamiz.uz/api/v1
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
-    NEXT_PUBLIC_ENABLE_MOCKS=$NEXT_PUBLIC_ENABLE_MOCKS \
     CATALOGUE_API_URL=$CATALOGUE_API_URL
 
 COPY --from=deps /app/node_modules ./node_modules

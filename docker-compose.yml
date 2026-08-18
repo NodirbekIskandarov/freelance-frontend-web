@@ -8,7 +8,6 @@ services:
         # `docker compose build --no-cache web` kerak bo'ladi.
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8090/api}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:8090}
-        NEXT_PUBLIC_ENABLE_MOCKS: ${NEXT_PUBLIC_ENABLE_MOCKS:-false}
     image: yopamiz-web:latest
     container_name: yopamiz-web
     restart: unless-stopped
