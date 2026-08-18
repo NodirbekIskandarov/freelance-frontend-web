@@ -121,6 +121,16 @@ export const accountApi = baseApi.injectEndpoints({
       providesTags: ['Appeal'],
     }),
 
+    /**
+     * Bitta murojaat — ro'yxat javobi allaqachon `message` va `reply`ni
+     * to'liq beradi, shuning uchun ro'yxat ekranida bu so'rov kerak emas.
+     * Havola bo'yicha to'g'ridan-to'g'ri ochish uchun qoldirilgan.
+     */
+    getAppeal: build.query<Appeal, string>({
+      query: (id) => ({ url: `/me/appeals/${id}/` }),
+      providesTags: (_result, _error, id) => [{ type: 'Appeal', id }],
+    }),
+
     createAppeal: build.mutation<Appeal, AppealCreateRequest>({
       query: (body) => ({ url: '/me/appeals/', method: 'POST', body }),
       invalidatesTags: ['Appeal'],
@@ -142,5 +152,6 @@ export const {
   useSaveFreelancerMutation,
   useUnsaveFreelancerMutation,
   useGetAppealsQuery,
+  useGetAppealQuery,
   useCreateAppealMutation,
 } = accountApi;
