@@ -82,14 +82,22 @@ export const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
   escrow_refund: 'Kafolatdan qaytarildi',
 };
 
-/** Balansni oshiradigan turlar — ro'yxatda yashil ko'rsatiladi. */
-export const CREDIT_TRANSACTION_TYPES: TransactionType[] = [
-  'topup',
-  'sale',
-  'refund',
-  'escrow_release',
-  'escrow_refund',
-];
+/**
+ * Tranzaksiya balansni oshiradimi.
+ *
+ * Tur bo'yicha ajratish NOTO'G'RI edi: `adjustment` ikkala tomonga ham
+ * ishlaydi va musbat tuzatish qizil minus bo'lib ko'rinardi. Backend
+ * summani o'z ishorasi bilan qaytaradi (`"-50000.00"`), shuning uchun
+ * yagona ishonchli manba — shu ishora.
+ */
+export function isCreditTransaction(amount: string): boolean {
+  return !amount.trimStart().startsWith('-');
+}
+
+/** Ishorasiz summa — belgi alohida chiziladi. */
+export function absoluteAmount(amount: string): string {
+  return amount.replace('-', '');
+}
 
 export interface WalletTotals {
   topped_up: string;

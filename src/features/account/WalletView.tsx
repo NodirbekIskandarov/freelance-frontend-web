@@ -18,7 +18,7 @@ import { cn } from '@/lib/cn';
 import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
-  CREDIT_TRANSACTION_TYPES,
+  isCreditTransaction,
   TRANSACTION_TYPE_LABELS,
   WITHDRAWAL_METHOD_LABELS,
   WITHDRAWAL_METHODS,
@@ -263,7 +263,7 @@ export function WalletView() {
         ) : (
           <div className="mt-4 grid gap-3">
             {transactions.results.map((transaction) => {
-              const isCredit = CREDIT_TRANSACTION_TYPES.includes(transaction.type);
+              const isCredit = isCreditTransaction(transaction.amount);
 
               return (
                 <article
