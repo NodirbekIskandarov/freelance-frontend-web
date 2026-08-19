@@ -15,15 +15,24 @@ if (!apiUrl) {
 /**
  * Ochiq katalog uchun backend manzili.
  *
- * `NEXT_PUBLIC_API_URL` dan ALOHIDA: u mijoz tomonidagi RTK Query uchun
- * va hozircha MSW mock'lariga qaratilgan. Katalog esa Server
- * Component'da, haqiqiy backenddan o'qiladi — server so'roviga CORS
- * qo'llanmagani uchun to'liq manzil ishlatiladi.
+ * `NEXT_PUBLIC_API_URL` dan ALOHIDA: u mijoz tomonidagi RTK Query
+ * uchun. Katalog esa Server Component'da o'qiladi — server so'roviga
+ * CORS qo'llanmagani uchun to'liq manzil ishlatiladi.
  */
 const catalogueApiUrl = process.env.CATALOGUE_API_URL ?? 'https://api.yopamiz.uz/api/v1';
+
+/**
+ * WebSocket manzilining ILDIZI.
+ *
+ * Backend chipta bilan birga NISBIY yo'l qaytaradi (`/ws/notifications/`),
+ * shuning uchun host API manzilidan olinadi: `/api/v1` qirqiladi va
+ * sxema `ws`/`wss` ga almashtiriladi.
+ */
+const wsOrigin = apiUrl.replace(/\/api\/v\d+\/?$/, '').replace(/^http/, 'ws');
 
 export const env = {
   apiUrl,
   catalogueApiUrl,
+  wsOrigin,
   isProduction: process.env.NODE_ENV === 'production',
 } as const;

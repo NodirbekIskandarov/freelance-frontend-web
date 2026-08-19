@@ -40,7 +40,7 @@ export default async function FreelancePage() {
         description: freelancer.bio,
         knowsAbout: freelancer.skills,
         ...(freelancer.city ? { homeLocation: freelancer.city } : {}),
-        url: absoluteUrl('/freelance'),
+        url: absoluteUrl(`/freelance/${freelancer.id}`),
       },
     })),
   };

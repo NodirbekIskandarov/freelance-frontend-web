@@ -12,6 +12,8 @@ import { useAppSelector } from '@/store/hooks';
 
 import { HeaderUserMenu } from './HeaderUserMenu';
 import { SiteLogo } from './SiteLogo';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
+
 import { ThemeToggle } from './ThemeToggle';
 
 function isNavItemActive(item: PublicNavItem, pathname: string): boolean {
@@ -88,7 +90,10 @@ export function Header() {
         <div className="hidden shrink-0 items-center gap-3 md:flex">
           <ThemeToggle compact />
           {user ? (
-            <HeaderUserMenu user={user} />
+            <>
+              <NotificationBell />
+              <HeaderUserMenu user={user} />
+            </>
           ) : (
             <>
               <ButtonLink href="/login" variant="outline">

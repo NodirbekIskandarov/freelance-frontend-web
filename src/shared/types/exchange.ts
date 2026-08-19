@@ -108,6 +108,32 @@ export interface ExchangeOfferCreateRequest {
   deadline_days: DeadlineDays;
 }
 
+/**
+ * Yakunlangan ish uchun sharh.
+ *
+ * Sharhni MIJOZ yozadi va u FREELANCERga tegishli — shuning uchun
+ * ro'yxat `/freelance/freelancers/{id}/reviews/` da, yozish esa
+ * `/freelance/tasks/{id}/review/` da.
+ */
+export interface ExchangeReview {
+  id: string;
+  task: string;
+  task_title: string;
+  client: string;
+  client_name: string;
+  client_avatar: string;
+  freelancer: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExchangeReviewWriteRequest {
+  rating: number;
+  comment?: string;
+}
+
 export interface TaskDeliverRequest {
   note?: string;
   file?: File;

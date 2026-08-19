@@ -2,6 +2,8 @@ import type { ApiPaginated } from '@/shared/types/catalogue';
 import type {
   ExchangeOffer,
   ExchangeOfferCreateRequest,
+  ExchangeReview,
+  ExchangeReviewWriteRequest,
   ExchangeTask,
   ExchangeTaskDetail,
   ExchangeTaskWriteRequest,
@@ -173,6 +175,44 @@ export const exchangeApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getFreelancerReviews: build.query<
+      ApiPaginated<ExchangeReview>,
+      { id: string; page?: number; page_size?: number; ordering?: string; search?: string }
+    >({
+      query: ({ id, ...params }) => ({ url: `/freelance/freelancers/${id}/reviews/`, params }),
+      providesTags: (_result, _error, { id }) => [{ type: 'Review', id: `freelancer-${id}` }],
+    }),
+
+    /** Sharhni faqat mijoz va faqat yakunlangan ishga yozadi. */
+    reviewTask: build.mutation<
+      ExchangeReview,
+      { taskId: string; freelancerId?: string } & ExchangeReviewWriteRequest
+    >({
+      query: ({ taskId, freelancerId: _freelancerId, ...body }) => ({
+        url: `/freelance/tasks/${taskId}/review/`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { taskId, freelancerId }) => [
+        { type: 'FreelanceTask', id: taskId },
+        { type: 'FreelanceTask', id: 'MINE' },
+        ...(freelancerId ? [{ type: 'Review' as const, id: `freelancer-${freelancerId}` }] : []),
+      ],
+    }),
+
+    updateTaskReview: build.mutation<
+      ExchangeReview,
+      { id: string; freelancerId?: string } & Partial<ExchangeReviewWriteRequest>
+    >({
+      query: ({ id, freelancerId: _freelancerId, ...body }) => ({
+        url: `/freelance/reviews/${id}/`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, { freelancerId }) =>
+        freelancerId ? [{ type: 'Review' as const, id: `freelancer-${freelancerId}` }] : ['Review'],
+    }),
+
     cancelTask: build.mutation<ExchangeTask, { id: string; reason?: string }>({
       query: ({ id, ...body }) => ({
         url: `/freelance/tasks/${id}/cancel/`,
@@ -203,4 +243,7 @@ export const {
   useDeliverTaskMutation,
   useCompleteTaskMutation,
   useCancelTaskMutation,
+  useGetFreelancerReviewsQuery,
+  useReviewTaskMutation,
+  useUpdateTaskReviewMutation,
 } = exchangeApi;

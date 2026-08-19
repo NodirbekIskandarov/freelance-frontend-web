@@ -67,6 +67,8 @@ export const baseApi = createApi({
     'PublicFreelancer',
     'FreelancerApplication',
     'Withdrawal',
+    'Notification',
+    'MyRequest',
   ],
   endpoints: () => ({}),
 });

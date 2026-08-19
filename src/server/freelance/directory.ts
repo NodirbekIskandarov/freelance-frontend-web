@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { ApiPaginated } from '@/shared/types/catalogue';
+import type { ExchangeReview } from '@/shared/types/exchange';
 import type { PublicFreelancer } from '@/shared/types/publicFreelance';
 
 import { request } from '../catalogue/client';
@@ -20,6 +21,33 @@ export async function getFreelancers(): Promise<PublicFreelancer[]> {
     ordering: '-rating',
   });
   return page.results;
+}
+
+/**
+ * Bitta freelancer — profil sahifasi uchun.
+ *
+ * Topilmasa `null`: sahifa `notFound()` chaqiradi, xato tashlamaydi.
+ * O'chirilgan yoki to'xtatilgan profilga havola qolib ketishi mumkin.
+ */
+export async function getFreelancer(id: string): Promise<PublicFreelancer | null> {
+  try {
+    return await request<PublicFreelancer>(`/freelance/freelancers/${id}/`);
+  } catch {
+    return null;
+  }
+}
+
+/** Profil sahifasidagi sharhlar — ular ham botga ko'rinishi kerak. */
+export async function getFreelancerReviews(id: string): Promise<ExchangeReview[]> {
+  try {
+    const page = await request<ApiPaginated<ExchangeReview>>(
+      `/freelance/freelancers/${id}/reviews/`,
+      { page_size: 50, ordering: '-created_at' },
+    );
+    return page.results;
+  } catch {
+    return [];
+  }
 }
 
 /**

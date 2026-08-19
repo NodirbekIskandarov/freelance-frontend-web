@@ -1,4 +1,5 @@
 import { Briefcase, MapPin, MessageCircle, Star } from 'lucide-react';
+import Link from 'next/link';
 
 import { cn } from '@/lib/cn';
 import { formatSom } from '@/lib/format';
@@ -155,6 +156,13 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
       </dl>
 
       <div className="mt-auto flex gap-2 pt-3">
+        <Link
+          href={`/freelance/${freelancer.id}`}
+          className="inline-flex h-8 flex-1 items-center justify-center rounded-lg border border-border text-xs font-semibold text-foreground transition-colors hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400"
+        >
+          Profil
+        </Link>
+
         {isBusy ? (
           <span
             className="inline-flex h-8 flex-1 items-center justify-center rounded-lg bg-muted text-xs font-medium text-muted-foreground"

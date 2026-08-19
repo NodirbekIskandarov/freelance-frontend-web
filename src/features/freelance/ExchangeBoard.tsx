@@ -24,6 +24,7 @@ import type { ExchangeOffer, ExchangeTask } from '@/shared/types/exchange';
 import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
 
 import { CreateTaskDialog } from './CreateTaskDialog';
+import { ReviewTaskModal } from './ReviewTaskModal';
 import {
   useAcceptOfferMutation,
   useCancelTaskMutation,
@@ -252,6 +253,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
 
   const [completeTask, complete] = useCompleteTaskMutation();
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-background">
@@ -312,6 +314,16 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
             )}
             <Button variant="outline" size="sm" onClick={() => setCancelOpen(true)}>
               Bekor qilish
+            </Button>
+          </div>
+        )}
+
+        {/* Sharh faqat ish yakunlangach — baho bajarilgan ishga beriladi. */}
+        {task.status === 'completed' && task.freelancer && (
+          <div className="mt-3">
+            <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>
+              <Star className="size-3.5" />
+              Bajaruvchini baholash
             </Button>
           </div>
         )}
@@ -377,6 +389,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
       )}
 
       <CancelTaskModal taskId={task.id} open={cancelOpen} onClose={() => setCancelOpen(false)} />
+      <ReviewTaskModal task={reviewOpen ? task : null} onClose={() => setReviewOpen(false)} />
     </div>
   );
 }

@@ -1,11 +1,13 @@
 'use client';
 
 import {
+  Bell,
   Bookmark,
   Briefcase,
   ClipboardList,
   Coins,
   Download,
+  FilePlus2,
   LayoutDashboard,
   LifeBuoy,
   Send,
@@ -41,6 +43,8 @@ interface CabinetNavItem {
  */
 /** Ikkala rolda ham bir xil bo'lgan, rolga bog'liq bo'lmagan bo'limlar. */
 const SHARED_NAV: CabinetNavItem[] = [
+  { label: 'Bildirishnomalar', href: '/notifications', icon: Bell },
+  { label: 'Arizalarim', href: '/requests', icon: FilePlus2 },
   { label: 'Saqlanganlar', href: '/saved', icon: Bookmark },
   { label: 'Hamyon', href: '/wallet', icon: Wallet },
   { label: 'Murojaatlar', href: '/appeals', icon: LifeBuoy },
