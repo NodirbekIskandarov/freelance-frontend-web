@@ -198,3 +198,139 @@
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------
+   Katalog CTA banneri — jonli fon.
+   Animatsiyalar CSS'da, JS'da emas: ular asosiy oqimni bo'shatadi
+   va `prefers-reduced-motion` bilan bir joyda o'chiriladi.
+   --------------------------------------------------------------- */
+@keyframes cta-blob-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(12%, -8%) scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+@keyframes cta-blob-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(-10%, 10%) scale(1.12);
+    opacity: 0.45;
+  }
+}
+
+@keyframes cta-shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
+}
+
+@keyframes cta-glow {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+@keyframes cta-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.cta-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  pointer-events: none;
+  animation-duration: 10s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+.cta-blob-a {
+  animation-name: cta-blob-a;
+}
+
+.cta-blob-b {
+  animation-name: cta-blob-b;
+  animation-duration: 13s;
+  animation-delay: -2s;
+}
+
+.cta-shimmer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cta-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: -50% 0;
+  width: 45%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(52, 211, 153, 0.14) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 100%
+  );
+  animation: cta-shimmer 7s ease-in-out infinite;
+}
+
+.cta-glow {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  z-index: 0;
+  height: 75%;
+  width: 90%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(16, 185, 129, 0.45) 0%,
+    rgba(16, 185, 129, 0.15) 45%,
+    transparent 70%
+  );
+  animation: cta-glow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cta-float {
+  animation: cta-float 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-blob,
+  .cta-shimmer::after,
+  .cta-glow,
+  .cta-float {
+    animation: none;
+  }
+}

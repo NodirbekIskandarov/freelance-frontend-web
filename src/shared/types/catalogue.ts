@@ -55,6 +55,8 @@ export interface Assignment {
   university: string;
   university_name: string;
   title: string;
+  /** `AssignmentTypeEnum` — fan sahifasidagi tablar shunga qarab bo'linadi. */
+  type: string;
   description: string;
   is_active: boolean;
   created_at: string;

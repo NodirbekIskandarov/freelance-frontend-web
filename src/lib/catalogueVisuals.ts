@@ -1,0 +1,145 @@
+import { createElement } from 'react';
+import {
+  Atom,
+  BookOpen,
+  Calculator,
+  CircuitBoard,
+  Code2,
+  Cpu,
+  Database,
+  FlaskConical,
+  Landmark,
+  Languages,
+  LayoutGrid,
+  Leaf,
+  LineChart,
+  MoreHorizontal,
+  Network,
+  Palette,
+  Ruler,
+  Scale,
+  Sigma,
+  Stethoscope,
+  Wheat,
+  Wrench,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
+
+/**
+ * Katalog KO'RINISHI — backend bermaydigan vizual tafsilotlar.
+ *
+ * Institut logotipi, fan ikonkasi va yo'nalish ikonkasi API'da yo'q.
+ * Ularni qo'lda jadvalga yozib qo'yish yangi institut yoki fan
+ * qo'shilishi bilan eskirardi, shuning uchun hammasi MA'LUMOTDAN
+ * hosil qilinadi: rang — ID'dan, ikonka — nomdagi kalit so'zdan.
+ */
+
+const GRADIENTS = [
+  'from-emerald-500 to-teal-600',
+  'from-blue-500 to-indigo-600',
+  'from-violet-500 to-purple-600',
+  'from-amber-400 to-orange-500',
+  'from-rose-500 to-pink-600',
+  'from-cyan-500 to-sky-600',
+];
+
+/** Bir xil ID har doim bir xil rangni beradi — sahifalar orasida barqaror. */
+export function gradientFor(id: string): string {
+  const sum = [...id].reduce((total, char) => total + char.charCodeAt(0), 0);
+  return GRADIENTS[sum % GRADIENTS.length]!;
+}
+
+export function initialsOf(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '—';
+
+  // Qisqartma allaqachon bosh harflardan iborat bo'lsa (TATU, TDPU) —
+  // uni bo'lakka ajratmaymiz, birinchi ikki harfini olamiz.
+  if (/^[A-ZА-ЯЎҚҒҲ'‘’]+$/.test(trimmed)) return trimmed.slice(0, 2);
+
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  return parts
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
+}
+
+/**
+ * Fan nomidagi kalit so'zdan ikonka.
+ *
+ * Ro'yxat yuqoridan pastga tekshiriladi — birinchi mos kelgani yutadi,
+ * shuning uchun aniqroq so'zlar ("dasturlash") umumiylaridan
+ * ("informatika") oldin turishi kerak.
+ */
+const SUBJECT_ICON_RULES: { icon: LucideIcon; words: string[] }[] = [
+  { icon: Code2, words: ['dastur', 'program', 'software', 'kod', 'web', 'python', 'java'] },
+  { icon: Database, words: ['baza', 'database', 'data', 'ma’lumotlar bazasi'] },
+  { icon: Network, words: ['tarmoq', 'network', 'internet', 'telekom'] },
+  { icon: CircuitBoard, words: ['elektron', 'sxemotex', 'mikro'] },
+  { icon: Zap, words: ['elektr', 'energ'] },
+  { icon: Cpu, words: ['komputer', 'kompyuter', 'computer', 'informat', 'axborot', 'intellekt'] },
+  { icon: Sigma, words: ['matematik', 'algebra', 'geometr', 'analiz'] },
+  { icon: Calculator, words: ['hisob', 'buxgalter', 'statistik'] },
+  { icon: LineChart, words: ['iqtisod', 'moliya', 'menejment', 'marketing', 'biznes'] },
+  { icon: Atom, words: ['fizika', 'astronom'] },
+  { icon: FlaskConical, words: ['kimyo', 'chemistry'] },
+  { icon: Leaf, words: ['biolog', 'ekolog', 'botanik'] },
+  { icon: Wheat, words: ['qishloq', 'agro', 'ziroat'] },
+  { icon: Stethoscope, words: ['tibbiyot', 'anatomi', 'farmatsev', 'meditsina'] },
+  { icon: Scale, words: ['huquq', 'yurid', 'qonun'] },
+  { icon: Languages, words: ['til', 'tarjima', 'ingliz', 'lingvist', 'filolog'] },
+  { icon: Landmark, words: ['tarix', 'falsafa', 'siyos', 'sotsiolog'] },
+  { icon: Palette, words: ["san'at", 'sanat', 'dizayn', 'musiqa', 'rassom'] },
+  { icon: Ruler, words: ['chizma', 'geodez', 'arxitek', 'qurilish'] },
+  { icon: Wrench, words: ['mexanik', 'muhandis', 'texnolog', 'mashina'] },
+  { icon: BookOpen, words: ['pedagog', 'psixolog', "ta'lim", 'talim'] },
+];
+
+export function subjectIcon(name: string): LucideIcon {
+  const lower = name.toLowerCase();
+
+  for (const rule of SUBJECT_ICON_RULES) {
+    if (rule.words.some((word) => lower.includes(word))) return rule.icon;
+  }
+
+  return BookOpen;
+}
+
+/** Yo'nalish (kategoriya) chiplari uchun ikonka — fan bilan bir xil qoida. */
+export function directionIcon(name: string): LucideIcon {
+  if (!name) return MoreHorizontal;
+  return subjectIcon(name);
+}
+
+/**
+ * Ikonkani KOMPONENT sifatida chizadi.
+ *
+ * `const Icon = subjectIcon(name)` deb yozib `<Icon />` chaqirish React
+ * uchun "renderda komponent yaratish" bo'lib ko'rinadi va lint buni
+ * to'g'ri belgilaydi: har renderda yangi tur paydo bo'lsa React daraxtni
+ * qayta yaratadi. `createElement` bilan bunday bo'lmaydi.
+ */
+export function SubjectIcon({
+  name,
+  className,
+  strokeWidth = 1.75,
+}: {
+  name: string;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  return createElement(subjectIcon(name), { className, strokeWidth });
+}
+
+export function DirectionIcon({
+  name,
+  className,
+}: {
+  /** Bo'sh satr — «Barchasi» chipi uchun to'r ikonkasi. */
+  name: string;
+  className?: string;
+}) {
+  return createElement(name ? directionIcon(name) : LayoutGrid, { className });
+}

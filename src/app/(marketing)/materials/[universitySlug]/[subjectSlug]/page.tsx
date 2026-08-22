@@ -1,17 +1,19 @@
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { SubjectTasks, type TaskNode } from '@/components/materials/SubjectTasks';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { toSlugId } from '@/lib/slug';
 import {
   getAllCataloguePaths,
-  getAssignmentsBySubject,
+  getAssignmentTree,
+  getSolutionsByVariant,
   getSubjectBySlugId,
   getUniversityBySlug,
 } from '@/server/catalogue';
+import type { PublicSolution } from '@/shared/types/catalogue';
+import { assignmentTypeLabel } from '@/shared/types/assignmentTypes';
 
 export async function generateStaticParams() {
   const { subjects } = await getAllCataloguePaths();
@@ -44,13 +46,13 @@ export async function generateMetadata(
   }
 
   const { university, subject } = data;
-  const assignments = await getAssignmentsBySubject(subject.id);
+  const tasks = await getAssignmentTree(subject.id);
 
   const course = subject.course === null ? '' : ` ${subject.course}-kurs.`;
 
   return buildMetadata({
     title: `${subject.name} — ${university.short_name} topshiriqlari`,
-    description: `${university.short_name} ${subject.name} fani bo'yicha ${assignments.length} ta tayyor topshiriq: mustaqil ish, amaliy ish va laboratoriya ishlari.${course}`,
+    description: `${university.name}, ${subject.name}.${course} ${tasks.length} ta topshiriq: mustaqil, amaliy va laboratoriya ishlari uchun tayyor yechimlar.`,
     path: `/materials/${universitySlug}/${subjectSlug}`,
   });
 }
@@ -64,31 +66,55 @@ export default async function SubjectPage(
   if (!data) notFound();
 
   const { university, subject } = data;
-  const assignments = await getAssignmentsBySubject(subject.id);
+  const tree = await getAssignmentTree(subject.id);
+
+  /*
+   * Yechimlar variant bo'yicha oldindan yig'iladi: mijoz panelida ular
+   * darhol ko'rinishi kerak, sahifa esa ISR bilan statik — narx faqat
+   * qayta chizishda to'lanadi.
+   */
+  const variantIds = tree.flatMap((node) =>
+    node.variants.filter((variant) => variant.solutionCount > 0).map((variant) => variant.id),
+  );
+
+  const solutionEntries = await Promise.all(
+    variantIds.map(async (id) => [id, await getSolutionsByVariant(id)] as const),
+  );
+  const solutionsByVariant: Record<string, PublicSolution[]> = Object.fromEntries(solutionEntries);
+
+  const tasks: TaskNode[] = tree.map((node) => ({
+    id: node.assignment.id,
+    slug: node.slug,
+    title: node.assignment.title,
+    type: node.assignment.type,
+    description: node.assignment.description,
+    variants: node.variants,
+  }));
+
+  const uniSlug = universitySlug;
+  const subjSlug = toSlugId(subject.name, subject.id);
 
   const crumbs = [
     { name: 'Bosh sahifa', path: '/' },
     { name: 'Tayyor materiallar', path: '/materials' },
-    { name: university.short_name, path: `/materials/${universitySlug}` },
-    { name: subject.name, path: `/materials/${universitySlug}/${subjectSlug}` },
+    { name: university.short_name, path: `/materials/${uniSlug}` },
+    { name: subject.name, path: `/materials/${uniSlug}/${subjSlug}` },
   ];
 
-  /**
-   * `ItemList` — Google topshiriqlar ro'yxatini tuzilgan ma'lumot sifatida
-   * o'qiydi, bu qidiruv natijasida boyroq ko'rinish beradi.
-   */
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: `${university.short_name} — ${subject.name} topshiriqlari`,
-    numberOfItems: assignments.length,
-    itemListElement: assignments.map((assignment, index) => ({
+    name: `${subject.name} topshiriqlari`,
+    numberOfItems: tasks.length,
+    itemListElement: tasks.map((task, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      name: assignment.title,
-      url: absoluteUrl(
-        `/materials/${universitySlug}/${subjectSlug}/${toSlugId(assignment.title, assignment.id)}`,
-      ),
+      item: {
+        '@type': 'CreativeWork',
+        name: task.title,
+        genre: assignmentTypeLabel(task.type),
+        url: absoluteUrl(`/materials/${uniSlug}/${subjSlug}/${task.slug}`),
+      },
     })),
   };
 
@@ -97,50 +123,26 @@ export default async function SubjectPage(
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <JsonLd data={itemListJsonLd} />
 
-      <Container className="py-8 sm:py-12">
+      <Container className="py-6 sm:py-8">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-6">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <header className="mt-5">
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             {subject.name}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {university.name}
-            {subject.course !== null && <> &middot; {subject.course}-kurs</>}
-            {subject.direction_name && <> &middot; {subject.direction_name}</>} &middot;{' '}
-            {assignments.length} ta topshiriq
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+            {university.short_name}
+            {subject.course ? ` · ${subject.course}-kurs` : ''} · {tasks.length} ta topshiriq
           </p>
         </header>
 
-        {assignments.length === 0 ? (
-          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Bu fan uchun topshiriqlar hozircha qo&apos;shilmagan.
-          </p>
-        ) : (
-          <div className="mt-8 grid gap-3">
-            {assignments.map((assignment) => (
-              <Link
-                key={assignment.id}
-                href={`/materials/${universitySlug}/${subjectSlug}/${toSlugId(assignment.title, assignment.id)}`}
-                className="group flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 transition-colors hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70"
-              >
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-[15px] font-bold text-foreground">{assignment.title}</h2>
-                  {assignment.description && (
-                    <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                      {assignment.description}
-                    </p>
-                  )}
-                </div>
-
-                <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-emerald-600 transition-all group-hover:gap-2 dark:text-emerald-400">
-                  Variantlar
-                  <ArrowRight className="size-4" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
+        <SubjectTasks
+          subject={subject}
+          universitySlug={uniSlug}
+          universityShortName={university.short_name || university.name}
+          tasks={tasks}
+          solutionsByVariant={solutionsByVariant}
+        />
       </Container>
     </>
   );

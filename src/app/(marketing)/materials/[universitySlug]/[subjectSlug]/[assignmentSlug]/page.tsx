@@ -1,21 +1,20 @@
-import { Star, Users } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
+import { SubjectTasks, type TaskNode } from '@/components/materials/SubjectTasks';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
-import { formatSom } from '@/lib/format';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { toSlugId } from '@/lib/slug';
-import type { PublicSolution, Variant } from '@/shared/types/catalogue';
 import {
   getAllCataloguePaths,
   getAssignmentBySlugId,
+  getAssignmentTree,
   getSolutionsByVariant,
   getSubjectBySlugId,
   getUniversityBySlug,
-  getVariantsByAssignment,
 } from '@/server/catalogue';
+import { assignmentTypeLabel } from '@/shared/types/assignmentTypes';
+import type { PublicSolution } from '@/shared/types/catalogue';
 
 type Params = PageProps<'/materials/[universitySlug]/[subjectSlug]/[assignmentSlug]'>;
 
@@ -56,83 +55,19 @@ export async function generateMetadata(props: Params) {
     title: `${assignment.title} — ${subject.name}`,
     description:
       assignment.description ||
-      `${university.short_name} ${subject.name} fani bo'yicha "${assignment.title}" topshirig'i: variantlar va tayyor yechimlar.`,
+      `${university.name}, ${subject.name} fani bo'yicha "${assignment.title}" topshirig'i uchun tayyor yechimlar.`,
     path: `/materials/${universitySlug}/${subjectSlug}/${assignmentSlug}`,
   });
 }
 
-function SolutionRow({ solution }: { solution: PublicSolution }) {
-  const rating = Number(solution.average_rating);
-
-  return (
-    <article className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
-      <div className="min-w-0 flex-1">
-        <h4 className="text-sm font-bold text-foreground">{solution.title}</h4>
-
-        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <span>{solution.uploader.full_name}</span>
-
-          {solution.review_count > 0 && (
-            <span className="inline-flex items-center gap-1">
-              <Star className="size-3.5 fill-amber-400 text-amber-400" />
-              <span className="font-medium text-foreground">
-                {Number.isNaN(rating) ? solution.average_rating : rating.toFixed(1)}
-              </span>
-              ({solution.review_count})
-            </span>
-          )}
-
-          {solution.sold_count > 0 && (
-            <span className="inline-flex items-center gap-1">
-              <Users className="size-3.5" />
-              {solution.sold_count} marta sotilgan
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-4">
-        <div className="text-right">
-          <div className="text-xs text-muted-foreground">Narxi</div>
-          <div className="text-sm font-bold text-foreground">
-            {formatSom(Number(solution.price))}
-          </div>
-        </div>
-
-        {/* Fayl faqat sotib olingandan keyin beriladi — shuning uchun kirish. */}
-        <ButtonLink href="/login" variant="emerald" size="sm">
-          Sotib olish
-        </ButtonLink>
-      </div>
-    </article>
-  );
-}
-
-function VariantBlock({ variant, solutions }: { variant: Variant; solutions: PublicSolution[] }) {
-  return (
-    <section className="rounded-2xl border border-border/60 bg-muted/20 p-4 dark:border-zinc-800">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-base font-bold text-foreground">{variant.label}</h3>
-        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-          {solutions.length} ta yechim
-        </span>
-      </div>
-
-      {solutions.length === 0 ? (
-        <p className="mt-3 text-sm text-muted-foreground">
-          Bu variant uchun hali yechim e&apos;lon qilinmagan.
-        </p>
-      ) : (
-        <div className="mt-3 grid gap-3">
-          {solutions.map((solution) => (
-            <SolutionRow key={solution.id} solution={solution} />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
+/**
+ * Topshiriqning o'z manzili.
+ *
+ * Fan sahifasi bilan BIR XIL brauzerni chizadi, faqat kerakli topshiriq
+ * oldindan tanlangan holda. Alohida ko'rinish yasash o'rniga shunday
+ * qilindi: manzil qidiruv tizimi uchun saqlanadi, foydalanuvchi esa
+ * o'sha yerda qolgan topshiriqlarga ham o'ta oladi.
+ */
 export default async function AssignmentPage(props: Params) {
   const { universitySlug, subjectSlug, assignmentSlug } = await props.params;
   const data = await loadAssignment(universitySlug, subjectSlug, assignmentSlug);
@@ -140,24 +75,36 @@ export default async function AssignmentPage(props: Params) {
   if (!data) notFound();
 
   const { university, subject, assignment } = data;
+  const tree = await getAssignmentTree(subject.id);
 
-  const variants = await getVariantsByAssignment(assignment.id);
-
-  // Har variant uchun yechimlar — variantlar kam, parallel yetarli.
-  const solutionsByVariant = await Promise.all(
-    variants.map((variant) => getSolutionsByVariant(variant.id)),
+  const variantIds = tree.flatMap((node) =>
+    node.variants.filter((variant) => variant.solutionCount > 0).map((variant) => variant.id),
   );
 
-  const totalSolutions = solutionsByVariant.reduce((sum, list) => sum + list.length, 0);
+  const solutionEntries = await Promise.all(
+    variantIds.map(async (id) => [id, await getSolutionsByVariant(id)] as const),
+  );
+  const solutionsByVariant: Record<string, PublicSolution[]> = Object.fromEntries(solutionEntries);
+
+  const tasks: TaskNode[] = tree.map((node) => ({
+    id: node.assignment.id,
+    slug: node.slug,
+    title: node.assignment.title,
+    type: node.assignment.type,
+    description: node.assignment.description,
+    variants: node.variants,
+  }));
+
+  const subjSlug = toSlugId(subject.name, subject.id);
 
   const crumbs = [
     { name: 'Bosh sahifa', path: '/' },
     { name: 'Tayyor materiallar', path: '/materials' },
     { name: university.short_name, path: `/materials/${universitySlug}` },
-    { name: subject.name, path: `/materials/${universitySlug}/${subjectSlug}` },
+    { name: subject.name, path: `/materials/${universitySlug}/${subjSlug}` },
     {
       name: assignment.title,
-      path: `/materials/${universitySlug}/${subjectSlug}/${toSlugId(assignment.title, assignment.id)}`,
+      path: `/materials/${universitySlug}/${subjSlug}/${assignmentSlug}`,
     },
   ];
 
@@ -165,40 +112,26 @@ export default async function AssignmentPage(props: Params) {
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
 
-      <Container className="py-8 sm:py-12">
+      <Container className="py-6 sm:py-8">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-6">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <header className="mt-5">
+          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             {assignment.title}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {university.short_name} &middot; {subject.name} &middot; {variants.length} ta variant
-            &middot; {totalSolutions} ta yechim
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+            {university.short_name} · {subject.name} · {assignmentTypeLabel(assignment.type)}
           </p>
-
-          {assignment.description && (
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed whitespace-pre-line text-muted-foreground">
-              {assignment.description}
-            </p>
-          )}
         </header>
 
-        {variants.length === 0 ? (
-          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Bu topshiriq uchun variantlar hozircha qo&apos;shilmagan.
-          </p>
-        ) : (
-          <div className="mt-8 grid gap-4">
-            {variants.map((variant, index) => (
-              <VariantBlock
-                key={variant.id}
-                variant={variant}
-                solutions={solutionsByVariant[index] ?? []}
-              />
-            ))}
-          </div>
-        )}
+        <SubjectTasks
+          subject={subject}
+          universitySlug={universitySlug}
+          universityShortName={university.short_name || university.name}
+          tasks={tasks}
+          solutionsByVariant={solutionsByVariant}
+          initialTaskId={assignment.id}
+        />
       </Container>
     </>
   );

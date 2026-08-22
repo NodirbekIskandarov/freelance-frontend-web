@@ -1,8 +1,9 @@
-import { UniversityCard } from '@/components/materials/UniversityCard';
+import { MaterialsBrowser } from '@/components/materials/MaterialsBrowser';
+import { MaterialsPromo } from '@/components/materials/MaterialsPromo';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
-import { getSubjectsByUniversity, getUniversities, universitySlug } from '@/server/catalogue';
+import { getCatalogueTree } from '@/server/catalogue';
 
 export const metadata = buildMetadata({
   title: 'Tayyor materiallar — universitetlar bo‘yicha topshiriqlar',
@@ -17,50 +18,58 @@ const crumbs = [
 ];
 
 export default async function MaterialsPage() {
-  const universities = await getUniversities();
+  const groups = await getCatalogueTree();
 
-  // Har bir universitet uchun fanlar soni — kartada ko'rsatiladi.
-  // Universitetlar kam, shuning uchun parallel so'rov yetarli.
-  const subjectCounts = await Promise.all(
-    universities.map(async (university) => (await getSubjectsByUniversity(university.id)).length),
-  );
+  const totalSubjects = groups.reduce((sum, group) => sum + group.subjects.length, 0);
 
-  const totalSubjects = subjectCounts.reduce((sum, count) => sum + count, 0);
+  /*
+   * ItemList — botga katalogning to'liq ro'yxati. Sahifada fanlar
+   * filtrlanadi va institut qatorida faqat to'rttasi ko'rinadi, qidiruv
+   * tizimi esa tugma bosmaydi.
+   */
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Yopamiz.uz tayyor materiallari',
+    numberOfItems: groups.length,
+    itemListElement: groups.map((group, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'CollegeOrUniversity',
+        name: group.university.name,
+        alternateName: group.university.short_name,
+        address: group.university.city,
+        url: `/materials/${group.slug}`,
+      },
+    })),
+  };
 
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
+      <JsonLd data={itemListJsonLd} />
 
-      <Container className="py-8 sm:py-12">
+      <Container className="py-6 sm:py-10 lg:py-12">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-6">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <div className="mt-5 sm:mt-6">
+          <MaterialsPromo />
+        </div>
+
+        <header className="mt-8 max-w-2xl sm:mt-10">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
             Tayyor materiallar
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            {universities.length} ta universitet va {totalSubjects} ta fan. Universitetni tanlang va
-            fanlar ro&apos;yxatiga o&apos;ting.
+          <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
+            {groups.length} ta institut va {totalSubjects} ta fan. Kerakli institut, fan va
+            topshiriqni tanlang va tayyor yechimlarni oling.
           </p>
         </header>
 
-        {universities.length === 0 ? (
-          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Katalog hozircha to&apos;ldirilmoqda. Tez orada bu yerda universitetlar paydo
-            bo&apos;ladi.
-          </p>
-        ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {universities.map((university, index) => (
-              <UniversityCard
-                key={university.id}
-                university={university}
-                href={`/materials/${universitySlug(university)}`}
-                subjectCount={subjectCounts[index]}
-              />
-            ))}
-          </div>
-        )}
+        <div className="mt-8 sm:mt-10">
+          <MaterialsBrowser groups={groups} />
+        </div>
       </Container>
     </>
   );

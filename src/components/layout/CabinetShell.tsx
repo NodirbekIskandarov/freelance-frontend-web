@@ -98,7 +98,12 @@ export function CabinetShell({ children }: { children: ReactNode }) {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:gap-8">
-        <nav aria-label={title} className="lg:w-56 lg:shrink-0">
+        {/*
+          `min-w-0` SHART: usiz flex elementi mazmuniga qarab kengayadi
+          va ichidagi `overflow-x-auto` hech narsani kesmaydi — tor
+          ekranda butun sahifa yon tomonga suriladi.
+        */}
+        <nav aria-label={title} className="min-w-0 lg:w-56 lg:shrink-0">
           <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible [&::-webkit-scrollbar]:hidden">
             {items.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);

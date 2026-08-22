@@ -1,0 +1,148 @@
+'use client';
+
+import { Building2, RotateCcw, Search } from 'lucide-react';
+
+import { cn } from '@/lib/cn';
+
+export interface MaterialsFilterState {
+  universityId: string;
+  search: string;
+  course: string;
+  direction: string;
+}
+
+export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
+  universityId: 'all',
+  search: '',
+  course: 'all',
+  direction: 'all',
+};
+
+const field =
+  'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+
+export interface FilterOption {
+  value: string;
+  label: string;
+}
+
+export function MaterialsFilters({
+  filters,
+  universities,
+  courses,
+  directions,
+  onChange,
+  onReset,
+}: {
+  filters: MaterialsFilterState;
+  universities: FilterOption[];
+  courses: FilterOption[];
+  /** Bo'sh bo'lsa yo'nalish tanlagichi umuman chizilmaydi. */
+  directions: FilterOption[];
+  onChange: (patch: Partial<MaterialsFilterState>) => void;
+  onReset: () => void;
+}) {
+  const isDirty =
+    filters.universityId !== 'all' ||
+    filters.search !== '' ||
+    filters.course !== 'all' ||
+    filters.direction !== 'all';
+
+  return (
+    <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5 lg:p-6">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+            <Building2 className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.14em] text-emerald-700 uppercase dark:text-emerald-400">
+              Qidiruv filtrlari
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Institut, fan va kurs bo&apos;yicha natijalarni aniqroq qiling.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!isDirty}
+          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-background px-3 text-xs font-medium text-emerald-800 shadow-sm transition-colors hover:bg-emerald-500/10 disabled:opacity-40 dark:text-emerald-300"
+        >
+          <RotateCcw className="size-3.5" />
+          Tozalash
+        </button>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1.5fr_0.9fr_0.9fr] lg:items-center">
+        <label className="block">
+          <span className="sr-only">Institut</span>
+          <select
+            value={filters.universityId}
+            onChange={(event) => onChange({ universityId: event.target.value })}
+            className={field}
+          >
+            <option value="all">Institutni tanlang</option>
+            {universities.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <label className="sr-only" htmlFor="materials-search">
+            Fan nomi
+          </label>
+          <input
+            id="materials-search"
+            type="search"
+            placeholder="Fan nomini qidiring..."
+            value={filters.search}
+            onChange={(event) => onChange({ search: event.target.value })}
+            className={cn(field, 'pl-10')}
+          />
+        </div>
+
+        <label className="block">
+          <span className="sr-only">Kurs</span>
+          <select
+            value={filters.course}
+            onChange={(event) => onChange({ course: event.target.value })}
+            className={field}
+          >
+            <option value="all">Barchasi</option>
+            {courses.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {/* Yo'nalish backendda ixtiyoriy — bo'sh bo'lsa tanlagich chizilmaydi. */}
+        {directions.length > 0 && (
+          <label className="block">
+            <span className="sr-only">Yo&apos;nalish</span>
+            <select
+              value={filters.direction}
+              onChange={(event) => onChange({ direction: event.target.value })}
+              className={field}
+            >
+              <option value="all">Barchasi</option>
+              {directions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+      </div>
+    </section>
+  );
+}

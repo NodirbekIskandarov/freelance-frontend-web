@@ -4,13 +4,27 @@
  * so'rov 404 bo'lganda emas.
  */
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+/**
+ * Oxiridagi `/` OLIB TASHLANADI.
+ *
+ * Yo'llar `/auth/login/` ko'rinishida yoziladi, shuning uchun bazaviy
+ * manzil `…/api/v1/` bo'lsa `…/api/v1//auth/login/` hosil bo'ladi va
+ * server buni 404 qaytaradi (ikkilangan slashni yig'ishtirmaydi).
+ * Sozlamadagi bitta ortiqcha belgi butun ilovani ishdan chiqarmasin.
+ */
+function trimSlash(value: string): string {
+  return value.replace(/\/+$/, '');
+}
 
-if (!apiUrl) {
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!rawApiUrl) {
   throw new Error(
     'NEXT_PUBLIC_API_URL sozlanmagan. `apps/web/.env.local` faylini `.env.example` dan nusxalang.',
   );
 }
+
+const apiUrl = trimSlash(rawApiUrl);
 
 /**
  * Ochiq katalog uchun backend manzili.
@@ -19,7 +33,7 @@ if (!apiUrl) {
  * uchun. Katalog esa Server Component'da o'qiladi — server so'roviga
  * CORS qo'llanmagani uchun to'liq manzil ishlatiladi.
  */
-const catalogueApiUrl = process.env.CATALOGUE_API_URL ?? 'https://api.yopamiz.uz/api/v1';
+const catalogueApiUrl = trimSlash(process.env.CATALOGUE_API_URL ?? 'https://api.yopamiz.uz/api/v1');
 
 /**
  * WebSocket manzilining ILDIZI.

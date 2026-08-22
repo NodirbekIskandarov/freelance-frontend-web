@@ -1,13 +1,14 @@
-import { ArrowRight, GraduationCap } from 'lucide-react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { UniversityLogo } from '@/components/materials/UniversityRow';
+import { UniversitySubjects } from '@/components/materials/UniversitySubjects';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { toSlugId } from '@/lib/slug';
 import {
   getAllCataloguePaths,
+  getAssignmentsBySubject,
   getSubjectsByUniversity,
   getUniversityBySlug,
   universitySlug as slugOf,
@@ -54,68 +55,66 @@ export default async function UniversityPage(props: PageProps<'/materials/[unive
   const subjects = await getSubjectsByUniversity(university.id);
   const uniSlug = slugOf(university);
 
+  // Har fandagi topshiriqlar soni — kartadagi rozetka uchun.
+  const withCounts = await Promise.all(
+    subjects.map(async (subject) => ({
+      ...subject,
+      slug: toSlugId(subject.name, subject.id),
+      assignmentCount: (await getAssignmentsBySubject(subject.id)).length,
+    })),
+  );
+
   const crumbs = [
     { name: 'Bosh sahifa', path: '/' },
     { name: 'Tayyor materiallar', path: '/materials' },
     { name: university.short_name, path: `/materials/${uniSlug}` },
   ];
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${university.short_name} fanlari`,
+    numberOfItems: withCounts.length,
+    itemListElement: withCounts.map((subject, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Course',
+        name: subject.name,
+        provider: { '@type': 'CollegeOrUniversity', name: university.name },
+        url: `/materials/${uniSlug}/${subject.slug}`,
+      },
+    })),
+  };
+
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
+      <JsonLd data={itemListJsonLd} />
 
-      <Container className="py-8 sm:py-12">
+      <Container className="py-6 sm:py-10">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-6 flex flex-wrap items-start gap-4">
-          <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg font-bold text-white shadow-sm">
-            {university.short_name.slice(0, 2).toUpperCase()}
-          </div>
+        <header className="mt-5 flex flex-wrap items-start gap-4">
+          <UniversityLogo university={university} />
 
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              {university.name}
+            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+              {university.short_name || university.name}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {university.short_name}
-              {university.city && <> &middot; {university.city}</>} &middot; {subjects.length} ta
-              fan
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{university.name}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                {withCounts.length} ta fan
+              </span>
+              {university.city && (
+                <span className="text-xs text-muted-foreground">{university.city}</span>
+              )}
+            </div>
           </div>
         </header>
 
-        {subjects.length === 0 ? (
-          <p className="mt-8 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Bu universitet uchun fanlar hozircha qo&apos;shilmagan.
-          </p>
-        ) : (
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {subjects.map((subject) => (
-              <Link
-                key={subject.id}
-                href={`/materials/${uniSlug}/${toSlugId(subject.name, subject.id)}`}
-                className="group flex flex-col rounded-xl border border-border/60 bg-background p-4 transition-all hover:-translate-y-0.5 hover:border-emerald-500/40 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/70"
-              >
-                <h2 className="text-[15px] font-bold text-foreground">{subject.name}</h2>
-
-                <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                  {subject.course !== null && <span>{subject.course}-kurs</span>}
-                  {subject.direction_name && (
-                    <span className="inline-flex items-center gap-1">
-                      <GraduationCap className="size-3.5" />
-                      {subject.direction_name}
-                    </span>
-                  )}
-                </p>
-
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 transition-all group-hover:gap-2 dark:text-emerald-400">
-                  Ochish
-                  <ArrowRight className="size-4" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
+        <UniversitySubjects university={university} slug={uniSlug} subjects={withCounts} />
       </Container>
     </>
   );

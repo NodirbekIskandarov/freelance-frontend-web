@@ -268,7 +268,7 @@ export function WalletView() {
               return (
                 <article
                   key={transaction.id}
-                  className="flex items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-background p-4 sm:gap-4 dark:border-zinc-800 dark:bg-zinc-900/70"
                 >
                   <span
                     className={cn(
@@ -285,7 +285,7 @@ export function WalletView() {
                     )}
                   </span>
 
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-40">
                     <h3 className="truncate text-sm font-medium text-foreground">
                       {transaction.description || TRANSACTION_TYPE_LABELS[transaction.type]}
                     </h3>
@@ -295,7 +295,12 @@ export function WalletView() {
                     </p>
                   </div>
 
-                  <div className="text-right">
+                  {/*
+                    `ml-auto` va `shrink-0`: tor ekranda summa pastki
+                    qatorga tushadi va o'ngda turadi — qatorni cho'zib
+                    sahifani yon tomonga surib yubormaydi.
+                  */}
+                  <div className="ml-auto shrink-0 text-right">
                     {/* `formatDecimalSom` ishorani o'zi chiqaradi — qo'lda "−" qo'yilmaydi. */}
                     <div
                       className={cn(
