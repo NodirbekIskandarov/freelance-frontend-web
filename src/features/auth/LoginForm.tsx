@@ -15,7 +15,9 @@ import {
   AuthFieldLabel,
   AuthInput,
   AuthPrimaryButton,
+  AuthSeparator,
 } from './AuthCard';
+import { AuthMethodTabs, type AuthMethod } from './AuthMethodTabs';
 import { useLoginMutation } from './authApi';
 import { cabinetPathFor } from './cabinetPath';
 import { GoogleLoginButton } from './GoogleLoginButton';
@@ -26,6 +28,7 @@ export function LoginForm() {
   const router = useRouter();
   const [login, { isLoading, error }] = useLoginMutation();
 
+  const [method, setMethod] = useState<AuthMethod>('phone');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
@@ -53,10 +56,15 @@ export function LoginForm() {
       <AuthCardHeader
         icon={<KeyRound className="size-6" />}
         title="Kirish"
-        subtitle="Telefon raqamingiz va parol bilan kiring."
+        subtitle="Google, telefon raqam yoki parol bilan kiring."
       />
 
+      <GoogleLoginButton />
+      <AuthSeparator />
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <AuthMethodTabs value={method} onChange={setMethod} />
+
         <PhoneField id="login-phone" value={phone} onChange={setPhone} required />
 
         <div>
@@ -79,8 +87,6 @@ export function LoginForm() {
           {isLoading ? 'Kirilmoqda...' : 'Kirish'}
         </AuthPrimaryButton>
       </form>
-
-      <GoogleLoginButton />
 
       <AuthCardFooter>
         Hisobingiz yo&apos;qmi?{' '}

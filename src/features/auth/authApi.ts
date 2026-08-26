@@ -6,6 +6,7 @@ import {
   type ForgotPasswordConfirmRequest,
   type LoginRequest,
   type PhoneCodeRequest,
+  type PhoneCodeSentResponse,
   type PhoneVerifyRequest,
   type RegisterRequest,
 } from '@/shared/types/auth';
@@ -101,8 +102,13 @@ export const authApi = baseApi.injectEndpoints({
         persistSession(queryFulfilled, dispatch),
     }),
 
-    /** SMS kodi yuboriladi — kod bilan kirish va ro'yxatdan o'tish uchun. */
-    sendPhoneCode: build.mutation<void, PhoneCodeRequest>({
+    /**
+     * SMS kodi yuboriladi — kod bilan kirish va ro'yxatdan o'tish uchun.
+     *
+     * SMS provayderi ulanmagan bo'lsa javobda `demo_code` ham keladi:
+     * aks holda hech kim oqimni yakunlay olmasdi.
+     */
+    sendPhoneCode: build.mutation<PhoneCodeSentResponse, PhoneCodeRequest>({
       query: (body) => ({ url: '/auth/phone/send-code/', method: 'POST', body }),
     }),
 

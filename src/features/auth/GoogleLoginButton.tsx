@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getApiErrorMessage } from '@/shared/api';
 
-import { AuthSeparator } from './AuthCard';
 import { useLoginWithGoogleMutation } from './authApi';
 import { cabinetPathFor } from './cabinetPath';
 
@@ -91,8 +90,6 @@ export function GoogleLoginButton() {
         strategy="afterInteractive"
         onReady={() => setReady(true)}
       />
-
-      <AuthSeparator />
 
       <div ref={containerRef} className="flex justify-center" />
 

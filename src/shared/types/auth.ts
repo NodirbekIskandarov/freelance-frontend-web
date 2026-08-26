@@ -108,13 +108,33 @@ export interface RegisterRequest {
 }
 
 export interface ChangePasswordRequest {
-  old_password: string;
+  /**
+   * Birinchi parolni qo'yayotganda YUBORILMAYDI.
+   *
+   * SMS kodi yoki Google orqali ochilgan hisobda parol umuman yo'q, ya'ni
+   * yozadigan eski parol ham yo'q. Backend bunday hisob uchun maydonni
+   * talab qilmaydi (qaror saqlangan hash'dan olinadi, so'rovdan emas).
+   */
+  old_password?: string;
   new_password: string;
   new_password_confirm: string;
 }
 
 export interface PhoneCodeRequest {
   phone: string;
+}
+
+export interface PhoneCodeSentResponse {
+  detail: string;
+  /** SMS haqiqatan yuborildimi. Provayder ulanmaguncha `false`. */
+  sms_sent: boolean;
+  /**
+   * SMS yuborilmaganda backend kodni javobda qaytaradi.
+   *
+   * Provayder ulangach bu maydon kelmay qo'yadi va kod faqat telefonda
+   * qoladi — shuning uchun uni ixtiyoriy deb qarash SHART.
+   */
+  demo_code?: string;
 }
 
 export interface PhoneVerifyRequest {
