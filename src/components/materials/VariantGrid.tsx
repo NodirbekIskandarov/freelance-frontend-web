@@ -1,10 +1,13 @@
 'use client';
 
 import { Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
-import { useRequestVariantSolutionMutation } from '@/features/requests/requestsApi';
+import {
+  useGetMySolutionRequestsQuery,
+  useRequestVariantSolutionMutation,
+} from '@/features/requests/requestsApi';
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import {
   useGetMySolutionsQuery,
@@ -86,17 +89,56 @@ export function VariantGrid({
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
   const [uploadOpen, setUploadOpen] = useState(false);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const panelRef = useRef<HTMLElement>(null);
 
   /*
-   * Foydalanuvchining SHU variantga yuborgan yechimlari.
+   * Variant tanlanganda panel ko'rinadigan joyga suriladi — FAQAT tor
+   * ekranda.
+   *
+   * Keng ekranda panel to'rning yonida turadi va tanlov darhol ko'rinadi.
+   * Tor ekranda esa u to'r ostida qoladi: odam variantni bosadi, hech
+   * nima o'zgarmagandek tuyuladi va boshqasini bosaveradi. Surish shuni
+   * yopadi.
+   *
+   * `lg` chegarasi (1024px) Tailwind'dagi joylashuv o'zgarishi bilan bir
+   * xil — ikkalasi bir vaqtda o'zgarishi kerak.
+   */
+  function selectVariant(id: string) {
+    setSelectedId(id);
+    if (window.matchMedia('(min-width: 1024px)').matches) return;
+    panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /*
+   * Foydalanuvchining shu TOPSHIRIQQA yuborgan yechimlari — bitta so'rovda.
+   *
+   * Variant bo'yicha so'ralsa, har variant bosilganda yangi so'rov ketardi:
+   * o'n beshta variantli topshiriqda o'n beshta borish-kelish. Topshiriq
+   * bo'yicha esa bitta javob keladi va variantlar orasida o'tish darhol
+   * ishlaydi. Ro'yxat kichik — bir odam bir topshiriqqa ko'pi bilan
+   * variantlar soni × 2 ta yechim yubora oladi.
    *
    * Erta qaytishdan oldin chaqiriladi — hook shartli bo'lmasligi kerak.
-   * Mehmon uchun butunlay o'tkazib yuboriladi: backend 401 qaytaradi va
-   * ochiq katalogda bu foydasiz xato bo'lardi.
+   * Mehmon uchun o'tkazib yuboriladi: backend 401 qaytaradi va ochiq
+   * katalogda bu foydasiz xato bo'lardi.
    */
+  const assignmentId = variants[0]?.assignment;
   const myUploads = useGetMySolutionsQuery(
-    { variant: selectedId, page_size: MAX_UPLOADS_PER_VARIANT + 1 },
-    { skip: !isAuthenticated || !selectedId },
+    { variant__assignment: assignmentId ?? '', page_size: 100 },
+    { skip: !isAuthenticated || !assignmentId },
+  );
+
+  /*
+   * Allaqachon so'rov qoldirilgan variantlar.
+   *
+   * Ilgari bu faqat MAHALLIY holatda edi: sahifa yangilangach tugma yana
+   * faol ko'rinardi, bosilganda esa server "siz allaqachon so'ragansiz"
+   * deb rad qilardi. Bu ro'yxat shuni yopadi va yuklashlar bilan bir xil
+   * shaklda — topshiriq bo'yicha bitta so'rov.
+   */
+  const myRequests = useGetMySolutionRequestsQuery(
+    { variant__assignment: assignmentId ?? '', page_size: 100 },
+    { skip: !isAuthenticated || !assignmentId },
   );
 
   if (variants.length === 0) {
@@ -110,9 +152,11 @@ export function VariantGrid({
   const selected = variants.find((item) => item.id === selectedId) ?? variants[0]!;
   const selectedStatus = statusOf(selected);
   const solutions = solutionsByVariant[selected.id] ?? [];
-  const alreadyRequested = requestedIds.includes(selected.id);
+  const alreadyRequested =
+    requestedIds.includes(selected.id) ||
+    (myRequests.data?.results ?? []).some((item) => item.variant === selected.id);
 
-  const mine = myUploads.data?.results ?? [];
+  const mine = (myUploads.data?.results ?? []).filter((item) => item.variant === selected.id);
   const uploadsLeft = Math.max(0, MAX_UPLOADS_PER_VARIANT - mine.length);
 
   return (
@@ -130,7 +174,7 @@ export function VariantGrid({
               <button
                 key={variant.id}
                 type="button"
-                onClick={() => setSelectedId(variant.id)}
+                onClick={() => selectVariant(variant.id)}
                 aria-pressed={active}
                 className={cn(
                   'card-lift rounded-xl border bg-card p-2.5 text-left',
@@ -197,7 +241,10 @@ export function VariantGrid({
         </div>
       </div>
 
-      <aside className="min-w-0 rounded-xl border border-border/70 bg-muted/20 p-4 lg:sticky lg:top-4">
+      <aside
+        ref={panelRef}
+        className="min-w-0 scroll-mt-4 rounded-xl border border-border/70 bg-muted/20 p-4 lg:sticky lg:top-4"
+      >
         <p className="text-sm font-semibold text-foreground">{selected.number}-variant</p>
 
         {selectedStatus === 'available' ? (
@@ -226,6 +273,11 @@ export function VariantGrid({
                     variant="emerald"
                     size="sm"
                     className="mt-2 w-full"
+                    /*
+                      Faqat BOSILGAN tugma o'chadi va matnini almashtiradi.
+                      Umumiy `isLoading` bilan uchala tugma ham o'chib,
+                      qaysi biri ishlayotgani ko'rinmasdi.
+                    */
                     disabled={purchaseState.isLoading}
                     onClick={() => {
                       void purchase(solution.id)
@@ -234,8 +286,14 @@ export function VariantGrid({
                         .catch(() => undefined);
                     }}
                   >
-                    <ShoppingCart className="size-3.5" />
-                    Sotib olish
+                    {purchaseState.isLoading && purchaseState.originalArgs === solution.id ? (
+                      'Sotib olinmoqda…'
+                    ) : (
+                      <>
+                        <ShoppingCart className="size-3.5" />
+                        Sotib olish
+                      </>
+                    )}
                   </Button>
                 )}
               </li>
@@ -278,7 +336,11 @@ export function VariantGrid({
                   .catch(() => undefined);
               }}
             >
-              {alreadyRequested ? 'So‘rov yuborildi' : "So'rov qoldirish"}
+              {requestState.isLoading
+                ? 'Yuborilmoqda…'
+                : alreadyRequested
+                  ? 'So‘rov yuborildi'
+                  : "So'rov qoldirish"}
             </Button>
 
             {requestState.error && !alreadyRequested && (

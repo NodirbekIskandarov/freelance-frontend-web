@@ -25,6 +25,8 @@ export const solutionsApi = baseApi.injectEndpoints({
         page_size?: number;
         status?: SolutionStatus;
         variant?: string;
+        /** Topshiriqning barcha variantlari — bitta so'rovda. */
+        variant__assignment?: string;
         ordering?: string;
       }
     >({

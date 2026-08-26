@@ -110,7 +110,10 @@ export const requestsApi = baseApi.injectEndpoints({
     /** Variant so'rovlarida holat filtri yo'q — ular tasdiqlanmaydi. */
     getMySolutionRequests: build.query<
       ApiPaginated<MySolutionRequest>,
-      Omit<MyRequestsQuery, 'status'>
+      Omit<MyRequestsQuery, 'status'> & {
+        /** Topshiriqning barcha variantlari bo'yicha — bitta so'rovda. */
+        variant__assignment?: string;
+      }
     >({
       query: (params) => ({ url: '/me/requests/variants/', params }),
       providesTags: [{ type: 'MyRequest', id: 'VARIANT' }],

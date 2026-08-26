@@ -30,6 +30,12 @@ const PROTECTED_PREFIXES = [
  */
 export const baseApi = createApi({
   reducerPath: 'api',
+  /*
+   * Ulanish tiklanganda qayta so'ralsin — mobil tarmoqda uzilish odatiy
+   * hol va kesh eskirgan holida qolib ketardi. Fokus bo'yicha qayta
+   * so'rash YOQILMADI: har oyna almashishda o'nlab so'rov ketardi.
+   */
+  refetchOnReconnect: true,
   baseQuery: createAppBaseQuery({
     baseUrl: env.apiUrl,
     tokens: tokenStore,
