@@ -2,6 +2,7 @@
 
 import { Building2, RotateCcw, Search } from 'lucide-react';
 
+import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/cn';
 
 export interface MaterialsFilterState {
@@ -77,21 +78,20 @@ export function MaterialsFilters({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1.5fr_0.9fr_0.9fr] lg:items-center">
-        <label className="block">
-          <span className="sr-only">Institut</span>
-          <select
-            value={filters.universityId}
-            onChange={(event) => onChange({ universityId: event.target.value })}
-            className={field}
-          >
-            <option value="all">Institutni tanlang</option>
-            {universities.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/*
+          Institutlar ro'yxati uzun (21 ta va o'sib boradi), shuning uchun
+          uning ichida qidiruv bor — aylantirib topishdan ko'ra yozib
+          topish tezroq.
+        */}
+        <Select
+          aria-label="Institut"
+          value={filters.universityId}
+          onChange={(universityId) => onChange({ universityId })}
+          triggerClassName={field}
+          searchable
+          searchPlaceholder="Institut nomi..."
+          options={[{ value: 'all', label: 'Institutni tanlang' }, ...universities]}
+        />
 
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -108,39 +108,25 @@ export function MaterialsFilters({
           />
         </div>
 
-        <label className="block">
-          <span className="sr-only">Kurs</span>
-          <select
-            value={filters.course}
-            onChange={(event) => onChange({ course: event.target.value })}
-            className={field}
-          >
-            <option value="all">Barchasi</option>
-            {courses.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          aria-label="Kurs"
+          value={filters.course}
+          onChange={(course) => onChange({ course })}
+          triggerClassName={field}
+          options={[{ value: 'all', label: 'Barcha kurslar' }, ...courses]}
+        />
 
         {/* Yo'nalish backendda ixtiyoriy — bo'sh bo'lsa tanlagich chizilmaydi. */}
         {directions.length > 0 && (
-          <label className="block">
-            <span className="sr-only">Yo&apos;nalish</span>
-            <select
-              value={filters.direction}
-              onChange={(event) => onChange({ direction: event.target.value })}
-              className={field}
-            >
-              <option value="all">Barchasi</option>
-              {directions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            aria-label="Yo'nalish"
+            value={filters.direction}
+            onChange={(direction) => onChange({ direction })}
+            triggerClassName={field}
+            searchable={directions.length > 8}
+            searchPlaceholder="Yo'nalish nomi..."
+            options={[{ value: 'all', label: "Barcha yo'nalishlar" }, ...directions]}
+          />
         )}
       </div>
     </section>

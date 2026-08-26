@@ -174,6 +174,9 @@ export function UniversitySubjects({
                 value={direction}
                 onChange={(value) => applyFilter(() => setDirection(value))}
                 triggerClassName="h-10"
+                /* Uzun ro'yxatda aylantirib topishdan ko'ra yozib topish tezroq. */
+                searchable={directionOptions.length > 8}
+                searchPlaceholder="Yo'nalish nomi..."
                 options={[
                   { value: 'all', label: "Barcha yo'nalishlar" },
                   ...directionOptions.map((item) => ({ value: item, label: item })),
