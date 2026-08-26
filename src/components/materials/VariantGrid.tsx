@@ -6,15 +6,31 @@ import { useState } from 'react';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useRequestVariantSolutionMutation } from '@/features/requests/requestsApi';
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
-import { usePurchaseSolutionMutation } from '@/features/solutions/solutionsApi';
+import {
+  useGetMySolutionsQuery,
+  usePurchaseSolutionMutation,
+} from '@/features/solutions/solutionsApi';
 import { cn } from '@/lib/cn';
 import { formatDecimalSom } from '@/lib/format';
+import { SOLUTION_STATUS_LABELS } from '@/shared/types/solutions';
+import { useAppSelector } from '@/store/hooks';
+import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { PublicSolution, Variant } from '@/shared/types/catalogue';
 
 export interface VariantWithCount extends Variant {
   solutionCount: number;
 }
+
+/**
+ * Bitta odam bitta variantga nechta yechim yubora oladi.
+ *
+ * Backenddagi `MAX_SOLUTIONS_PER_USER_PER_VARIANT` bilan bir xil. Mijozda
+ * takrorlangani — chegaraga yetganda tugmani o'chirib qo'yish uchun:
+ * uchinchi urinishda faylni yuklab bo'lib, keyin xato olish yomon.
+ * Haqiqiy chek baribir serverda.
+ */
+const MAX_UPLOADS_PER_VARIANT = 2;
 
 type VariantStatus = 'available' | 'requested' | 'empty';
 
@@ -69,6 +85,19 @@ export function VariantGrid({
   const [requestedIds, setRequestedIds] = useState<string[]>([]);
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  /*
+   * Foydalanuvchining SHU variantga yuborgan yechimlari.
+   *
+   * Erta qaytishdan oldin chaqiriladi — hook shartli bo'lmasligi kerak.
+   * Mehmon uchun butunlay o'tkazib yuboriladi: backend 401 qaytaradi va
+   * ochiq katalogda bu foydasiz xato bo'lardi.
+   */
+  const myUploads = useGetMySolutionsQuery(
+    { variant: selectedId, page_size: MAX_UPLOADS_PER_VARIANT + 1 },
+    { skip: !isAuthenticated || !selectedId },
+  );
 
   if (variants.length === 0) {
     return (
@@ -82,6 +111,9 @@ export function VariantGrid({
   const selectedStatus = statusOf(selected);
   const solutions = solutionsByVariant[selected.id] ?? [];
   const alreadyRequested = requestedIds.includes(selected.id);
+
+  const mine = myUploads.data?.results ?? [];
+  const uploadsLeft = Math.max(0, MAX_UPLOADS_PER_VARIANT - mine.length);
 
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[1fr_260px] lg:items-start">
@@ -264,23 +296,65 @@ export function VariantGrid({
           ko'pchiligi uchun asosiy amal, yuklash esa ozchilik uchun.
         */}
         <div className="mt-3 border-t border-border/70 pt-3">
+          {/*
+            Foydalanuvchining o'z yuborganlari — holati bilan. Chop
+            etilmagunicha ular katalogda ko'rinmaydi, shuning uchun bu
+            ro'yxatsiz odam yechimi yetib bordimi-yo'qmi bilmasdi.
+          */}
+          {mine.length > 0 && (
+            <ul className="mb-3 space-y-1.5">
+              {mine.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-card px-2.5 py-1.5"
+                >
+                  <span className="min-w-0 truncate text-[11px] text-foreground" title={item.title}>
+                    {item.title}
+                  </span>
+                  <span
+                    className={cn(
+                      'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                      item.status === 'published'
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                        : item.status === 'rejected'
+                          ? 'bg-destructive/15 text-destructive'
+                          : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+                    )}
+                  >
+                    {SOLUTION_STATUS_LABELS[item.status]}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
           {selected.submissions_open ? (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => setUploadOpen(true)}
-              >
-                <Upload className="size-3.5" />
-                Yechim yuborish
-              </Button>
-              {selected.request_count > 0 && selectedStatus !== 'available' && (
+            uploadsLeft > 0 ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => setUploadOpen(true)}
+                >
+                  <Upload className="size-3.5" />
+                  Yechim yuborish
+                </Button>
                 <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                  {selected.request_count} kishi shu variantni kutyapti.
+                  {mine.length > 0
+                    ? `Yana ${uploadsLeft} ta yubora olasiz.`
+                    : selected.request_count > 0 && selectedStatus !== 'available'
+                      ? `${selected.request_count} kishi shu variantni kutyapti.`
+                      : `Bir variantga ${MAX_UPLOADS_PER_VARIANT} tagacha yechim yuborish mumkin.`}
                 </p>
-              )}
-            </>
+              </>
+            ) : (
+              /* Chegaraga yetildi. Tugmani ko'rsatib, keyin serverdan xato
+                 qaytarish o'rniga sababi shu yerda aytiladi. */
+              <p className="text-center text-[11px] leading-snug text-muted-foreground">
+                Bu variantga {MAX_UPLOADS_PER_VARIANT} ta yechim yuborib bo&apos;lgansiz.
+              </p>
+            )
           ) : (
             /*
               Yopilgani ochiq aytiladi. Tugmani shunchaki yashirish

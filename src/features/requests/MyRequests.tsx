@@ -10,7 +10,6 @@ import {
   type MyAssignmentRequest,
   type MySolutionRequest,
   type MySubjectRequest,
-  type MyUniversityRequest,
   type RequestStatus,
 } from '@/shared/types/myRequests';
 
@@ -18,11 +17,17 @@ import {
   useGetMyAssignmentRequestsQuery,
   useGetMySolutionRequestsQuery,
   useGetMySubjectRequestsQuery,
-  useGetMyUniversityRequestsQuery,
 } from './requestsApi';
 
+/*
+ * Institut arizasi bu yerda YO'Q.
+ *
+ * Institutni katalogga qo'shish talabaning ishi emas — u ma'muriy qaror va
+ * saytda institut qo'shish so'rovini qoldiradigan joy ham yo'q. Tab bor
+ * ekan, u har doim bo'sh turardi va kabinetni "nimadir ishlamayapti" degan
+ * taassurot bilan ochardi.
+ */
 const TABS = [
-  { key: 'universities', label: 'Institutlar' },
   { key: 'subjects', label: 'Fanlar' },
   { key: 'assignments', label: 'Topshiriqlar' },
   { key: 'variants', label: 'Variant so‘rovlari' },
@@ -123,27 +128,24 @@ function Skeletons() {
 }
 
 export function MyRequests() {
-  const [tab, setTab] = useState<TabKey>('universities');
+  const [tab, setTab] = useState<TabKey>('subjects');
 
   const query = { page_size: 50, ordering: '-created_at' };
 
-  // To'rttasi ham birdaniga so'raladi: har biri kichik ro'yxat va
+  // Uchtasi ham birdaniga so'raladi: har biri kichik ro'yxat va
   // tab almashganda kutish bo'lmaydi. RTK Query keshi takroriy
   // so'rovlarni o'zi to'xtatadi.
-  const universities = useGetMyUniversityRequestsQuery(query);
   const subjects = useGetMySubjectRequestsQuery(query);
   const assignments = useGetMyAssignmentRequestsQuery(query);
   const variants = useGetMySolutionRequestsQuery(query);
 
   const counts: Record<TabKey, number> = {
-    universities: universities.data?.count ?? 0,
     subjects: subjects.data?.count ?? 0,
     assignments: assignments.data?.count ?? 0,
     variants: variants.data?.count ?? 0,
   };
 
-  const error =
-    universities.error ?? subjects.error ?? assignments.error ?? variants.error ?? undefined;
+  const error = subjects.error ?? assignments.error ?? variants.error ?? undefined;
 
   if (error) return <ErrorNotice error={error} />;
 
@@ -179,27 +181,6 @@ export function MyRequests() {
       </div>
 
       <div className="mt-4">
-        {tab === 'universities' &&
-          (universities.isLoading ? (
-            <Skeletons />
-          ) : universities.data?.results.length === 0 ? (
-            <EmptyState message="Katalogda yo'q institutni qo'shishni so'rasangiz, u shu yerda ko'rinadi." />
-          ) : (
-            <div className="grid gap-3">
-              {universities.data?.results.map((row: MyUniversityRequest) => (
-                <RequestCard
-                  key={row.id}
-                  title={row.name}
-                  meta={[row.short_name, row.city].filter(Boolean).join(' · ') || '—'}
-                  status={row.status}
-                  rewardGranted={row.reward_granted}
-                  rejectReason={row.reject_reason}
-                  createdAt={row.created_at}
-                />
-              ))}
-            </div>
-          ))}
-
         {tab === 'subjects' &&
           (subjects.isLoading ? (
             <Skeletons />

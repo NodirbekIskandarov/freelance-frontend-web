@@ -28,6 +28,19 @@ export interface University {
   /** Institut kodi — manzil uchun ishlatilmaydi, u raqamli bo'lishi mumkin. */
   code: string;
   city: string;
+  logo: string | null;
+  /**
+   * Backend hisoblab beradi (`universities_with_counts()`).
+   *
+   * `solution_count` — faqat CHOP ETILGAN yechimlar: katalog «qayerda
+   * material ko'p» degan savolga javob beradi, moderatsiyadagi yuklama esa
+   * hali material emas.
+   *
+   * Ixtiyoriy: yozuv javoblari annotatsiyasiz obyekt qaytaradi.
+   */
+  subject_count?: number;
+  assignment_count?: number;
+  solution_count?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;

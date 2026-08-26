@@ -31,7 +31,10 @@ export interface MySolution {
   title: string;
   description: string;
   file: string;
+  /** Joriy narx — chop etilgandan keyin moderator belgilagani. */
   price: string;
+  /** Yuklashda so'ralgan narx. Hech qachon o'zgarmaydi. */
+  asking_price: string;
   status: SolutionStatus;
   reject_reason: string;
   commission_percent: string | null;

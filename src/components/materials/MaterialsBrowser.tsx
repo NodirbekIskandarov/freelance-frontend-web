@@ -3,6 +3,8 @@
 import { SearchX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { Pagination } from '@/components/ui/Pagination';
+
 import { cn } from '@/lib/cn';
 import { DirectionIcon } from '@/lib/catalogueVisuals';
 
@@ -21,6 +23,61 @@ export interface CatalogueGroup {
 }
 
 /**
+ * Bir sahifada nechta institut.
+ *
+ * Beshta: har institut qatori o'z ichida to'rttagacha fan kartasini
+ * chizadi, ya'ni qator baland. Yigirma bittasini birdaniga chiqarish
+ * sahifani bir necha ekran uzunlikdagi devorga aylantirardi va
+ * pastdagilarni hech kim ko'rmasdi.
+ */
+const PAGE_SIZE = 5;
+
+/** Institutning ro'yxatdagi "og'irligi" — sanoqlar javobning o'zida keladi. */
+function weight(group: CatalogueGroup) {
+  return {
+    solutions: group.university.solution_count ?? 0,
+    assignments: group.university.assignment_count ?? 0,
+    subjects: group.subjects.length,
+  };
+}
+
+/**
+ * Tanlangan tartib bo'yicha taqqoslagich.
+ *
+ * `material` uchalasini ketma-ket ko'radi: avval sotuvdagi yechim, keyin
+ * topshiriq, keyin fan. Bitta sanoq bo'yicha saralash tenglikda tasodifiy
+ * tartib berardi — ikkita institutda ham nol yechim bo'lsa, ulardan
+ * topshirig'i ko'pi tepada turgani foydaliroq.
+ */
+function compareGroups(a: CatalogueGroup, b: CatalogueGroup, sort: MaterialsFilterState['sort']) {
+  const left = weight(a);
+  const right = weight(b);
+  const byName = () =>
+    (a.university.short_name || a.university.name).localeCompare(
+      b.university.short_name || b.university.name,
+      'uz',
+    );
+
+  switch (sort) {
+    case 'name':
+      return byName();
+    case 'solutions':
+      return right.solutions - left.solutions || byName();
+    case 'assignments':
+      return right.assignments - left.assignments || byName();
+    case 'subjects':
+      return right.subjects - left.subjects || byName();
+    default:
+      return (
+        right.solutions - left.solutions ||
+        right.assignments - left.assignments ||
+        right.subjects - left.subjects ||
+        byName()
+      );
+  }
+}
+
+/**
  * Filtrlash MIJOZDA bajariladi.
  *
  * Katalog Server Component'da to'liq olinadi (bot to'ldirilgan HTML
@@ -30,6 +87,7 @@ export interface CatalogueGroup {
  */
 export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
   const [filters, setFilters] = useState<MaterialsFilterState>(DEFAULT_MATERIALS_FILTERS);
+  const [page, setPage] = useState(1);
 
   const universityOptions = useMemo(
     () =>
@@ -100,8 +158,26 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
           const narrowed = search !== '' || filters.course !== 'all' || filters.direction !== 'all';
           return !narrowed || group.subjects.length > 0;
         })
+        .sort((a, b) => compareGroups(a, b, filters.sort))
     );
   }, [filters, groups]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  /*
+   * Joriy sahifa oxirgisidan oshib ketishi mumkin: filtr toraysa,
+   * 4-sahifada turgan foydalanuvchi bo'sh ro'yxat ko'rardi. Effekt bilan
+   * tuzatilsa bir kadr davomida bo'sh ekran chizilardi, shuning uchun
+   * render paytida chegaralanadi.
+   */
+  const currentPage = Math.min(page, totalPages);
+  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  /** Filtr o'zgarsa doim birinchi sahifadan boshlanadi. */
+  function applyFilters(patch: Partial<MaterialsFilterState>) {
+    setFilters((current) => ({ ...current, ...patch }));
+    setPage(1);
+  }
 
   const chips = useMemo(
     () => [{ value: 'all', label: 'Barchasi' }, ...directionOptions],
@@ -115,8 +191,11 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
         universities={universityOptions}
         courses={courseOptions}
         directions={directionOptions}
-        onChange={(patch) => setFilters((current) => ({ ...current, ...patch }))}
-        onReset={() => setFilters(DEFAULT_MATERIALS_FILTERS)}
+        onChange={applyFilters}
+        onReset={() => {
+          setFilters(DEFAULT_MATERIALS_FILTERS);
+          setPage(1);
+        }}
       />
 
       {/* Yo'nalish chiplari — backend yo'nalish bermasa umuman chizilmaydi. */}
@@ -130,7 +209,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
                 <button
                   key={chip.value}
                   type="button"
-                  onClick={() => setFilters((current) => ({ ...current, direction: chip.value }))}
+                  onClick={() => applyFilters({ direction: chip.value })}
                   aria-pressed={active}
                   className={cn(
                     'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all',
@@ -159,7 +238,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
             </p>
           </div>
         ) : (
-          filtered.map((group) => (
+          visible.map((group) => (
             <UniversityRow
               key={group.university.id}
               university={group.university}
@@ -169,6 +248,16 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
+          <p className="text-xs text-muted-foreground tabular-nums">
+            {filtered.length} ta institutdan {(currentPage - 1) * PAGE_SIZE + 1}–
+            {Math.min(currentPage * PAGE_SIZE, filtered.length)} ko&apos;rsatilmoqda
+          </p>
+        </div>
+      )}
     </>
   );
 }

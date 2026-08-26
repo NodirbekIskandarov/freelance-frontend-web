@@ -20,7 +20,13 @@ export const solutionsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getMySolutions: build.query<
       ApiPaginated<MySolution>,
-      { page?: number; page_size?: number; status?: SolutionStatus; ordering?: string }
+      {
+        page?: number;
+        page_size?: number;
+        status?: SolutionStatus;
+        variant?: string;
+        ordering?: string;
+      }
     >({
       query: (params) => ({ url: '/solutions/', params }),
       providesTags: ['MySolution'],

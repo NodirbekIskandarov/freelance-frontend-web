@@ -5,11 +5,29 @@ import { Building2, RotateCcw, Search } from 'lucide-react';
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/cn';
 
+/**
+ * Institutlar qanday tartibda chiqadi.
+ *
+ * Standart — `material`: sotuvdagi yechimlar, keyin topshiriqlar, keyin
+ * fanlar bo'yicha kamayish tartibida. Alifbo tartibi foydalanuvchiga hech
+ * nima aytmaydi; u qidirayotgan narsa — qayerda material bor.
+ */
+export const SORT_OPTIONS = [
+  { value: 'material', label: "Materiali ko'p" },
+  { value: 'solutions', label: "Yechimi ko'p" },
+  { value: 'assignments', label: "Topshirig'i ko'p" },
+  { value: 'subjects', label: "Fani ko'p" },
+  { value: 'name', label: 'Nomi bo‘yicha' },
+] as const;
+
+export type MaterialsSort = (typeof SORT_OPTIONS)[number]['value'];
+
 export interface MaterialsFilterState {
   universityId: string;
   search: string;
   course: string;
   direction: string;
+  sort: MaterialsSort;
 }
 
 export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
@@ -17,6 +35,7 @@ export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
   search: '',
   course: 'all',
   direction: 'all',
+  sort: 'material',
 };
 
 const field =
@@ -47,7 +66,8 @@ export function MaterialsFilters({
     filters.universityId !== 'all' ||
     filters.search !== '' ||
     filters.course !== 'all' ||
-    filters.direction !== 'all';
+    filters.direction !== 'all' ||
+    filters.sort !== DEFAULT_MATERIALS_FILTERS.sort;
 
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5 lg:p-6">
@@ -77,7 +97,7 @@ export function MaterialsFilters({
         </button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.2fr_1.5fr_0.9fr_0.9fr] lg:items-center">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1.4fr_0.8fr_0.8fr_1fr] lg:items-center">
         {/*
           Institutlar ro'yxati uzun (21 ta va o'sib boradi), shuning uchun
           uning ichida qidiruv bor — aylantirib topishdan ko'ra yozib
@@ -128,6 +148,16 @@ export function MaterialsFilters({
             options={[{ value: 'all', label: "Barcha yo'nalishlar" }, ...directions]}
           />
         )}
+
+        {/* Saralash oxirida: u natijalarni toraytirmaydi, faqat tartibini
+            o'zgartiradi — filtrlardan keyin turgani mantiqan to'g'ri. */}
+        <Select
+          aria-label="Saralash"
+          value={filters.sort}
+          onChange={(sort) => onChange({ sort: sort as MaterialsSort })}
+          triggerClassName={field}
+          options={SORT_OPTIONS.map((option) => ({ ...option }))}
+        />
       </div>
     </section>
   );
