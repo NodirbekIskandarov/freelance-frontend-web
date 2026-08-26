@@ -1,18 +1,27 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
-import { Button } from '@/components/ui/Button';
-import { TextField } from '@/components/ui/Field';
 import { getApiErrorMessage } from '@/shared/api';
 
+import {
+  AuthCard,
+  AuthCardFooter,
+  AuthCardHeader,
+  AuthError,
+  AuthFieldLabel,
+  AuthInput,
+  AuthPrimaryButton,
+} from './AuthCard';
 import { useRegisterMutation } from './authApi';
 import { cabinetPathFor } from './cabinetPath';
-
-const MIN_PASSWORD_LENGTH = 8;
+import { PasswordRequirements } from './PasswordRequirements';
+import { validatePassword } from './passwordPolicy';
+import { isCompletePhone, toApiPhone } from './phone';
+import { PhoneField } from './PhoneField';
 
 export function RegisterForm() {
   const router = useRouter();
@@ -21,16 +30,23 @@ export function RegisterForm() {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState<string | undefined>();
+  const [localError, setLocalError] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setPasswordError(`Parol kamida ${MIN_PASSWORD_LENGTH} ta belgidan iborat bo'lishi kerak`);
+    if (!isCompletePhone(phone)) {
+      setLocalError("Telefon raqam to'liq emas. Masalan: 90 123 45 67");
       return;
     }
-    setPasswordError(undefined);
+
+    const check = validatePassword(password);
+    if (!check.valid) {
+      setLocalError(check.errors[0] ?? null);
+      return;
+    }
+
+    setLocalError(null);
 
     /*
      * Backend ismni bitta maydonda emas, `first_name` va `last_name`
@@ -43,7 +59,7 @@ export function RegisterForm() {
 
     try {
       const { user } = await register({
-        phone,
+        phone: toApiPhone(phone),
         password,
         password_confirm: password,
         first_name: firstName,
@@ -56,68 +72,51 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">
-        Ro&apos;yxatdan o&apos;tish
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Bir daqiqada hisob oching va topshiriqlarga kirish oling.
-      </p>
+    <AuthCard>
+      <AuthCardHeader
+        icon={<UserRound className="size-6" />}
+        title="Ro'yxatdan o'tish"
+        subtitle="Bir daqiqada hisob oching va topshiriqlarga kirish oling."
+      />
 
-      <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
-        <TextField
-          label="Ism familiya"
-          required
-          autoComplete="name"
-          placeholder="Dilnoza Karimova"
-          value={fullName}
-          onChange={(event) => setFullName(event.target.value)}
-        />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <AuthFieldLabel htmlFor="register-name">Ism familiya</AuthFieldLabel>
+          <AuthInput
+            id="register-name"
+            required
+            autoComplete="name"
+            placeholder="Dilnoza Karimova"
+            value={fullName}
+            onChange={(event) => setFullName(event.target.value)}
+          />
+        </div>
 
-        <TextField
-          label="Telefon raqam"
-          type="tel"
-          required
-          autoComplete="tel"
-          placeholder="+998 90 123 45 67"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-        />
+        <PhoneField id="register-phone" value={phone} onChange={setPhone} required />
 
-        <TextField
-          label="Parol"
-          type="password"
-          required
-          autoComplete="new-password"
-          placeholder="••••••••"
-          hint={`Kamida ${MIN_PASSWORD_LENGTH} ta belgi`}
-          error={passwordError}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
+        <div>
+          <AuthFieldLabel htmlFor="register-password">Parol</AuthFieldLabel>
+          <AuthInput
+            id="register-password"
+            type="password"
+            required
+            autoComplete="new-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+          <PasswordRequirements password={password} className="mt-2.5" />
+        </div>
 
-        {error && (
-          <p
-            role="alert"
-            className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
-          >
-            {getApiErrorMessage(error)}
-          </p>
-        )}
+        <AuthError message={localError ?? (error ? getApiErrorMessage(error) : null)} />
 
-        <Button
-          type="submit"
-          variant="emerald"
-          size="lg"
-          disabled={isLoading}
-          className="mt-2 w-full"
-        >
+        <AuthPrimaryButton type="submit" loading={isLoading}>
           {isLoading && <Loader2 className="size-4 animate-spin" />}
           {isLoading ? 'Yaratilmoqda...' : "Ro'yxatdan o'tish"}
-        </Button>
+        </AuthPrimaryButton>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <AuthCardFooter>
         Hisobingiz bormi?{' '}
         <Link
           href="/login"
@@ -125,7 +124,7 @@ export function RegisterForm() {
         >
           Kiring
         </Link>
-      </p>
-    </div>
+      </AuthCardFooter>
+    </AuthCard>
   );
 }

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getApiErrorMessage } from '@/shared/api';
 
+import { AuthSeparator } from './AuthCard';
 import { useLoginWithGoogleMutation } from './authApi';
 import { cabinetPathFor } from './cabinetPath';
 
@@ -84,18 +85,14 @@ export function GoogleLoginButton() {
   if (!CLIENT_ID) return null;
 
   return (
-    <div className="mt-6">
+    <div>
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onReady={() => setReady(true)}
       />
 
-      <div className="mb-4 flex items-center gap-3">
-        <span className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">yoki</span>
-        <span className="h-px flex-1 bg-border" />
-      </div>
+      <AuthSeparator />
 
       <div ref={containerRef} className="flex justify-center" />
 
