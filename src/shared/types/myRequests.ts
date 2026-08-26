@@ -52,6 +52,7 @@ export interface MyAssignmentRequest extends RequestBase {
   university: string;
   university_name: string;
   title: string;
+  type: string;
   description: string;
   file: string;
   variant_count: number | null;

@@ -30,8 +30,12 @@ export interface SubjectRequestInput {
 export interface AssignmentRequestInput {
   subject: string;
   title: string;
+  /** `independent` | `practical` | `laboratory` — katalog shu bo'yicha bo'linadi. */
+  type: string;
   description?: string;
+  /** Variantsiz topshiriqda YUBORILMAYDI. */
   variant_count?: number;
+  file?: File;
 }
 
 export interface RequestResult {
@@ -63,7 +67,28 @@ export const requestsApi = baseApi.injectEndpoints({
     }),
 
     submitAssignmentRequest: build.mutation<RequestResult, AssignmentRequestInput>({
-      query: (body) => ({ url: '/assignment-requests/', method: 'POST', body }),
+      /*
+       * Fayl biriktirilgan bo'lsa `FormData`, aks holda oddiy JSON.
+       *
+       * Har doim `FormData` yuborib bo'lmaydi: undagi hamma narsa matnga
+       * aylanadi va `variant_count` ni tashlab ketish "bo'sh matn" bo'lib
+       * ketardi, backend esa uni raqam deb kutadi. `fetchBaseQuery`
+       * `FormData` ni ko'rsa `Content-Type` ni o'zi qo'ymaydi — chegara
+       * (boundary) brauzer tomonidan qo'shiladi.
+       */
+      query: ({ file, ...rest }) => {
+        if (!file) {
+          return { url: '/assignment-requests/', method: 'POST', body: rest };
+        }
+
+        const form = new FormData();
+        for (const [key, value] of Object.entries(rest)) {
+          if (value !== undefined) form.append(key, String(value));
+        }
+        form.append('file', file);
+
+        return { url: '/assignment-requests/', method: 'POST', body: form };
+      },
       invalidatesTags: [{ type: 'MyRequest', id: 'ASSIGNMENT' }],
     }),
 

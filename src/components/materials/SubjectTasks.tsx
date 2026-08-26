@@ -365,6 +365,8 @@ export function SubjectTasks({
         open={requestOpen}
         subjectId={subject.id}
         subjectName={subject.name}
+        subjectCourse={subject.course}
+        subjectSemester={subject.semester}
         onClose={() => setRequestOpen(false)}
       />
     </>
