@@ -334,3 +334,37 @@
     animation: none;
   }
 }
+
+/*
+ * Ingichka, temaga moslashadigan aylantirish chizig'i.
+ *
+ * Modal ichidagi forma va ochiladigan ro'yxatlarda ishlatiladi: brauzerning
+ * o'z chizig'i qora oynada oq bo'lib turib qolardi. Firefox `scrollbar-*`
+ * xossalarini, WebKit esa `::-webkit-scrollbar` ni tushunadi — ikkalasi ham
+ * yozilgan, chunki biri ikkinchisini almashtirmaydi.
+ */
+.scrollbar-slim {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.scrollbar-slim::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: var(--color-border);
+  /* Shaffof ramka — g'ildirak yo'lakdan ingichkaroq ko'rinadi. */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollbar-slim::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-muted-foreground);
+}

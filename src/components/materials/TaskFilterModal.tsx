@@ -63,7 +63,6 @@ export function TaskFilterModal({
       title="Filtrlar"
       description="Topshiriqlar ro'yxatini toraytiring."
       className="w-[min(24rem,calc(100vw-2rem))]"
-      scrollBody={false}
       footer={
         <>
           <Button variant="outline" size="sm" onClick={onReset}>

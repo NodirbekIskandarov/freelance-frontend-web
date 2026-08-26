@@ -136,8 +136,6 @@ export function AssignmentRequestModal({
       onClose={close}
       title="Topshiriqni yuklash"
       description="Ariza admin tasdiqlagach ro'yxatga qo'shiladi. Bonus olish imkoniyati ham bor."
-      /* Ichida ochiladigan tanlagich bor — dialog uni qirqib qo'ymasligi uchun. */
-      scrollBody={false}
       className="w-[min(32rem,calc(100vw-2rem))]"
       footer={
         done ? (
@@ -181,11 +179,7 @@ export function AssignmentRequestModal({
           </ButtonLink>
         </div>
       ) : (
-        <form
-          id="assignment-request-form"
-          onSubmit={handleSubmit}
-          className="max-h-[60vh] space-y-4 overflow-y-auto pr-1"
-        >
+        <form id="assignment-request-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
             <FieldLabel>Fan</FieldLabel>
             <p className={cn(fieldClass, 'flex h-11 items-center bg-muted/40')}>{subjectName}</p>

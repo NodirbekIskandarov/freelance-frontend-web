@@ -42,7 +42,7 @@ export function Select({
   const autoId = useId();
   const listId = `${autoId}-list`;
   const [open, setOpen] = useState(false);
-  const [menuWidth, setMenuWidth] = useState<number | undefined>();
+  const [anchor, setAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const selected = options.find((option) => option.value === value);
@@ -58,25 +58,56 @@ export function Select({
       if (event.key === 'Escape') setOpen(false);
     }
 
+    /*
+     * Ro'yxat `position: fixed` bilan chiziladi, ya'ni sahifa yoki modal
+     * ichi aylantirilsa u tugmadan ajralib qolardi. Qayta hisoblash
+     * o'rniga yopamiz: ro'yxat ochiq turganda aylantirish — bu odatda
+     * "boshqa narsaga o'tyapman" degani.
+     */
+    function onScroll() {
+      setOpen(false);
+    }
+
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
+    // `capture` — ichki aylantiriladigan konteynerlar ham hisobga olinadi.
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+
     return () => {
       document.removeEventListener('mousedown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
     };
   }, [open]);
 
   /*
-   * Ro'yxatning ENG KAM kengligi tugmaga tenglashtiriladi.
+   * Ro'yxat `position: fixed` bilan, ekran koordinatalarida chiziladi.
    *
-   * Qat'iy `width` bermaymiz: ro'yxat elementida tugmada yo'q belgi
-   * (galochka) ham bor, shuning uchun bir xil kenglikda matn qirqilib
-   * "Barcha kursl…" bo'lib qolardi. O'sishi `max-w` bilan cheklangan —
-   * uzun yo'nalish nomi menyuni ekrandan chiqarib yubormaydi.
+   * `absolute` bo'lsa, aylantiriladigan konteyner (modal formasi) yoki
+   * `overflow: auto` li `<dialog>` uni qirqib qo'yardi. `fixed` esa
+   * `overflow` chegaralaridan xoli.
+   *
+   * `document.body` ga PORTAL QILINMAYDI: `showModal()` bilan ochilgan
+   * `<dialog>` top layer'da turadi va body ichidagi element, `z-index`
+   * qanday bo'lishidan qat'i nazar, uning ORTIDA qolardi. DOM'da shu
+   * yerda qolgani uchun ro'yxat modal bilan bir qatlamda bo'ladi.
+   *
+   * Cheklov: `transform` yoki `filter` li ota element `fixed` uchun yangi
+   * sanoq boshi yaratadi. Hozirgi ishlatilish joylarida bunday ota yo'q.
+   *
+   * Eng kam kenglik tugmaga tenglashtiriladi, qat'iy emas: ro'yxat
+   * elementida tugmada yo'q galochka ham bor va teng kenglikda matn
+   * qirqilardi.
    */
   useLayoutEffect(() => {
     if (!open) return;
-    setMenuWidth(rootRef.current?.offsetWidth);
+
+    const rect = rootRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    setAnchor({ top: rect.bottom + 4, left: rect.left, width: rect.width });
   }, [open, options.length]);
 
   return (
@@ -104,12 +135,12 @@ export function Select({
         />
       </button>
 
-      {open ? (
+      {open && anchor ? (
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-200 mt-1 max-h-60 w-max max-w-[min(20rem,80vw)] overflow-auto rounded-xl border border-border/80 bg-popover py-1 text-popover-foreground shadow-lg ring-1 ring-black/5"
-          style={menuWidth ? { minWidth: menuWidth } : undefined}
+          className="scrollbar-slim fixed z-200 max-h-60 w-max max-w-[min(20rem,80vw)] overflow-auto rounded-xl border border-border/80 bg-popover py-1 text-popover-foreground shadow-lg ring-1 ring-black/5"
+          style={{ top: anchor.top, left: anchor.left, minWidth: anchor.width }}
         >
           {options.map((option) => {
             const active = option.value === value;

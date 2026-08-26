@@ -96,8 +96,6 @@ export function SubjectRequestModal({
       onClose={close}
       title="Ariza qoldirish"
       description={`${universityName} uchun ro'yxatda yo'q fan bo'lsa, ma'lumotlarni yuboring. Tekshirgach saytga qo'shamiz.`}
-      /* Ichida ochiladigan tanlagich bor — dialog uni qirqib qo'ymasligi uchun. */
-      scrollBody={false}
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>
