@@ -8,7 +8,6 @@ import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { toSlugId } from '@/lib/slug';
 import {
   getAllCataloguePaths,
-  getAssignmentsBySubject,
   getSubjectsByUniversity,
   getUniversityBySlug,
   universitySlug as slugOf,
@@ -55,14 +54,13 @@ export default async function UniversityPage(props: PageProps<'/materials/[unive
   const subjects = await getSubjectsByUniversity(university.id);
   const uniSlug = slugOf(university);
 
-  // Har fandagi topshiriqlar soni — kartadagi rozetka uchun.
-  const withCounts = await Promise.all(
-    subjects.map(async (subject) => ({
-      ...subject,
-      slug: toSlugId(subject.name, subject.id),
-      assignmentCount: (await getAssignmentsBySubject(subject.id)).length,
-    })),
-  );
+  // Topshiriqlar soni — kartadagi rozetka uchun. Backend uni fan
+  // javobining o'zida beradi, shuning uchun qo'shimcha so'rov yo'q.
+  const withCounts = subjects.map((subject) => ({
+    ...subject,
+    slug: toSlugId(subject.name, subject.id),
+    assignmentCount: subject.assignment_count ?? 0,
+  }));
 
   const crumbs = [
     { name: 'Bosh sahifa', path: '/' },

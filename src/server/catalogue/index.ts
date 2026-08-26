@@ -59,6 +59,39 @@ export async function getAssignmentsBySubject(subjectId: string): Promise<Assign
   return requestAll<Assignment>(`/subjects/${subjectId}/assignments/`, { ordering: 'title' });
 }
 
+/**
+ * Butun katalogni bir yo'la oladigan ro'yxatlar.
+ *
+ * Institut ichidagi ro'yxatlar (`getSubjectsByUniversity`) bitta sahifa
+ * uchun to'g'ri, lekin butun katalogni yig'ishda ular institut boshiga
+ * bittadan so'rovga aylanadi. Bu ikkisi esa sahifalab o'tadi va soni
+ * institutlar/fanlar soniga emas, YOZUVLAR soniga bog'liq.
+ *
+ * Faol bo'lmaganlari mijozda ajratiladi: anonim so'rovga backend
+ * allaqachon faqat faollarini beradi, lekin filtr `getUniversities()`
+ * bilan bir xil bo'lib qolsin — ikki joyda ikki xil qoida bo'lsa,
+ * ro'yxatlar jimgina bir-biriga to'g'ri kelmay qolardi.
+ */
+export async function getAllSubjects(): Promise<Subject[]> {
+  const subjects = await requestAll<Subject>('/subjects/', { ordering: 'name' });
+  return subjects.filter((item) => item.is_active);
+}
+
+export async function getAllAssignments(): Promise<Assignment[]> {
+  return requestAll<Assignment>('/assignments/', { ordering: 'title' });
+}
+
+/** `subject` maydoni bo'yicha guruhlaydi — ro'yxat bo'ylab qidirmasdan. */
+function groupBy<T>(items: T[], key: (item: T) => string): Map<string, T[]> {
+  const groups = new Map<string, T[]>();
+  for (const item of items) {
+    const bucket = groups.get(key(item)) ?? [];
+    bucket.push(item);
+    groups.set(key(item), bucket);
+  }
+  return groups;
+}
+
 export async function getAssignmentBySlugId(
   subjectId: string,
   segment: string,
@@ -83,19 +116,24 @@ export interface UniversityWithSubjects {
 }
 
 export async function getCatalogueTree(): Promise<UniversityWithSubjects[]> {
-  const universities = await getUniversities();
+  const [universities, allSubjects] = await Promise.all([getUniversities(), getAllSubjects()]);
+  const subjectsByUniversity = groupBy(allSubjects, (subject) => subject.university);
 
   return Promise.all(
     universities.map(async (university) => {
-      const subjects = await getSubjectsByUniversity(university.id);
+      const subjects = subjectsByUniversity.get(university.id) ?? [];
 
-      const withCounts = await Promise.all(
-        subjects.map(async (subject) => ({
-          ...subject,
-          slug: toSlugId(subject.name, subject.id),
-          assignmentCount: (await getAssignmentsBySubject(subject.id)).length,
-        })),
-      );
+      /*
+       * Topshiriqlar soni fan javobining O'ZIDA keladi
+       * (`subjects_with_counts()`). Ilgari bu yerda har fan uchun
+       * `/subjects/{id}/assignments/` so'rovi ketardi — 21 institut va
+       * o'nlab fan bilan bu yuzlab so'rov degani edi.
+       */
+      const withCounts = subjects.map((subject) => ({
+        ...subject,
+        slug: toSlugId(subject.name, subject.id),
+        assignmentCount: subject.assignment_count ?? 0,
+      }));
 
       return {
         university,
@@ -110,6 +148,21 @@ export async function getVariantsByAssignment(assignmentId: string): Promise<Var
   return requestAll<Variant>(`/assignments/${assignmentId}/variants/`, { ordering: 'number' });
 }
 
+/**
+ * Fanning BARCHA variantlari — bitta so'rovda.
+ *
+ * `/variants/?assignment__subject=` topshiriqlar bo'ylab kesib o'tadi,
+ * shuning uchun daraxt uchun topshiriq boshiga alohida so'rov kerak
+ * emas. Tartib `assignment`ga qarab emas, `number` bo'yicha keladi —
+ * guruhlash chaqiruvchida bo'lgani uchun bu muhim emas.
+ */
+export async function getVariantsBySubject(subjectId: string): Promise<Variant[]> {
+  return requestAll<Variant>('/variants/', {
+    assignment__subject: subjectId,
+    ordering: 'number',
+  });
+}
+
 export async function getSolutionsByVariant(variantId: string): Promise<PublicSolution[]> {
   const page = await request<ApiPaginated<PublicSolution>>(`/variants/${variantId}/solutions/`, {
     page_size: 20,
@@ -121,11 +174,15 @@ export async function getSolutionsByVariant(variantId: string): Promise<PublicSo
  * Fan sahifasi uchun to'liq daraxt: topshiriqlar → variantlar →
  * har variantdagi yechimlar soni.
  *
- * Yechimlar soni variant ro'yxatida YO'Q, shuning uchun har variant
- * uchun alohida so'rov ketadi. Bu qimmat ko'rinadi, lekin sahifa ISR
- * bilan statik chiziladi: narx tashrif buyuruvchiga emas, besh daqiqada
- * bir marta qayta chizishga tushadi. Buning evaziga variantlar to'ri
- * bir qarashda to'g'ri rang beradi — mijozda 20 ta so'rov qilinmaydi.
+ * IKKI so'rov, topshiriqlar soniga bog'liq emas: topshiriqlar ro'yxati va
+ * fanning barcha variantlari. Yechimlar soni variant javobining o'zida
+ * keladi (`published_solution_count`).
+ *
+ * Ilgari bu 1 + N + N×M so'rov edi — har variant uchun uning yechimlari
+ * olinib, faqat uzunligi ishlatilardi. Sahifa ISR bilan chizilgani uchun
+ * narxni tashrif buyuruvchi to'lamasdi, lekin qayta chizish har fan uchun
+ * yuzlab so'rovga cho'zilardi va backendni katalog to'lgani sari
+ * og'irlashtirardi.
  */
 export interface AssignmentNode {
   assignment: Assignment;
@@ -134,26 +191,25 @@ export interface AssignmentNode {
 }
 
 export async function getAssignmentTree(subjectId: string): Promise<AssignmentNode[]> {
-  const assignments = await getAssignmentsBySubject(subjectId);
+  const [assignments, variants] = await Promise.all([
+    getAssignmentsBySubject(subjectId),
+    getVariantsBySubject(subjectId),
+  ]);
 
-  return Promise.all(
-    assignments.map(async (assignment) => {
-      const variants = await getVariantsByAssignment(assignment.id);
+  // Topshiriq bo'yicha guruhlash — ro'yxat bo'ylab qidirish o'rniga bitta
+  // o'tish: variantlar soni yuzlab bo'lishi mumkin.
+  const byAssignment = new Map<string, (Variant & { solutionCount: number })[]>();
+  for (const variant of variants) {
+    const bucket = byAssignment.get(variant.assignment) ?? [];
+    bucket.push({ ...variant, solutionCount: variant.published_solution_count });
+    byAssignment.set(variant.assignment, bucket);
+  }
 
-      const withCounts = await Promise.all(
-        variants.map(async (variant) => ({
-          ...variant,
-          solutionCount: (await getSolutionsByVariant(variant.id)).length,
-        })),
-      );
-
-      return {
-        assignment,
-        slug: toSlugId(assignment.title, assignment.id),
-        variants: withCounts,
-      };
-    }),
-  );
+  return assignments.map((assignment) => ({
+    assignment,
+    slug: toSlugId(assignment.title, assignment.id),
+    variants: byAssignment.get(assignment.id) ?? [],
+  }));
 }
 
 /**
@@ -169,7 +225,21 @@ export interface CataloguePaths {
 }
 
 export async function getAllCataloguePaths(): Promise<CataloguePaths> {
-  const universities = await getUniversities();
+  /*
+   * Uchta ro'yxat, keyin xotirada birlashtiriladi.
+   *
+   * Ilgari bu ich-ichiga kirgan sikl edi va har fan uchun bitta so'rov
+   * yuborardi — build vaqtida yuzlab ketma-ket so'rov. Endi so'rovlar soni
+   * faqat sahifalash sonicha.
+   */
+  const [universities, allSubjects, allAssignments] = await Promise.all([
+    getUniversities(),
+    getAllSubjects(),
+    getAllAssignments(),
+  ]);
+
+  const subjectsByUniversity = groupBy(allSubjects, (subject) => subject.university);
+  const assignmentsBySubject = groupBy(allAssignments, (assignment) => assignment.subject);
 
   const paths: CataloguePaths = { universities: [], subjects: [], assignments: [] };
 
@@ -177,13 +247,13 @@ export async function getAllCataloguePaths(): Promise<CataloguePaths> {
     const uniSlug = universitySlug(university);
     paths.universities.push({ universitySlug: uniSlug });
 
-    const subjects = await getSubjectsByUniversity(university.id);
+    const subjects = subjectsByUniversity.get(university.id) ?? [];
 
     for (const subject of subjects) {
       const subjSlug = toSlugId(subject.name, subject.id);
       paths.subjects.push({ universitySlug: uniSlug, subjectSlug: subjSlug });
 
-      const assignments = await getAssignmentsBySubject(subject.id);
+      const assignments = assignmentsBySubject.get(subject.id) ?? [];
 
       for (const assignment of assignments) {
         paths.assignments.push({

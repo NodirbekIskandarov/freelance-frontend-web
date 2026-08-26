@@ -1,10 +1,11 @@
 'use client';
 
-import { Flame, Lock, ShoppingCart, Star } from 'lucide-react';
+import { Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useRequestVariantSolutionMutation } from '@/features/requests/requestsApi';
+import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import { usePurchaseSolutionMutation } from '@/features/solutions/solutionsApi';
 import { cn } from '@/lib/cn';
 import { formatDecimalSom } from '@/lib/format';
@@ -67,6 +68,7 @@ export function VariantGrid({
   const [purchase, purchaseState] = usePurchaseSolutionMutation();
   const [requestedIds, setRequestedIds] = useState<string[]>([]);
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   if (variants.length === 0) {
     return (
@@ -134,8 +136,10 @@ export function VariantGrid({
                               : 'text-muted-foreground',
                           )}
                         >
+                          {/* Talab qancha ekani muhim: bitta so'rov bilan
+                              o'ntasi bir xil ko'rinmasin. */}
                           {status === 'requested'
-                            ? 'Talab bor'
+                            ? `${variant.request_count} ta so'rov`
                             : `${variant.solutionCount} ta yechim`}
                         </p>
                       </>
@@ -252,7 +256,52 @@ export function VariantGrid({
             )}
           </div>
         )}
+
+        {/*
+          Yechim yuborish HAR IKKALA holatda ham ko'rinadi — yechimi bor
+          variantga ham yuborish mumkin, chegara to'lmaguncha. Panel pastida
+          turadi: sotib olish yoki so'rov qoldirish tashrif buyuruvchilarning
+          ko'pchiligi uchun asosiy amal, yuklash esa ozchilik uchun.
+        */}
+        <div className="mt-3 border-t border-border/70 pt-3">
+          {selected.submissions_open ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => setUploadOpen(true)}
+              >
+                <Upload className="size-3.5" />
+                Yechim yuborish
+              </Button>
+              {selected.request_count > 0 && selectedStatus !== 'available' && (
+                <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                  {selected.request_count} kishi shu variantni kutyapti.
+                </p>
+              )}
+            </>
+          ) : (
+            /*
+              Yopilgani ochiq aytiladi. Tugmani shunchaki yashirish
+              «bu yerda yuklab bo'lmaydi» degan xulosani o'zi chiqarishga
+              qoldirardi; yuklashga urinib, xato olishdan esa yomonroq.
+            */
+            <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
+              <Lock className="mt-px size-3 shrink-0" />
+              Bu variantga yechim qabul qilish yopilgan.
+            </p>
+          )}
+        </div>
       </aside>
+
+      <SolutionUploadModal
+        open={uploadOpen}
+        variantId={selected.id}
+        variantNumber={selected.number}
+        assignmentTitle={selected.assignment_title}
+        onClose={() => setUploadOpen(false)}
+      />
     </div>
   );
 }

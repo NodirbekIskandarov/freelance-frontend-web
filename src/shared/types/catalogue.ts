@@ -50,6 +50,14 @@ export interface Subject {
    * komponentlarga tegish shart emas.
    */
   semester?: number | null;
+  /**
+   * Backend hisoblab beradi (`subjects_with_counts()`).
+   *
+   * Ixtiyoriy: yozuv javoblari annotatsiyasiz obyekt qaytaradi va u yerda
+   * maydon yo'q. O'quvchi tomonda esa doim keladi.
+   */
+  assignment_count?: number;
+  variant_count?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -79,6 +87,12 @@ export interface Variant {
   label: string;
   max_published_solutions: number;
   request_count: number;
+  /** Chop etilgan yechimlar soni — variantga javob berilganmi. */
+  published_solution_count: number;
+  /** Shu variantga yangi yechim qabul qilinadimi. */
+  accepts_submissions: boolean;
+  /** Topshiriq qavati ham hisobga olingan yakuniy javob. */
+  submissions_open: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
