@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Search, X } from 'lucide-react';
+import { FileText, Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { AssignmentRequestModal } from '@/features/requests/AssignmentRequestModal';
@@ -13,6 +13,13 @@ import {
 } from '@/shared/types/assignmentTypes';
 
 import { CatalogueCtaBanner } from './CatalogueCtaBanner';
+import {
+  DEFAULT_TASK_FILTERS,
+  hasActiveTaskFilters,
+  TaskFilterModal,
+  type TaskAvailability,
+  type TaskFilters,
+} from './TaskFilterModal';
 import { VariantGrid, type VariantWithCount } from './VariantGrid';
 
 export interface TaskNode {
@@ -22,6 +29,19 @@ export interface TaskNode {
   type: string;
   description: string;
   variants: VariantWithCount[];
+}
+
+/**
+ * Topshiriqning yechim holati.
+ *
+ * Yon ro'yxatdagi rangli nuqta ham, filtr ham AYNAN shu funksiyaga
+ * tayanadi — ikki joyda alohida hisoblansa, filtr «yechim bor» deb
+ * ko'rsatgan topshiriq yonida kulrang nuqta turib qolishi mumkin edi.
+ */
+export function taskAvailability(task: TaskNode): TaskAvailability {
+  if (task.variants.some((variant) => variant.solutionCount > 0)) return 'has_solution';
+  if (task.variants.some((variant) => variant.request_count > 0)) return 'demand';
+  return 'missing';
 }
 
 /**
@@ -54,6 +74,8 @@ export function SubjectTasks({
     (initial?.type as AssignmentType) ?? 'practical',
   );
   const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [activeId, setActiveId] = useState(initial?.id ?? '');
   const [requestOpen, setRequestOpen] = useState(false);
 
@@ -63,11 +85,15 @@ export function SubjectTasks({
     return result;
   }, [tasks]);
 
-  /* Bo'sh turdagi tab chizilmaydi — nol yozuvli tab faqat joy egallaydi. */
-  const visibleTabs = useMemo(
-    () => ASSIGNMENT_TAB_ORDER.filter((item) => (counts[item] ?? 0) > 0),
-    [counts],
-  );
+  /*
+   * Kategoriyalarning HAMMASI chiziladi, bo'shi ham.
+   *
+   * Oldin nol yozuvli tab yashirilardi va bitta turdagi topshiriqli fanda
+   * ekranda yolg'iz «Boshqa» qolib, fanda umuman qanday bo'limlar borligi
+   * ko'rinmasdi. Bo'sh tab — bu ham ma'lumot: bo'lim bor, lekin hozircha
+   * to'ldirilmagan.
+   */
+  const tabs = ASSIGNMENT_TAB_ORDER;
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -75,9 +101,22 @@ export function SubjectTasks({
     return tasks.filter((task) => {
       if (task.type !== type) return false;
       if (search && !task.title.toLowerCase().includes(search)) return false;
+
+      if (filters.availability !== 'all' && taskAvailability(task) !== filters.availability) {
+        return false;
+      }
+
+      if (filters.format !== 'all') {
+        const hasVariants = task.variants.length > 0;
+        if (filters.format === 'with_variants' && !hasVariants) return false;
+        if (filters.format === 'without_variants' && hasVariants) return false;
+      }
+
       return true;
     });
-  }, [query, tasks, type]);
+  }, [filters, query, tasks, type]);
+
+  const filtersActive = hasActiveTaskFilters(filters);
 
   /*
    * Tanlov ro'yxatdan chiqib ketsa (tab yoki qidiruv o'zgargach)
@@ -89,6 +128,10 @@ export function SubjectTasks({
   function selectType(next: AssignmentType) {
     setType(next);
     setQuery('');
+  }
+
+  function resetFilters() {
+    setFilters(DEFAULT_TASK_FILTERS);
   }
 
   return (
@@ -110,7 +153,7 @@ export function SubjectTasks({
               aria-label="Topshiriq turi"
               className="inline-flex min-w-max gap-1 rounded-xl bg-muted/40 p-1"
             >
-              {visibleTabs.map((item) => {
+              {tabs.map((item) => {
                 const isActive = type === item;
 
                 return (
@@ -144,28 +187,46 @@ export function SubjectTasks({
             </div>
           </div>
 
-          <div className="relative min-w-0 lg:w-[240px] lg:shrink-0">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-            <label className="sr-only" htmlFor="task-search">
-              Topshiriq qidirish
-            </label>
-            <input
-              id="task-search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Qidirish..."
-              className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery('')}
-                aria-label="Qidiruvni tozalash"
-                className="absolute top-1/2 right-2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                <X className="size-3" />
-              </button>
-            )}
+          <div className="flex items-center gap-2 lg:shrink-0">
+            <div className="relative min-w-0 flex-1 lg:w-[240px] lg:flex-none">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <label className="sr-only" htmlFor="task-search">
+                Topshiriq qidirish
+              </label>
+              <input
+                id="task-search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Qidirish..."
+                className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  aria-label="Qidiruvni tozalash"
+                  className="absolute top-1/2 right-2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setFilterOpen(true)}
+              aria-label="Filtrlar"
+              className={cn(
+                'relative inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/80 px-2.5 text-xs font-medium transition-colors hover:bg-muted sm:px-3',
+                filtersActive && 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
+              )}
+            >
+              <SlidersHorizontal className="size-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Filtr</span>
+              {filtersActive ? (
+                <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-card" />
+              ) : null}
+            </button>
           </div>
         </div>
       </div>
@@ -180,16 +241,19 @@ export function SubjectTasks({
           <div className="max-h-[420px] min-h-0 flex-1 space-y-1 overflow-y-auto p-2 sm:p-2.5">
             {filtered.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center">
-                <p className="text-sm font-medium text-foreground">Topshiriq topilmadi</p>
+                <p className="text-sm font-medium text-foreground">
+                  {counts[type] ? 'Topshiriq topilmadi' : "Bu bo'lim hozircha bo'sh"}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Qidiruvni o&apos;zgartiring yoki topshiriq yuklang.
+                  {counts[type]
+                    ? "Qidiruv yoki filtrni o'zgartiring."
+                    : "Birinchi bo'lib topshiriq yuklang."}
                 </p>
               </div>
             ) : (
               filtered.map((task, index) => {
                 const isActive = task.id === active?.id;
-                const hasSolution = task.variants.some((variant) => variant.solutionCount > 0);
-                const hasDemand = task.variants.some((variant) => variant.request_count > 0);
+                const availability = taskAvailability(task);
 
                 return (
                   <button
@@ -229,11 +293,19 @@ export function SubjectTasks({
 
                     <span
                       title={
-                        hasSolution ? 'Yechim bor' : hasDemand ? 'Talab mavjud' : "Yechim yo'q"
+                        availability === 'has_solution'
+                          ? 'Yechim bor'
+                          : availability === 'demand'
+                            ? 'Talab mavjud'
+                            : "Yechim yo'q"
                       }
                       className={cn(
                         'size-2 shrink-0 rounded-full',
-                        hasSolution ? 'bg-emerald-500' : hasDemand ? 'bg-amber-500' : 'bg-zinc-400',
+                        availability === 'has_solution'
+                          ? 'bg-emerald-500'
+                          : availability === 'demand'
+                            ? 'bg-amber-500'
+                            : 'bg-zinc-400',
                       )}
                     />
                   </button>
@@ -280,6 +352,14 @@ export function SubjectTasks({
           )}
         </div>
       </section>
+
+      <TaskFilterModal
+        open={filterOpen}
+        filters={filters}
+        onChange={setFilters}
+        onClose={() => setFilterOpen(false)}
+        onReset={resetFilters}
+      />
 
       <AssignmentRequestModal
         open={requestOpen}
