@@ -22,6 +22,9 @@ export interface SubjectRequestInput {
   university: string;
   name: string;
   course?: number;
+  semester?: number;
+  /** Foydalanuvchining o'z izohi — moderator uchun kontekst. Ixtiyoriy. */
+  note?: string;
 }
 
 export interface AssignmentRequestInput {

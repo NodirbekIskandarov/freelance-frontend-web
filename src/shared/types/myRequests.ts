@@ -41,6 +41,8 @@ export interface MySubjectRequest extends RequestBase {
   university_short_name: string;
   name: string;
   course: number | null;
+  semester: number | null;
+  note: string;
   created_subject: string | null;
 }
 

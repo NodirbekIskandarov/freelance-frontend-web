@@ -4,15 +4,36 @@ import { CircleCheck } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
-import { SelectField, TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
+import { Select } from '@/components/ui/Select';
+import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 
 import { useSubmitSubjectRequestMutation } from './requestsApi';
 
-const COURSES = [1, 2, 3, 4, 5, 6];
+/** Backend chegaralari: kurs 1-6, semestr 1-8. */
+const COURSE_OPTIONS = [1, 2, 3, 4, 5, 6].map((n) => ({
+  value: String(n),
+  label: `${n}-kurs`,
+}));
+
+const SEMESTER_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
+  value: String(n),
+  label: `${n}-semestr`,
+}));
+
+const fieldClass =
+  'w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+
+function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+  return (
+    <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-foreground">
+      {children}
+    </label>
+  );
+}
 
 /**
  * "Fan ro'yxatda yo'q" arizasi.
@@ -36,7 +57,9 @@ export function SubjectRequestModal({
   const [submit, { isLoading, error, reset }] = useSubmitSubjectRequestMutation();
 
   const [name, setName] = useState('');
-  const [course, setCourse] = useState('');
+  const [course, setCourse] = useState('1');
+  const [semester, setSemester] = useState('1');
+  const [note, setNote] = useState('');
   const [done, setDone] = useState(false);
 
   function close() {
@@ -52,14 +75,18 @@ export function SubjectRequestModal({
       await submit({
         university: universityId,
         name: name.trim(),
-        ...(course ? { course: Number(course) } : {}),
+        course: Number(course),
+        semester: Number(semester),
+        ...(note.trim() ? { note: note.trim() } : {}),
       }).unwrap();
     } catch {
       return;
     }
 
     setName('');
-    setCourse('');
+    setCourse('1');
+    setSemester('1');
+    setNote('');
     setDone(true);
   }
 
@@ -67,8 +94,10 @@ export function SubjectRequestModal({
     <Modal
       open={open}
       onClose={close}
-      title="Fan qo'shish arizasi"
-      description={universityName}
+      title="Ariza qoldirish"
+      description={`${universityName} uchun ro'yxatda yo'q fan bo'lsa, ma'lumotlarni yuboring. Tekshirgach saytga qo'shamiz.`}
+      /* Ichida ochiladigan tanlagich bor — dialog uni qirqib qo'ymasligi uchun. */
+      scrollBody={false}
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>
@@ -85,7 +114,7 @@ export function SubjectRequestModal({
               variant="emerald"
               disabled={isLoading || !name.trim()}
             >
-              {isLoading ? 'Yuborilmoqda...' : 'Yuborish'}
+              {isLoading ? 'Yuborilmoqda...' : 'Arizani yuborish'}
             </Button>
           </>
         ) : undefined
@@ -112,25 +141,55 @@ export function SubjectRequestModal({
         </div>
       ) : (
         <form id="subject-request-form" onSubmit={handleSubmit} className="space-y-4">
-          <TextField
-            label="Fan nomi"
-            required
-            maxLength={200}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Masalan: Diskret matematika"
-          />
+          <div>
+            <FieldLabel htmlFor="subject-request-name">Fan nomi</FieldLabel>
+            <input
+              id="subject-request-name"
+              required
+              maxLength={200}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Masalan: Dasturlash asoslari"
+              className={cn(fieldClass, 'h-11')}
+            />
+          </div>
 
-          <SelectField
-            label="Kurs"
-            value={course}
-            onChange={(event) => setCourse(event.target.value)}
-            options={[
-              { value: '', label: "Ko'rsatilmagan" },
-              ...COURSES.map((item) => ({ value: String(item), label: `${item}-kurs` })),
-            ]}
-            hint="Bilmasangiz bo'sh qoldiring."
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel htmlFor="subject-request-course">Kurs</FieldLabel>
+              <Select
+                id="subject-request-course"
+                aria-label="Kurs"
+                value={course}
+                onChange={setCourse}
+                options={COURSE_OPTIONS}
+              />
+            </div>
+
+            <div>
+              <FieldLabel htmlFor="subject-request-semester">Semestr</FieldLabel>
+              <Select
+                id="subject-request-semester"
+                aria-label="Semestr"
+                value={semester}
+                onChange={setSemester}
+                options={SEMESTER_OPTIONS}
+              />
+            </div>
+          </div>
+
+          <div>
+            <FieldLabel htmlFor="subject-request-note">Qo&apos;shimcha izoh (ixtiyoriy)</FieldLabel>
+            <textarea
+              id="subject-request-note"
+              rows={3}
+              maxLength={2000}
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder="Masalan: 3-kurs, 5-semestr uchun kerak"
+              className={cn(fieldClass, 'resize-none py-2.5')}
+            />
+          </div>
 
           {error && (
             <p role="alert" className="text-sm text-destructive">
