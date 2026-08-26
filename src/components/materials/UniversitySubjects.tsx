@@ -1,8 +1,9 @@
 'use client';
 
-import { ClipboardList, Search, SearchX } from 'lucide-react';
+import { ClipboardList, RotateCcw, Search, SearchX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { Select } from '@/components/ui/Select';
 import { SubjectRequestModal } from '@/features/requests/SubjectRequestModal';
 import { cn } from '@/lib/cn';
 import type { University } from '@/shared/types/catalogue';
@@ -54,6 +55,14 @@ export function UniversitySubjects({
     });
   }, [course, direction, search, subjects]);
 
+  const hasActiveFilters = search.trim() !== '' || course !== 'all' || direction !== 'all';
+
+  function resetFilters() {
+    setSearch('');
+    setCourse('all');
+    setDirection('all');
+  }
+
   return (
     <>
       <div className="mt-5 sm:mt-6">
@@ -64,10 +73,10 @@ export function UniversitySubjects({
         />
       </div>
 
-      <section className="mt-5 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.6fr_0.8fr_0.8fr_auto] lg:items-center">
-          <div className="relative">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      <section className="mt-5 rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+          <div className="relative min-w-0 flex-1">
+            <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <label className="sr-only" htmlFor="subject-search">
               Fan nomi
             </label>
@@ -81,54 +90,60 @@ export function UniversitySubjects({
             />
           </div>
 
-          <label className="block">
-            <span className="sr-only">Kurs</span>
-            <select
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+            <Select
+              aria-label="Kurs"
               value={course}
-              onChange={(event) => setCourse(event.target.value)}
-              className={field}
-            >
-              <option value="all">Barcha kurslar</option>
-              {courseOptions.map((item) => (
-                <option key={item} value={String(item)}>
-                  {item}-kurs
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setCourse}
+              triggerClassName="h-10"
+              options={[
+                { value: 'all', label: 'Barcha kurslar' },
+                ...courseOptions.map((item) => ({ value: String(item), label: `${item}-kurs` })),
+              ]}
+            />
 
-          {/* Yo'nalish backendda ixtiyoriy — bo'lmasa tanlagich chizilmaydi. */}
-          {directionOptions.length > 0 ? (
-            <label className="block">
-              <span className="sr-only">Yo&apos;nalish</span>
-              <select
+            {/* Yo'nalish backendda ixtiyoriy — bo'lmasa tanlagich chizilmaydi. */}
+            {directionOptions.length > 0 ? (
+              <Select
+                aria-label="Yo'nalish"
                 value={direction}
-                onChange={(event) => setDirection(event.target.value)}
-                className={field}
-              >
-                <option value="all">Barcha yo&apos;nalishlar</option>
-                {directionOptions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : (
-            <span className="hidden lg:block" />
-          )}
+                onChange={setDirection}
+                triggerClassName="h-10"
+                options={[
+                  { value: 'all', label: "Barcha yo'nalishlar" },
+                  ...directionOptions.map((item) => ({ value: item, label: item })),
+                ]}
+              />
+            ) : null}
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setRequestOpen(true)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-emerald-500/35 bg-background px-4 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-500/10 dark:text-emerald-300"
-          >
-            <ClipboardList className="size-4" />
-            Ariza qoldirish
-          </button>
+          <div className="flex gap-2 sm:shrink-0">
+            {hasActiveFilters ? (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:flex-none"
+              >
+                <RotateCcw className="size-4" />
+                Tozalash
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={() => setRequestOpen(true)}
+              className={cn(
+                'inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-medium text-white transition-colors hover:bg-emerald-700',
+                hasActiveFilters ? 'flex-1 sm:flex-none' : 'w-full sm:w-auto',
+              )}
+            >
+              <ClipboardList className="size-4 shrink-0" />
+              Ariza qoldirish
+            </button>
+          </div>
         </div>
 
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-4 border-t border-border/50 pt-3 text-xs leading-relaxed text-muted-foreground">
           Ro&apos;yxatdan fan toping yoki yuqoridagi banner orqali ariza qoldiring.
         </p>
       </section>
@@ -145,7 +160,7 @@ export function UniversitySubjects({
             </p>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((subject) => (
               <SubjectMiniCard key={subject.id} subject={subject} universitySlug={slug} />
             ))}

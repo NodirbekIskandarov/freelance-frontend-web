@@ -48,7 +48,7 @@ export function SubjectMiniCard({
     <Link
       href={`/materials/${universitySlug}/${subject.slug}`}
       className={cn(
-        'group flex h-full min-h-[152px] min-w-0 flex-col rounded-xl border border-border/80 bg-card p-3.5 shadow-sm transition-colors hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-4 dark:border-zinc-700/80 dark:bg-zinc-900',
+        'group flex h-full min-h-[152px] min-w-0 flex-col rounded-xl border border-border/80 bg-card p-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.05)] transition-colors hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-4 dark:border-zinc-700/80 dark:bg-zinc-900 dark:shadow-[0_2px_12px_rgba(0,0,0,0.35)]',
         className,
       )}
     >
