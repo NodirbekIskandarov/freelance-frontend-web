@@ -13,7 +13,7 @@ import {
   getSubjectBySlugId,
   getUniversityBySlug,
 } from '@/server/catalogue';
-import { assignmentTypeLabel } from '@/shared/types/assignmentTypes';
+import { assignmentTypeLabel, isVisibleAssignmentType } from '@/shared/types/assignmentTypes';
 import type { PublicSolution } from '@/shared/types/catalogue';
 
 type Params = PageProps<'/materials/[universitySlug]/[subjectSlug]/[assignmentSlug]'>;
@@ -32,6 +32,15 @@ async function loadAssignment(universitySlug: string, subjectSlug: string, assig
 
   const assignment = await getAssignmentBySlugId(subject.id, assignmentSlug);
   if (!assignment) return null;
+
+  /*
+   * Saytda ko'rsatilmaydigan tur (`course_work`, `other`) — 404.
+   *
+   * Fan sahifasi bunday topshiriqni ro'yxatdan chiqarib tashlaydi;
+   * shu yerda ochilishiga ruxsat berilsa, sahifa sarlavhani chizib,
+   * ostidagi ro'yxatni bo'sh qoldirardi.
+   */
+  if (!isVisibleAssignmentType(assignment.type)) return null;
 
   return { university, subject, assignment };
 }
@@ -75,7 +84,9 @@ export default async function AssignmentPage(props: Params) {
   if (!data) notFound();
 
   const { university, subject, assignment } = data;
-  const tree = await getAssignmentTree(subject.id);
+  const tree = (await getAssignmentTree(subject.id)).filter((node) =>
+    isVisibleAssignmentType(node.assignment.type),
+  );
 
   const variantIds = tree.flatMap((node) =>
     node.variants.filter((variant) => variant.solutionCount > 0).map((variant) => variant.id),

@@ -9,7 +9,8 @@ import type { PublicSolution, Subject } from '@/shared/types/catalogue';
 import {
   ASSIGNMENT_TAB_ORDER,
   assignmentTypeLabel,
-  type AssignmentType,
+  isVisibleAssignmentType,
+  type VisibleAssignmentType,
 } from '@/shared/types/assignmentTypes';
 
 import { CatalogueCtaBanner } from './CatalogueCtaBanner';
@@ -70,8 +71,8 @@ export function SubjectTasks({
 }) {
   const initial = tasks.find((task) => task.id === initialTaskId) ?? tasks[0];
 
-  const [type, setType] = useState<AssignmentType>(
-    (initial?.type as AssignmentType) ?? 'practical',
+  const [type, setType] = useState<VisibleAssignmentType>(() =>
+    initial && isVisibleAssignmentType(initial.type) ? initial.type : ASSIGNMENT_TAB_ORDER[0],
   );
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
@@ -86,12 +87,11 @@ export function SubjectTasks({
   }, [tasks]);
 
   /*
-   * Kategoriyalarning HAMMASI chiziladi, bo'shi ham.
+   * Uchala bo'lim ham doim chiziladi, bo'shi ham.
    *
-   * Oldin nol yozuvli tab yashirilardi va bitta turdagi topshiriqli fanda
-   * ekranda yolg'iz «Boshqa» qolib, fanda umuman qanday bo'limlar borligi
-   * ko'rinmasdi. Bo'sh tab — bu ham ma'lumot: bo'lim bor, lekin hozircha
-   * to'ldirilmagan.
+   * Oldin nol yozuvli tab yashirilardi va fanda umuman qanday bo'limlar
+   * borligi ko'rinmasdi. Bo'sh tab — bu ham ma'lumot: bo'lim bor, lekin
+   * hozircha to'ldirilmagan.
    */
   const tabs = ASSIGNMENT_TAB_ORDER;
 
@@ -125,7 +125,7 @@ export function SubjectTasks({
    */
   const active = filtered.find((task) => task.id === activeId) ?? filtered[0] ?? null;
 
-  function selectType(next: AssignmentType) {
+  function selectType(next: VisibleAssignmentType) {
     setType(next);
     setQuery('');
   }

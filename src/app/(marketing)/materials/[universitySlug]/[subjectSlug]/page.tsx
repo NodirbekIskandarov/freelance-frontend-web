@@ -13,11 +13,25 @@ import {
   getUniversityBySlug,
 } from '@/server/catalogue';
 import type { PublicSolution } from '@/shared/types/catalogue';
-import { assignmentTypeLabel } from '@/shared/types/assignmentTypes';
+import { assignmentTypeLabel, isVisibleAssignmentType } from '@/shared/types/assignmentTypes';
 
 export async function generateStaticParams() {
   const { subjects } = await getAllCataloguePaths();
   return subjects;
+}
+
+/**
+ * Saytda ko'rsatiladigan topshiriqlar.
+ *
+ * Backend `course_work` va `other` turlarini ham qaytaradi, dizaynda esa
+ * uchta bo'lim bor. Filtrlash SERVER tomonda: shunda sarlavhadagi son,
+ * metadata va JSON-LD ro'yxati ekranda ko'rinadigan narsa bilan bir xil
+ * bo'ladi. Mijoz tomonda filtrlansa, «1 ta topshiriq» yozuvi ostida bo'sh
+ * ro'yxat qolib ketardi.
+ */
+async function visibleAssignments(subjectId: string) {
+  const tree = await getAssignmentTree(subjectId);
+  return tree.filter((node) => isVisibleAssignmentType(node.assignment.type));
 }
 
 async function loadSubject(universitySlug: string, subjectSlug: string) {
@@ -46,7 +60,7 @@ export async function generateMetadata(
   }
 
   const { university, subject } = data;
-  const tasks = await getAssignmentTree(subject.id);
+  const tasks = await visibleAssignments(subject.id);
 
   const course = subject.course === null ? '' : ` ${subject.course}-kurs.`;
 
@@ -66,7 +80,7 @@ export default async function SubjectPage(
   if (!data) notFound();
 
   const { university, subject } = data;
-  const tree = await getAssignmentTree(subject.id);
+  const tree = await visibleAssignments(subject.id);
 
   /*
    * Yechimlar variant bo'yicha oldindan yig'iladi: mijoz panelida ular
