@@ -43,6 +43,13 @@ export interface Subject {
   name_uz: string | null;
   name_ru: string | null;
   course: number | null;
+  /*
+   * Semestr — backend HOZIRCHA bu maydonni qaytarmaydi (tekshirilgan:
+   * `/api/v1/subjects/` javobida yo'q). Ixtiyoriy qilib qo'yildi: qo'shilishi
+   * bilan kartadagi yozuv ham, semestr filtri ham o'z-o'zidan paydo bo'ladi,
+   * komponentlarga tegish shart emas.
+   */
+  semester?: number | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

@@ -68,6 +68,7 @@ export function SubjectMiniCard({
       <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
         <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
           {subject.course ? `${subject.course}-kurs` : 'Kurs ko‘rsatilmagan'}
+          {subject.semester ? ` · ${subject.semester}-semestr` : ''}
           {subject.direction_name ? ` · ${subject.direction_name}` : ''}
         </p>
         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 transition-all group-hover:gap-1.5 sm:text-xs dark:text-emerald-400">
