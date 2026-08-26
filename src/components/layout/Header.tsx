@@ -2,7 +2,7 @@
 
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { ButtonLink } from '@/components/ui/Button';
 import { PUBLIC_NAV_ITEMS, type PublicNavItem } from '@/config/nav';
@@ -69,9 +69,20 @@ export function Header() {
   const user = useAppSelector(selectCurrentUser);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
+  /*
+   * Boshqa sahifaga o'tilganda menyu yopiladi — effektda emas, RENDER
+   * paytida.
+   *
+   * Effekt bilan yopilsa yangi sahifa avval ochiq menyu bilan chizilib,
+   * keyin qayta chizilardi: bir kadr davomida menyu ko'rinib turardi.
+   * React bu naqshni ataylab qo'llab-quvvatlaydi — holat o'zgarishi
+   * ekranga chiqishdan oldin qayta render bilan yutiladi.
+   */
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background dark:border-white/10 dark:bg-zinc-950">

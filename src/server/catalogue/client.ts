@@ -44,6 +44,26 @@ export class CatalogueError extends Error {
   }
 }
 
+/**
+ * Bitta so'rov uchun kutish chegarasi va qayta urinishlar.
+ *
+ * Sabab: katalog sahifalari build vaqtida yuzlab so'rov yuboradi va
+ * bittasining uzilishi BUTUN build'ni to'xtatardi (tekshirilgan: deploy
+ * paytida backend qayta ishga tushayotganda `ConnectTimeoutError`). Uch
+ * urinish o'sib boruvchi kutish bilan — vaqtinchalik uzilishni yopadi,
+ * haqiqiy nosozlikni esa baribir yuzaga chiqaradi.
+ *
+ * 4xx qayta urinilmaydi: yo'q sahifa qayta so'raganda ham paydo
+ * bo'lmaydi, faqat build'ni cho'zadi.
+ */
+const REQUEST_TIMEOUT_MS = 15_000;
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 400;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function request<T>(path: string, params?: Record<string, string | number>): Promise<T> {
   const url = new URL(`${env.catalogueApiUrl.replace(/\/$/, '')}${path}`);
 
@@ -51,15 +71,36 @@ async function request<T>(path: string, params?: Record<string, string | number>
     url.searchParams.set(key, String(value));
   }
 
-  const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: REVALIDATE_SECONDS },
-  });
+  let lastError: unknown;
 
-  if (!response.ok) throw new CatalogueError(response.status, path);
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: REVALIDATE_SECONDS },
+        // `AbortSignal.timeout` — osilib qolgan ulanish butun build'ni
+        // ushlab turmasligi uchun. Node 18+ da mavjud.
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
 
-  const body: unknown = await response.json();
-  return (isEnvelope(body) ? body.data : body) as T;
+      if (!response.ok) {
+        const error = new CatalogueError(response.status, path);
+        // Mijoz xatosi — javob o'zgarmaydi, qayta urinish behuda.
+        if (response.status < 500) throw error;
+        lastError = error;
+      } else {
+        const body: unknown = await response.json();
+        return (isEnvelope(body) ? body.data : body) as T;
+      }
+    } catch (error) {
+      if (error instanceof CatalogueError && error.status < 500) throw error;
+      lastError = error;
+    }
+
+    if (attempt < MAX_ATTEMPTS) await delay(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+  }
+
+  throw lastError instanceof Error ? lastError : new CatalogueError(0, path);
 }
 
 /**

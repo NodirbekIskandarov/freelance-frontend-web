@@ -30,9 +30,15 @@ export function NotificationBell() {
   const { data, isLoading } = useGetNotificationsQuery(PREVIEW_QUERY, { skip: !open });
   const [markAll, markAllState] = useMarkAllNotificationsReadMutation();
 
-  useEffect(() => {
+  /*
+   * Sahifa almashsa panel yopiladi — render paytida, effektda emas: aks
+   * holda yangi sahifa bir kadr davomida ochiq panel bilan chizilardi.
+   */
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (!open) return;

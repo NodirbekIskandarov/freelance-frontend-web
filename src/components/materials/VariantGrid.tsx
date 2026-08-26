@@ -133,7 +133,7 @@ export function VariantGrid({
                 onClick={() => setSelectedId(variant.id)}
                 aria-pressed={active}
                 className={cn(
-                  'rounded-xl border bg-card p-2.5 text-left transition-colors',
+                  'card-lift rounded-xl border bg-card p-2.5 text-left',
                   active
                     ? ACTIVE_BORDER[status]
                     : 'border-border/70 hover:border-emerald-500/40 hover:bg-muted/40',

@@ -368,3 +368,94 @@
 .scrollbar-slim::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-muted-foreground);
 }
+
+/*
+ * Katalog kartalari — ko'tarilish, yaltirash va navbat bilan chiqish.
+ *
+ * Nega CSS'da, Tailwind sinflarida emas: `@keyframes` va `::after` bilan
+ * ishlaydigan yaltirash sinfda ifodalanmaydi, kartaning har nusxasida esa
+ * o'nlab utility takrorlanardi. Uchala effekt ham `prefers-reduced-motion`
+ * bilan o'chadi — pastda.
+ */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes card-sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
+/*
+ * Sahifa ochilganda kartalar navbat bilan chiqadi.
+ *
+ * `backwards` — kechikish davomida karta boshlang'ich holatida (ko'rinmas)
+ * turadi; usiz u avval to'liq chizilib, keyin yo'qolib qayta chiqardi.
+ */
+.card-enter {
+  animation: card-enter 380ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/*
+ * Ko'tarilish faqat ko'rsatkichli qurilmada.
+ *
+ * Sensorli ekranda `:hover` bosishdan keyin "yopishib" qoladi va karta
+ * ko'tarilgan holatda turib qoladi.
+ */
+@media (hover: hover) {
+  .card-lift {
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .card-lift:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Yaltirash — kartaning ustidan bir marta o'tadigan yorug'lik chizig'i. */
+  .card-sheen::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 45%;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      color-mix(in oklab, white 22%, transparent),
+      transparent
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .card-sheen:hover::after {
+    opacity: 1;
+    animation: card-sheen 720ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-enter,
+  .card-sheen:hover::after {
+    animation: none;
+  }
+
+  .card-lift:hover {
+    transform: none;
+  }
+}

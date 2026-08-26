@@ -174,9 +174,16 @@ export function AccountProfile() {
   const { data: user, isLoading, error } = useGetProfileQuery();
   const [editing, setEditing] = useState(false);
 
-  // Foydalanuvchi almashsa (chiqib, boshqa hisob bilan kirsa) forma
-  // ochiq qolib ketmasin.
-  useEffect(() => setEditing(false), [user?.id]);
+  /*
+   * Foydalanuvchi almashsa (chiqib, boshqa hisob bilan kirsa) forma ochiq
+   * qolib ketmasin. Render paytida moslanadi: effekt bilan bir kadr
+   * davomida OLDINGI odamning ma'lumoti tahrirlash formasida ko'rinardi.
+   */
+  const [lastUserId, setLastUserId] = useState(user?.id);
+  if (lastUserId !== user?.id) {
+    setLastUserId(user?.id);
+    setEditing(false);
+  }
 
   if (error) return <ErrorNotice error={error} />;
   if (isLoading || !user) return <div className="h-64 animate-pulse rounded-xl bg-muted" />;

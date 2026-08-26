@@ -219,8 +219,13 @@ export function UniversitySubjects({
         ) : (
           <>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {visible.map((subject) => (
-                <SubjectMiniCard key={subject.id} subject={subject} universitySlug={slug} />
+              {visible.map((subject, index) => (
+                <SubjectMiniCard
+                  key={subject.id}
+                  subject={subject}
+                  universitySlug={slug}
+                  index={index}
+                />
               ))}
             </div>
 
