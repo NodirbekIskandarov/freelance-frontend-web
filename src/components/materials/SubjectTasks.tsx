@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { AssignmentComments } from '@/features/comments/AssignmentComments';
 import { AssignmentRequestModal } from '@/features/requests/AssignmentRequestModal';
 import { cn } from '@/lib/cn';
+import { useUrlState } from '@/lib/useUrlState';
 import type { PublicSolution, Subject } from '@/shared/types/catalogue';
 import {
   ASSIGNMENT_TAB_ORDER,
@@ -73,13 +74,42 @@ export function SubjectTasks({
 }) {
   const initial = tasks.find((task) => task.id === initialTaskId) ?? tasks[0];
 
-  const [type, setType] = useState<VisibleAssignmentType>(() =>
-    initial && isVisibleAssignmentType(initial.type) ? initial.type : ASSIGNMENT_TAB_ORDER[0],
+  /*
+   * Tanlangan bo'lim va topshiriq MANZILDA saqlanadi.
+   *
+   * Ilgari ular faqat komponent holatida edi: sahifani yangilagan yoki
+   * havolani ulashgan odam birinchi tabning birinchi topshirig'iga
+   * qaytardi va o'zi turgan joyni yo'qotardi.
+   *
+   * Manzil sahifani qayta yuklamasdan almashtiriladi (`replaceState`) —
+   * tabdan tabga o'tish darhol ishlaydi, lekin havola doim joriy
+   * ko'rinishni ko'rsatib turadi.
+   */
+  // Topshiriq AVVAL o'qiladi: bo'lim undan kelib chiqadi. Manzilda
+  // topshiriq bo'lib, bo'lim bo'lmasligi mumkin (masalan `?topshiriq=…`
+  // ko'rinishidagi havola) — u holda o'sha topshiriqning bo'limi ochiladi,
+  // aks holda havola boshqa tabni ko'rsatib, topshiriq ko'rinmay qolardi.
+  const [activeId, setActiveId] = useUrlState(
+    'topshiriq',
+    initial?.id ?? '',
+    // Manzildagi identifikator shu fanning topshirig'i bo'lishi kerak:
+    // boshqa fandan ko'chirilgan qiymat bilan panel bo'sh qolardi.
+    { isValid: (value) => tasks.some((task) => task.id === value) },
   );
+
+  const activeTask = tasks.find((task) => task.id === activeId) ?? initial;
+  const defaultType =
+    activeTask && isVisibleAssignmentType(activeTask.type)
+      ? activeTask.type
+      : ASSIGNMENT_TAB_ORDER[0];
+
+  const [type, setType] = useUrlState('tur', defaultType, {
+    isValid: isVisibleAssignmentType,
+  }) as [VisibleAssignmentType, (next: VisibleAssignmentType) => void];
+
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [activeId, setActiveId] = useState(initial?.id ?? '');
   const [requestOpen, setRequestOpen] = useState(false);
 
   const counts = useMemo(() => {
@@ -130,6 +160,10 @@ export function SubjectTasks({
   function selectType(next: VisibleAssignmentType) {
     setType(next);
     setQuery('');
+    // Manzil doim ekranda turgan narsani nomlashi kerak: eski tanlov
+    // boshqa bo'limning topshirig'i bo'lib qolardi va havolani ochgan
+    // odam boshqa joyga tushardi.
+    setActiveId(tasks.find((task) => task.type === next)?.id ?? '');
   }
 
   function resetFilters() {
