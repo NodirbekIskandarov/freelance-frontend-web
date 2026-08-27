@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { Modal } from '@/components/ui/Modal';
+import { GoogleCredentialButton, isGoogleConfigured } from '@/features/auth/GoogleCredentialButton';
 import { OtpInput } from '@/features/auth/OtpInput';
 import { PhoneField } from '@/features/auth/PhoneField';
 import { cn } from '@/lib/cn';
@@ -21,6 +22,7 @@ import {
   useConfirmPhoneLinkMutation,
   useGetLoginMethodsQuery,
   useStartEmailLinkMutation,
+  useLinkGoogleMutation,
   useStartPhoneLinkMutation,
   useUnlinkMethodMutation,
 } from './identitiesApi';
@@ -275,6 +277,13 @@ function MethodRow({ method }: { method: LoginMethod }) {
 export function LoginMethods() {
   const { data, isLoading, error } = useGetLoginMethodsQuery();
   const [linking, setLinking] = useState<'phone' | 'email' | null>(null);
+  const [linkGoogle, googleState] = useLinkGoogleMutation();
+
+  function handleGoogle(idToken: string) {
+    void linkGoogle({ id_token: idToken })
+      .unwrap()
+      .catch(() => undefined); // Xato tugma ostida ko'rsatiladi.
+  }
 
   if (error) return <ErrorNotice error={error} />;
 
@@ -302,9 +311,6 @@ export function LoginMethods() {
         ))}
       </ul>
 
-      {/* Bog'lanmagan usullar uchun tugmalar. Google bu yerda yo'q:
-          uni bog'lash Google SDK tugmasini talab qiladi va u alohida
-          ish — hozircha telefon va email. */}
       <div className="mt-4 flex flex-wrap gap-2 border-t border-border/50 pt-4">
         {!linked.has('phone') && (
           <Button variant="outline" size="sm" onClick={() => setLinking('phone')}>
@@ -325,6 +331,29 @@ export function LoginMethods() {
           </Button>
         )}
       </div>
+
+      {/*
+        Google bog'lash — SDK tugmasi orqali. Kod so'ralmaydi: tasdiqlangan
+        ID token egalikning o'zi isboti va uni qo'lda tasdiqlatish bir xil
+        narsani ikki marta so'rash bo'lardi.
+
+        Sozlanmagan muhitda butun blok chizilmaydi: ishlamaydigan tugma
+        odamni chalg'itardi.
+      */}
+      {!linked.has('google') && isGoogleConfigured && (
+        <div className="mt-4 border-t border-border/50 pt-4">
+          <p className="mb-2 text-xs text-muted-foreground">
+            Google hisobingizni bog&apos;lang — keyin u bilan ham kirishingiz mumkin bo&apos;ladi.
+          </p>
+          <GoogleCredentialButton onCredential={handleGoogle} text="signin_with" />
+
+          {googleState.error && (
+            <p role="alert" className="mt-2 text-xs text-destructive">
+              {getApiErrorMessage(googleState.error)}
+            </p>
+          )}
+        </div>
+      )}
 
       <LinkModal
         kind={linking ?? 'phone'}
