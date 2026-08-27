@@ -9,11 +9,14 @@ export type AuthMethod = 'phone' | 'email';
 /**
  * Telefon / Email tanlagichi.
  *
- * Email hozircha O'CHIRILGAN: backend `phone` ni majburiy maydon deb
- * biladi (`POST /auth/register/` va `/auth/login/` ikkalasi ham), ya'ni
- * email bilan hisob ochib ham, kirib ham bo'lmaydi. Tab ko'rinib turibdi,
- * chunki bu rejalashtirilgan imkoniyat — lekin bosilib, keyin xato
- * qaytargandan ko'ra ochiq «tez orada» deb turgani halolroq.
+ * Email KIRISHDA ishlaydi: tasdiqlangan manzil kirish identifikatori va
+ * uni profildagi «Kirish usullari» bo'limidan bog'lanadi.
+ *
+ * RO'YXATDAN O'TISHDA esa hali yo'q — u yerda `emailEnabled` berilmaydi
+ * va tab «tez orada» deb turadi. Sabab: hisob ochish telefon raqamni
+ * talab qiladi (`POST /auth/register/`), email esa keyin qo'shiladigan
+ * ikkinchi usul. Ishlamaydigan tabni bosilib, keyin xato qaytargandan
+ * ko'ra ochiq aytgan halolroq.
  */
 export function AuthMethodTabs({
   value,
@@ -64,7 +67,7 @@ export function AuthMethodTabs({
 
       {!emailEnabled && (
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Email orqali kirish tez orada qo&apos;shiladi.
+          Email bilan kirish uchun uni profilingizdagi «Kirish usullari»da bog&apos;lang.
         </p>
       )}
     </div>

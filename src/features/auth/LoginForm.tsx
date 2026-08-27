@@ -30,20 +30,39 @@ export function LoginForm() {
 
   const [method, setMethod] = useState<AuthMethod>('phone');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!isCompletePhone(phone)) {
-      setLocalError("Telefon raqam to'liq emas. Masalan: 90 123 45 67");
-      return;
+    /*
+     * Identifikator tanlangan usulga qarab yig'iladi. Telefon `+998…`
+     * ko'rinishiga keltiriladi, email esa o'zgarishsiz ketadi — bir xil
+     * maydon ikkalasini ham qabul qiladi va backend «@» belgisiga qarab
+     * qaysi biri ekanini hal qiladi.
+     */
+    let identifier: string;
+
+    if (method === 'email') {
+      identifier = email.trim();
+      if (!identifier.includes('@')) {
+        setLocalError('Email manzilni to‘liq kiriting.');
+        return;
+      }
+    } else {
+      if (!isCompletePhone(phone)) {
+        setLocalError("Telefon raqam to'liq emas. Masalan: 90 123 45 67");
+        return;
+      }
+      identifier = toApiPhone(phone);
     }
+
     setLocalError(null);
 
     try {
-      const { user } = await login({ phone: toApiPhone(phone), password }).unwrap();
+      const { user } = await login({ identifier, password }).unwrap();
       router.push(cabinetPathFor(user));
     } catch {
       // Xato `error` orqali ko'rsatiladi — bu yerda jim o'tamiz,
@@ -56,16 +75,34 @@ export function LoginForm() {
       <AuthCardHeader
         icon={<KeyRound className="size-6" />}
         title="Kirish"
-        subtitle="Google, telefon raqam yoki parol bilan kiring."
+        subtitle="Google, telefon raqam yoki email bilan kiring."
       />
 
       <GoogleLoginButton />
       <AuthSeparator />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <AuthMethodTabs value={method} onChange={setMethod} />
+        {/* Email endi ISHLAYDI: tasdiqlangan manzil kirish identifikatori.
+            Tasdiqlanmagani rad etiladi — u hech kim egaligini isbotlamagan
+            matn. */}
+        <AuthMethodTabs value={method} onChange={setMethod} emailEnabled />
 
-        <PhoneField id="login-phone" value={phone} onChange={setPhone} required />
+        {method === 'email' ? (
+          <div>
+            <AuthFieldLabel htmlFor="login-email">Email</AuthFieldLabel>
+            <AuthInput
+              id="login-email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="ism@example.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
+        ) : (
+          <PhoneField id="login-phone" value={phone} onChange={setPhone} required />
+        )}
 
         <div>
           <AuthFieldLabel htmlFor="login-password">Parol</AuthFieldLabel>

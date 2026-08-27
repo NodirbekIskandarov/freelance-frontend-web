@@ -76,6 +76,7 @@ export const baseApi = createApi({
     'Notification',
     'MyRequest',
     'Comment',
+    'LoginMethod',
   ],
   endpoints: () => ({}),
 });

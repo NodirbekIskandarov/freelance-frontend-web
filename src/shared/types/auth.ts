@@ -94,7 +94,15 @@ export interface AuthResponse {
 }
 
 export interface LoginRequest {
-  phone: string;
+  /**
+   * Telefon raqam YOKI tasdiqlangan email.
+   *
+   * Bitta maydon: odam eslagan narsasini yozadi, backend esa «@»
+   * belgisiga qarab qaysi biri ekanini o'zi hal qiladi. Undan avval
+   * «telefonmi yoki emailmi» deb so'rash identifikatorini o'zi
+   * tasniflashini talab qilish bo'lardi.
+   */
+  identifier: string;
   password: string;
 }
 
