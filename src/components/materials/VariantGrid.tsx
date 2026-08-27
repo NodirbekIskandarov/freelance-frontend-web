@@ -1,6 +1,6 @@
 'use client';
 
-import { Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
+import { Download, Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
@@ -187,8 +187,34 @@ export function VariantGrid({
     requestedIds.includes(selected.id) ||
     (myRequests.data?.results ?? []).some((item) => item.variant === selected.id);
 
-  const mine = (myUploads.data?.results ?? []).filter((item) => item.variant === selected.id);
+  const allMyUploads = myUploads.data?.results ?? [];
+  const mine = allMyUploads.filter((item) => item.variant === selected.id);
   const uploadsLeft = Math.max(0, MAX_UPLOADS_PER_VARIANT - mine.length);
+
+  /*
+   * O'z yechimini sotib olib bo'lmaydi — backend buni rad qiladi
+   * («You cannot purchase your own solution»). Ilgari katalogda o'z
+   * yechimida ham «Sotib olish» turardi va bosilganda xato chiqardi.
+   *
+   * Egalik `uploader` maydonini taqqoslash orqali emas, o'z yuklamalari
+   * ro'yxati orqali aniqlanadi: u allaqachon so'ralgan va fayl havolasini
+   * ham o'zi bilan olib keladi, ya'ni yuklab olish uchun qo'shimcha
+   * so'rov kerak emas.
+   */
+  const myUploadById = new Map(allMyUploads.map((item) => [item.id, item]));
+
+  /*
+   * Katalogda allaqachon ko'rinib turgan yechim «yuborganlarim»
+   * ro'yxatida takrorlanmaydi: tor panelda bir xil sarlavha ikki marta
+   * chiqishi xatodek ko'rinardi.
+   *
+   * Taqqoslash aynan katalog ro'yxati bo'yicha, holat bo'yicha emas:
+   * endigina e'lon qilingan yechim statik sahifada hali yo'q bo'lishi
+   * mumkin (ISR besh daqiqada yangilanadi) va uni holatiga qarab
+   * yashirish yechimni butunlay ko'rinmas qilardi.
+   */
+  const catalogueIds = new Set(solutions.map((item) => item.id));
+  const minePending = mine.filter((item) => !catalogueIds.has(item.id));
 
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[1fr_260px] lg:items-start">
@@ -291,9 +317,20 @@ export function VariantGrid({
                 <p className="mt-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {formatDecimalSom(solution.price)}
                 </p>
-                {/* `boughtIds` — shu seansda sotib olinganlari: kutubxona
+                {/* Uch holat: o'zi yuklagan, sotib olgan, hali olmagan.
+                    `boughtIds` — shu seansda sotib olinganlari: kutubxona
                     ro'yxati keshdan yangilanguncha tugma darrov o'zgarsin. */}
-                {boughtIds.includes(solution.id) || ownedIds.has(solution.id) ? (
+                {myUploadById.has(solution.id) ? (
+                  <a
+                    href={myUploadById.get(solution.id)!.file}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    <Download className="size-3.5" />
+                    Yuklab olish
+                  </a>
+                ) : boughtIds.includes(solution.id) || ownedIds.has(solution.id) ? (
                   <OwnedSolutionButton solutionId={solution.id} className="mt-2 w-full" />
                 ) : (
                   <Button
@@ -390,9 +427,9 @@ export function VariantGrid({
             etilmagunicha ular katalogda ko'rinmaydi, shuning uchun bu
             ro'yxatsiz odam yechimi yetib bordimi-yo'qmi bilmasdi.
           */}
-          {mine.length > 0 && (
+          {minePending.length > 0 && (
             <ul className="mb-3 space-y-1.5">
-              {mine.map((item) => (
+              {minePending.map((item) => (
                 <li
                   key={item.id}
                   className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-card px-2.5 py-1.5"
