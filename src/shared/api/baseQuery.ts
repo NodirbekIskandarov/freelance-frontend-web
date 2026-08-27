@@ -8,6 +8,7 @@ import {
 
 import { toAuthTokens, type TokenPair } from '../types/auth';
 import type { TokenStore } from './tokenStore';
+import { getLocale } from '@/lib/locale';
 
 export type AppBaseQuery = BaseQueryFn<
   string | FetchArgs,
@@ -88,6 +89,14 @@ export function createAppBaseQuery({
       if (accessToken) {
         headers.set('Authorization', `Bearer ${accessToken}`);
       }
+
+      /*
+       * Til — backendning `LocaleMiddleware` i shu sarlavhani o'qiydi va
+       * tarjima qilingan nomlarni (fan, institut, topshiriq) o'sha tilda
+       * qaytaradi. Tanlanmagan bo'lsa `getLocale()` standartni beradi.
+       */
+      headers.set('Accept-Language', getLocale());
+
       return headers;
     },
   });

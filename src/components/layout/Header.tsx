@@ -14,6 +14,7 @@ import { HeaderUserMenu } from './HeaderUserMenu';
 import { SiteLogo } from './SiteLogo';
 import { NotificationBell } from '@/features/notifications/NotificationBell';
 
+import { LocaleToggle } from './LocaleToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 function isNavItemActive(item: PublicNavItem, pathname: string): boolean {
@@ -99,6 +100,8 @@ export function Header() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-3 md:flex">
+          {/* Til va tema yonma-yon: ikkalasi ham ko'rinish sozlamasi. */}
+          <LocaleToggle compact />
           <ThemeToggle compact />
           {user ? (
             <>
@@ -118,6 +121,7 @@ export function Header() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2 md:hidden">
+          <LocaleToggle compact />
           <ThemeToggle compact />
           <button
             type="button"

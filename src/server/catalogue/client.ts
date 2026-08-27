@@ -76,7 +76,21 @@ async function request<T>(path: string, params?: Record<string, string | number>
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
       const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
+        /*
+         * Til ATAYLAB qat'iy `uz`.
+         *
+         * Bu sahifalar ISR bilan statik chiziladi va BARCHA tashrif
+         * buyuruvchiga bir xil ketadi — ular tanlagan tilga qarab
+         * o'zgara olmaydi. Sarlavhani yozib qo'yish natijani
+         * aniqlashtiradi: usiz javob server sozlamasiga bog'liq bo'lardi
+         * va build muhiti o'zgarsa katalog jimgina boshqa tilga
+         * o'tib ketishi mumkin edi.
+         *
+         * Tilni tanlash mijozdagi so'rovlarda ishlaydi. Katalog
+         * sahifalarini ham tilga bo'lish uchun manzilga til segmenti
+         * kerak (`/ru/materials/...`) — bu alohida ish.
+         */
+        headers: { Accept: 'application/json', 'Accept-Language': 'uz' },
         next: { revalidate: REVALIDATE_SECONDS },
         // `AbortSignal.timeout` — osilib qolgan ulanish butun build'ni
         // ushlab turmasligi uchun. Node 18+ da mavjud.
