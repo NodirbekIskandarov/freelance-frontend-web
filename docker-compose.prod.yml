@@ -13,6 +13,8 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?.env da NEXT_PUBLIC_API_URL ko'rsatilmagan}
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?.env da NEXT_PUBLIC_APP_URL ko'rsatilmagan}
+        # Ixtiyoriy: bo'sh bo'lsa Google tugmasi chizilmaydi.
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
         CATALOGUE_API_URL: ${CATALOGUE_API_URL:-https://api.yopamiz.uz/api/v1}
     image: yopamiz-web:prod
     container_name: yopamiz-web

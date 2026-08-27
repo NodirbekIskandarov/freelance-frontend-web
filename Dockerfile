@@ -31,6 +31,12 @@ ENV NODE_ENV=production
 ARG NEXT_PUBLIC_API_URL=http://localhost:8090/api/v1
 ARG NEXT_PUBLIC_APP_URL=http://localhost:8090
 
+# Google Identity Services web client id. Bo'sh bo'lsa "Google orqali kirish"
+# tugmasi umuman chizilmaydi — ishlamaydigan tugmani ko'rsatishdan ko'ra
+# shunisi to'g'ri. Standart qiymat ataylab bo'sh: sozlanmagan muhitda
+# Google'siz ishlayveradi.
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+
 # Ochiq katalog server tomonda o'qiladi (Server Component + ISR).
 # Build paytida SHART: `generateStaticParams` sahifalarni shu manzildan
 # yig'adi. Runner bosqichida ham qayta beriladi — ISR yangilanishi
@@ -39,6 +45,7 @@ ARG CATALOGUE_API_URL=https://api.yopamiz.uz/api/v1
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID \
     CATALOGUE_API_URL=$CATALOGUE_API_URL
 
 COPY --from=deps /app/node_modules ./node_modules
