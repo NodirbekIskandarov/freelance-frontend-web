@@ -3,11 +3,13 @@
 import { Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-import { Button, ButtonLink } from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button';
 import {
   useGetMySolutionRequestsQuery,
   useRequestVariantSolutionMutation,
 } from '@/features/requests/requestsApi';
+import { useGetLibraryQuery } from '@/features/library/libraryApi';
+import { OwnedSolutionButton } from '@/features/library/OwnedSolutionButton';
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import {
   useGetMySolutionsQuery,
@@ -157,6 +159,18 @@ export function VariantGrid({
     { skip: !isAuthenticated || !assignmentId },
   );
 
+  /*
+   * Sotib olinganlar — kutubxonadan.
+   *
+   * Egalikni katalog javobidan olib bo'lmaydi: u ISR bilan STATIK
+   * chiziladi va hamma tashrif buyuruvchiga bir xil ketadi, ya'ni unda
+   * shaxsiy maydon bo'lishi mumkin emas. Shuning uchun mijozda
+   * so'raladi. Ro'yxat butun sahifa uchun bitta so'rov: RTK Query uni
+   * kesh orqali barcha topshiriqlar bilan bo'lishadi.
+   */
+  const library = useGetLibraryQuery({ page_size: 100 }, { skip: !isAuthenticated });
+  const ownedIds = new Set((library.data?.results ?? []).map((item) => item.solution_id));
+
   if (variants.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center text-sm text-muted-foreground">
@@ -277,15 +291,10 @@ export function VariantGrid({
                 <p className="mt-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {formatDecimalSom(solution.price)}
                 </p>
-                {boughtIds.includes(solution.id) ? (
-                  <ButtonLink
-                    href="/student/downloads"
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 w-full"
-                  >
-                    Kutubxonada ochish
-                  </ButtonLink>
+                {/* `boughtIds` — shu seansda sotib olinganlari: kutubxona
+                    ro'yxati keshdan yangilanguncha tugma darrov o'zgarsin. */}
+                {boughtIds.includes(solution.id) || ownedIds.has(solution.id) ? (
+                  <OwnedSolutionButton solutionId={solution.id} className="mt-2 w-full" />
                 ) : (
                   <Button
                     variant="emerald"
