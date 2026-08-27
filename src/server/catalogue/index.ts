@@ -40,9 +40,22 @@ export async function getUniversityBySlug(slug: string): Promise<University | nu
   return universities.find((item) => universitySlug(item) === slug) ?? null;
 }
 
+/**
+ * Materiali ko'p fan tepada, tenglikda alifbo.
+ *
+ * Alifbo yolg'iz o'zi foydalanuvchiga hech nima aytmaydi: u bo'sh fanlarni
+ * topshirig'i borlari bilan aralashtirib yuboradi va odam sahifani pastga
+ * aylantirib qidirishga majbur bo'ladi.
+ *
+ * Tartib SERVERDA beriladi, mijozda emas: ro'yxat sahifalab olinadi va
+ * mijozda saralash faqat joriy sahifani tartiblab, natijani buzardi.
+ * Ikkala maydon ham `ordering_fields` da bor.
+ */
+const SUBJECT_ORDERING = '-assignment_count,name';
+
 export async function getSubjectsByUniversity(universityId: string): Promise<Subject[]> {
   const subjects = await requestAll<Subject>(`/universities/${universityId}/subjects/`, {
-    ordering: 'name',
+    ordering: SUBJECT_ORDERING,
   });
   return subjects.filter((item) => item.is_active);
 }
@@ -73,7 +86,7 @@ export async function getAssignmentsBySubject(subjectId: string): Promise<Assign
  * ro'yxatlar jimgina bir-biriga to'g'ri kelmay qolardi.
  */
 export async function getAllSubjects(): Promise<Subject[]> {
-  const subjects = await requestAll<Subject>('/subjects/', { ordering: 'name' });
+  const subjects = await requestAll<Subject>('/subjects/', { ordering: SUBJECT_ORDERING });
   return subjects.filter((item) => item.is_active);
 }
 
