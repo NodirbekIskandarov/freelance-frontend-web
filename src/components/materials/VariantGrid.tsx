@@ -37,9 +37,25 @@ const MAX_UPLOADS_PER_VARIANT = 2;
 
 type VariantStatus = 'available' | 'requested' | 'empty';
 
-function statusOf(variant: VariantWithCount): VariantStatus {
+/**
+ * Ko'rsatiladigan so'rovlar soni — shu seansda qo'shilgani bilan birga.
+ *
+ * `request_count` sahifa statik chizilgan paytdagi qiymat: sahifa ISR bilan
+ * besh daqiqada bir yangilanadi, ya'ni hozirgina bosilgan so'rov unda YO'Q.
+ * Natijada tugma «So'rov yuborildi» deb turar, karta esa «Tayyor emas»
+ * bo'lib qolaverardi — odam bosdimi-yo'qmi bilmasdi.
+ *
+ * Faqat SHU seansdagi bosishlar qo'shiladi. Serverdan kelgan «siz allaqachon
+ * so'ragansiz» belgisi qo'shilmaydi: eski so'rov statik sanoqqa allaqachon
+ * kirgan va uni yana qo'shish ikki marta sanash bo'lardi.
+ */
+function requestCountOf(variant: VariantWithCount, justRequested: boolean): number {
+  return variant.request_count + (justRequested ? 1 : 0);
+}
+
+function statusOf(variant: VariantWithCount, justRequested: boolean): VariantStatus {
   if (variant.solutionCount > 0) return 'available';
-  if (variant.request_count > 0) return 'requested';
+  if (requestCountOf(variant, justRequested) > 0) return 'requested';
   return 'empty';
 }
 
@@ -150,7 +166,8 @@ export function VariantGrid({
   }
 
   const selected = variants.find((item) => item.id === selectedId) ?? variants[0]!;
-  const selectedStatus = statusOf(selected);
+  const selectedStatus = statusOf(selected, requestedIds.includes(selected.id));
+  const selectedRequestCount = requestCountOf(selected, requestedIds.includes(selected.id));
   const solutions = solutionsByVariant[selected.id] ?? [];
   const alreadyRequested =
     requestedIds.includes(selected.id) ||
@@ -166,7 +183,8 @@ export function VariantGrid({
 
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
           {variants.map((variant) => {
-            const status = statusOf(variant);
+            const justRequested = requestedIds.includes(variant.id);
+            const status = statusOf(variant, justRequested);
             const active = variant.id === selected.id;
             const locked = status === 'empty';
 
@@ -215,7 +233,7 @@ export function VariantGrid({
                           {/* Talab qancha ekani muhim: bitta so'rov bilan
                               o'ntasi bir xil ko'rinmasin. */}
                           {status === 'requested'
-                            ? `${variant.request_count} ta so'rov`
+                            ? `${requestCountOf(variant, justRequested)} ta so'rov`
                             : `${variant.solutionCount} ta yechim`}
                         </p>
                       </>
@@ -312,10 +330,10 @@ export function VariantGrid({
           </ul>
         ) : (
           <div className="mt-3 space-y-2.5 rounded-lg border border-amber-500/40 bg-amber-500/[0.06] p-3">
-            {selected.request_count > 0 && (
+            {selectedRequestCount > 0 && (
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
                 <Flame className="size-3" />
-                Talab mavjud · {selected.request_count}
+                Talab mavjud · {selectedRequestCount}
               </span>
             )}
 
@@ -405,8 +423,8 @@ export function VariantGrid({
                 <p className="mt-2 text-center text-[11px] text-muted-foreground">
                   {mine.length > 0
                     ? `Yana ${uploadsLeft} ta yubora olasiz.`
-                    : selected.request_count > 0 && selectedStatus !== 'available'
-                      ? `${selected.request_count} kishi shu variantni kutyapti.`
+                    : selectedRequestCount > 0 && selectedStatus !== 'available'
+                      ? `${selectedRequestCount} kishi shu variantni kutyapti.`
                       : `Bir variantga ${MAX_UPLOADS_PER_VARIANT} tagacha yechim yuborish mumkin.`}
                 </p>
               </>
