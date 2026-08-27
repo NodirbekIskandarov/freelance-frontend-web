@@ -3,6 +3,7 @@
 import { FileText, Search, SlidersHorizontal, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { AssignmentComments } from '@/features/comments/AssignmentComments';
 import { AssignmentRequestModal } from '@/features/requests/AssignmentRequestModal';
 import { cn } from '@/lib/cn';
 import type { PublicSolution, Subject } from '@/shared/types/catalogue';
@@ -22,6 +23,7 @@ import {
   type TaskFilters,
 } from './TaskFilterModal';
 import { VariantGrid, type VariantWithCount } from './VariantGrid';
+import { VariantlessTask } from './VariantlessTask';
 
 export interface TaskNode {
   id: string;
@@ -334,11 +336,24 @@ export function SubjectTasks({
               </header>
 
               <div className="mt-4">
-                <VariantGrid
-                  key={active.id}
-                  variants={active.variants}
-                  solutionsByVariant={solutionsByVariant}
-                />
+                {/*
+                  Variantsiz topshiriqda variantlar to'ri chizilmaydi, lekin
+                  amallar o'sha-o'sha: so'rov qoldirish, yechim yuborish,
+                  sotib olish. Faqat variant tanlash bosqichi yo'q.
+                */}
+                {active.variants.length === 0 ? (
+                  <VariantlessTask
+                    key={active.id}
+                    assignmentId={active.id}
+                    assignmentTitle={active.title}
+                  />
+                ) : (
+                  <VariantGrid
+                    key={active.id}
+                    variants={active.variants}
+                    solutionsByVariant={solutionsByVariant}
+                  />
+                )}
               </div>
             </>
           ) : (
@@ -351,6 +366,25 @@ export function SubjectTasks({
             </div>
           )}
         </div>
+
+        {/*
+          Izohlar — alohida karta, tanlangan topshiriq kartasi ostida.
+          Chap ustunga emas, o'ng ustunga tushadi (`lg:col-start-2`): mavzu
+          tanlangan topshiriqqa tegishli va uning tafsiloti bilan bir
+          ustunda turgani mantiqan to'g'ri.
+
+          Tanlanmagan holatda umuman chizilmaydi — qaysi topshiriq mavzusi
+          ekani noma'lum bo'lardi.
+        */}
+        {active && (
+          <div className="min-w-0 rounded-2xl border border-border/70 bg-card p-4 sm:p-5 lg:col-start-2">
+            <AssignmentComments
+              key={active.id}
+              assignmentId={active.id}
+              assignmentTitle={active.title}
+            />
+          </div>
+        )}
       </section>
 
       <TaskFilterModal

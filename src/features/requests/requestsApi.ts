@@ -127,6 +127,21 @@ export const requestsApi = baseApi.injectEndpoints({
       query: (variantId) => ({ url: `/variants/${variantId}/request/`, method: 'POST' }),
       invalidatesTags: [{ type: 'MyRequest', id: 'VARIANT' }],
     }),
+
+    /**
+     * Variantsiz topshiriqqa so'rov.
+     *
+     * Katalog bunday topshiriqda variantlar to'rini chizmaydi, ya'ni
+     * mijozda variant identifikatori yo'q. Backend uni o'zi hal qiladi:
+     * yagona variant birinchi foydalanishda ochiladi.
+     */
+    requestAssignmentSolution: build.mutation<VariantRequestResult, string>({
+      query: (assignmentId) => ({
+        url: `/assignments/${assignmentId}/request/`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'MyRequest', id: 'VARIANT' }],
+    }),
   }),
 });
 
@@ -139,4 +154,5 @@ export const {
   useSubmitSubjectRequestMutation,
   useSubmitAssignmentRequestMutation,
   useRequestVariantSolutionMutation,
+  useRequestAssignmentSolutionMutation,
 } = requestsApi;

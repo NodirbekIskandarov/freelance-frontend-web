@@ -46,7 +46,15 @@ export interface MySolution {
 
 /** `POST /solutions/` — `multipart/form-data`. */
 export interface SolutionUploadRequest {
-  variant: string;
+  /**
+   * Variant YOKI topshiriq — bittasi.
+   *
+   * `assignment` variantsiz topshiriq uchun: katalog u yerda variantlar
+   * to'rini chizmaydi, ya'ni mijozda variant identifikatori yo'q. Backend
+   * yagona variantni o'zi ochadi.
+   */
+  variant?: string;
+  assignment?: string;
   title: string;
   description?: string;
   file: File;

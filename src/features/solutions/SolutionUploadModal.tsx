@@ -60,12 +60,16 @@ export function SolutionUploadModal({
   open,
   variantId,
   variantNumber,
+  assignmentId,
   assignmentTitle,
   onClose,
 }: {
   open: boolean;
-  variantId: string;
-  variantNumber: number;
+  /** Variantli topshiriqda — tanlangan variant. */
+  variantId?: string;
+  variantNumber?: number;
+  /** Variantsiz topshiriqda — topshiriqning o'zi. */
+  assignmentId?: string;
   assignmentTitle: string;
   onClose: () => void;
 }) {
@@ -129,7 +133,8 @@ export function SolutionUploadModal({
 
     try {
       await upload({
-        variant: variantId,
+        // Backend ikkovidan BITTASINI kutadi.
+        ...(variantId ? { variant: variantId } : { assignment: assignmentId }),
         title: title.trim(),
         ...(description.trim() ? { description: description.trim() } : {}),
         price: price.trim(),
@@ -152,7 +157,9 @@ export function SolutionUploadModal({
       open={open}
       onClose={close}
       title="Yechim yuborish"
-      description={`${assignmentTitle} · ${variantNumber}-variant`}
+      description={
+        variantNumber ? `${assignmentTitle} · ${variantNumber}-variant` : assignmentTitle
+      }
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>

@@ -86,9 +86,29 @@ export interface Assignment {
   /** `AssignmentTypeEnum` — fan sahifasidagi tablar shunga qarab bo'linadi. */
   type: string;
   description: string;
+  /** Ochiq mavzudagi izohlar soni — tab yorlig'idagi raqam. */
+  comment_count?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+/** Topshiriq ostidagi ochiq izoh. */
+export interface AssignmentComment {
+  id: string;
+  assignment: string;
+  author: {
+    id: string;
+    /**
+     * Telefon raqami ATAYLAB yo'q: mavzu ochiq va uni har izoh yoniga
+     * qo'yish raqamni e'lon qilardi.
+     */
+    full_name: string;
+  };
+  body: string;
+  /** Joriy foydalanuvchi yozganmi — o'chirish tugmasi shunga qarab chiziladi. */
+  is_mine: boolean;
+  created_at: string;
 }
 
 export interface Variant {

@@ -75,6 +75,7 @@ export const baseApi = createApi({
     'Withdrawal',
     'Notification',
     'MyRequest',
+    'Comment',
   ],
   endpoints: () => ({}),
 });
