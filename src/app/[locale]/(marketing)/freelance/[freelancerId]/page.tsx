@@ -9,50 +9,69 @@ import { formatSom } from '@/lib/format';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { getFreelancer, getFreelancerReviews } from '@/server/freelance/directory';
 import {
-  AVAILABILITY_LABELS,
-  EXPERIENCE_LEVEL_LABELS,
-  WORK_DIRECTION_LABELS,
+  availabilityLabel,
+  experienceLevelLabel,
+  workDirectionLabel,
 } from '@/shared/types/publicFreelance';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { interpolate } from '@/i18n/interpolate';
+import { getMessages } from '@/i18n/messages';
+import { setRequestLocale } from '@/i18n/requestLocale';
 
 export async function generateMetadata(props: PageProps<'/[locale]/freelance/[freelancerId]'>) {
-  const { freelancerId } = await props.params;
+  const { locale: raw, freelancerId } = await props.params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
+  const m = await getMessages(locale);
   const freelancer = await getFreelancer(freelancerId);
 
   if (!freelancer) {
     return buildMetadata({
-      title: 'Freelancer topilmadi',
-      description: "So'ralgan mutaxassis katalogda mavjud emas.",
+      title: m.seo.freelancerNotFound.title,
+      description: m.seo.freelancerNotFound.description,
       path: `/freelance/${freelancerId}`,
+      locale,
       noIndex: true,
     });
   }
 
-  const direction = WORK_DIRECTION_LABELS[freelancer.direction] ?? freelancer.direction;
+  const direction = workDirectionLabel(freelancer.direction, m) ?? freelancer.direction;
 
   return buildMetadata({
-    title: `${freelancer.full_name} — ${direction}`,
+    title: interpolate(m.seo.freelancer.title, { name: freelancer.full_name, direction }),
     description:
       freelancer.bio ||
-      `${freelancer.full_name}: ${direction} bo'yicha ${freelancer.completed_jobs} ta bajarilgan ish, reyting ${freelancer.rating}.`,
+      interpolate(m.seo.freelancer.description, {
+        name: freelancer.full_name,
+        direction,
+        jobs: freelancer.completed_jobs,
+        rating: freelancer.rating,
+      }),
     path: `/freelance/${freelancerId}`,
+    locale,
   });
 }
 
 export default async function FreelancerProfilePage(
   props: PageProps<'/[locale]/freelance/[freelancerId]'>,
 ) {
-  const { freelancerId } = await props.params;
+  const { locale: raw, freelancerId } = await props.params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
+  const m = await getMessages(locale);
   const freelancer = await getFreelancer(freelancerId);
 
   if (!freelancer) notFound();
 
   const reviews = await getFreelancerReviews(freelancerId);
-  const direction = WORK_DIRECTION_LABELS[freelancer.direction] ?? freelancer.direction;
+  const direction = workDirectionLabel(freelancer.direction, m) ?? freelancer.direction;
   const rating = Number(freelancer.rating);
 
   const crumbs = [
-    { name: 'Bosh sahifa', path: '/' },
-    { name: 'Freelancerlar', path: '/freelance' },
+    { name: m.materials.breadcrumbHome, path: '/' },
+    { name: m.nav.freelancers, path: '/freelance' },
     { name: freelancer.full_name, path: `/freelance/${freelancerId}` },
   ];
 
@@ -131,7 +150,7 @@ export default async function FreelancerProfilePage(
             )}
             <span className="inline-flex items-center gap-1">
               <CircleCheck className="size-3.5" />
-              {AVAILABILITY_LABELS[freelancer.availability]}
+              {availabilityLabel(freelancer.availability, m)}
             </span>
             <span className="inline-flex items-center gap-1">
               <Wallet className="size-3.5" />
@@ -170,7 +189,7 @@ export default async function FreelancerProfilePage(
       <section className="mt-8">
         <h2 className="text-lg font-bold text-foreground">
           Tajriba:{' '}
-          {EXPERIENCE_LEVEL_LABELS[freelancer.experience_level] ?? freelancer.experience_level}
+          {experienceLevelLabel(freelancer.experience_level, m) ?? freelancer.experience_level}
         </h2>
       </section>
 

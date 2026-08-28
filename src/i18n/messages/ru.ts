@@ -14,6 +14,20 @@ export const ru: Messages = {
       description:
         'Вопросы о Yopamiz.uz: размещение задания, оплата, гарантии, как стать фрилансером и комиссия. Все ответы на одной странице.',
     },
+    freelance: {
+      title: 'Поиск фрилансеров — проверенные специалисты',
+      description:
+        'Проверенные фрилансеры на Yopamiz.uz: программирование, черчение, курсовые и перевод. Выбирайте по рейтингу, цене и городу.',
+    },
+    freelancerNotFound: {
+      title: 'Фрилансер не найден',
+      description: 'Запрошенный специалист отсутствует в каталоге.',
+    },
+    freelancer: {
+      title: '{name} — {direction}',
+      description:
+        '{name}: {jobs} выполненных работ по направлению «{direction}», рейтинг {rating}.',
+    },
     materials: {
       title: 'Готовые материалы — задания по университетам',
       description:
@@ -544,6 +558,81 @@ export const ru: Messages = {
     downloadFailed: 'Ошибка при скачивании',
     empty: 'Купите решение в каталоге — оно будет храниться здесь постоянно.',
     purchasedAt: 'Куплено: {date}',
+  },
+
+  freelance: {
+    dirSubject: 'Предметы',
+    dirProgramming: 'Программирование',
+    dirCoursework: 'Курсовые работы',
+    dirIndependent: 'Самостоятельные работы',
+    dirDiploma: 'Дипломные работы',
+    dirLab: 'Лабораторные работы',
+    dirDrawing: 'Черчение',
+    dirTranslation: 'Перевод',
+    dirContent: 'Тексты и контент',
+    dirOther: 'Другие работы',
+    allDirections: 'Все направления',
+
+    expBeginner: 'Начинающий — до 1 года',
+    expIntermediate: 'Средний — 1–3 года',
+    expProfessional: 'Профессионал — 3–5 лет',
+    expExpert: 'Эксперт — более 5 лет',
+
+    available: 'Свободен',
+    busy: 'Занят',
+
+    taskOpen: 'Открыто',
+    taskInProgress: 'В работе',
+    taskDelivered: 'Сдано',
+    taskCompleted: 'Завершено',
+    taskCancelled: 'Отменено',
+
+    offerPending: 'Ожидает',
+    offerAccepted: 'Принято',
+    offerDeclined: 'Отклонено',
+    offerWithdrawn: 'Отозвано',
+
+    statusNone: 'Студент',
+    statusPending: 'Заявка на рассмотрении',
+    statusActive: 'Фрилансер',
+    statusSuspended: 'Временно приостановлен',
+    statusRejected: 'Заявка отклонена',
+
+    sortRating: 'По рейтингу',
+    sortNewest: 'Новые',
+    sortPriceAsc: 'Цена: дешевле',
+    sortPriceDesc: 'Цена: дороже',
+
+    days: '{count} дн.',
+    negotiable: 'По договорённости',
+  },
+
+  freelancerCabinet: {
+    activeJobs: 'Активные работы',
+    doneJobs: 'Завершённые',
+    pendingOffers: 'Предложения без ответа',
+    openTasks: 'Открытые задания',
+    pendingWithdrawal: 'Ожидает вывода',
+    earnedTotal: 'Всего заработано',
+    commissionNote:
+      'Суммы выше указаны за вычетом комиссии платформы — это то, что вы получите на руки. Вывод средств',
+    noEarnings: 'Дохода пока нет. Оплата за завершённые работы появится здесь.',
+    noOffers: 'Выберите задание в разделе «Открытые задания» и отправьте первое предложение.',
+    withdrawOffer: 'Отозвать',
+    noJobs: 'Отправляйте предложения по открытым заданиям — принятые работы появятся здесь.',
+    deliverAgain: 'Сдать повторно',
+    deliver: 'Сдать работу',
+    deliverNotePlaceholder: 'Что сделано, как пользоваться, на что обратить внимание...',
+    delivering: 'Отправка...',
+    deliverSubmit: 'Сдать',
+    searchTasks: 'Поиск по названию задания',
+    direction: 'Направление',
+    noTasks: 'Измените фильтр — новые задания добавляются регулярно.',
+    sendOffer: 'Отправить предложение',
+    offerPrice: 'Цена (сум)',
+    offerMessagePlaceholder: 'Почему именно вы? Опыт, похожие работы, порядок работы...',
+    sending: 'Отправка...',
+    send: 'Отправить',
   },
 
   materials: {

@@ -8,8 +8,9 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
 import { useGetWalletQuery } from '@/features/account/accountApi';
 import { useGetMyJobsQuery, useGetMyOffersQuery } from '@/features/freelance/exchangeApi';
-import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { workDirectionLabel } from '@/shared/types/publicFreelance';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 /**
  * Freelancer bosh sahifasi — backendda alohida dashboard endpoint'i
@@ -18,6 +19,7 @@ import { useMoney } from '@/lib/useMoney';
  * emas, faqat sonni qaytaradi — bu eng arzon usul.
  */
 export function FreelancerDashboard() {
+  const { m } = useT();
   const money = useMoney();
   const active = useGetMyJobsQuery({ status: 'in_progress', page_size: 1 });
   const done = useGetMyJobsQuery({ status: 'completed', page_size: 1 });
@@ -104,7 +106,7 @@ export function FreelancerDashboard() {
                   <h3 className="text-sm font-bold text-foreground">{job.title}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {job.client?.full_name ?? 'Mijoz'} &middot;{' '}
-                    {WORK_DIRECTION_LABELS[job.direction]} &middot;{' '}
+                    {workDirectionLabel(job.direction, m)} &middot;{' '}
                     <span className="font-mono">{job.reference}</span>
                   </p>
                 </div>

@@ -8,8 +8,9 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { useGetMyOffersQuery, useWithdrawOfferMutation } from '@/features/freelance/exchangeApi';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { OFFER_STATUS_LABELS, OFFER_STATUSES, type OfferStatus } from '@/shared/types/exchange';
+import { offerStatusLabel, OFFER_STATUSES, type OfferStatus } from '@/shared/types/exchange';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -17,6 +18,7 @@ function formatDate(value: string): string {
 }
 
 export function FreelancerOffers() {
+  const { m } = useT();
   const money = useMoney();
   const [status, setStatus] = useState<OfferStatus | 'all'>('all');
   const [withdrawOffer, withdraw] = useWithdrawOfferMutation();
@@ -45,7 +47,7 @@ export function FreelancerOffers() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : OFFER_STATUS_LABELS[item]}
+            {item === 'all' ? 'Barchasi' : offerStatusLabel(item, m)}
           </button>
         ))}
       </div>

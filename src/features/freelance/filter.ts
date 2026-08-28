@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 import type { Availability, PublicFreelancer } from '@/shared/types/publicFreelance';
 
 /**
@@ -8,10 +10,10 @@ import type { Availability, PublicFreelancer } from '@/shared/types/publicFreela
  */
 
 export const FREELANCE_SORT_OPTIONS = [
-  { id: 'rating', label: "Reyting bo'yicha" },
-  { id: 'newest', label: "Yangi qo'shilganlar" },
-  { id: 'price_asc', label: 'Narx: arzon' },
-  { id: 'price_desc', label: 'Narx: qimmat' },
+  { id: 'rating', label: (m: Messages) => m.freelance.sortRating },
+  { id: 'newest', label: (m: Messages) => m.freelance.sortNewest },
+  { id: 'price_asc', label: (m: Messages) => m.freelance.sortPriceAsc },
+  { id: 'price_desc', label: (m: Messages) => m.freelance.sortPriceDesc },
 ] as const;
 
 export type FreelanceSortId = (typeof FREELANCE_SORT_OPTIONS)[number]['id'];

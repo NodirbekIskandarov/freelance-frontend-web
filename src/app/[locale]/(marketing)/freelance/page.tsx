@@ -1,23 +1,37 @@
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { FreelancerDirectory } from '@/features/freelance/FreelancerDirectory';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { getMessages } from '@/i18n/messages';
+import { setRequestLocale } from '@/i18n/requestLocale';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { getFreelancerCities, getFreelancers } from '@/server/freelance/directory';
-import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { workDirectionLabel } from '@/shared/types/publicFreelance';
 
-export const metadata = buildMetadata({
-  title: 'Freelancer qidirish — ishonchli mutaxassislar',
-  description:
-    "Yopamiz.uz'da tasdiqlangan freelancerlar: dasturlash, chizmachilik, kurs ishlari va tarjima. Reyting, narx va shahar bo'yicha tanlang.",
-  path: '/freelance',
-});
+export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const seo = (await getMessages(locale)).seo.freelance;
 
-const crumbs = [
-  { name: 'Bosh sahifa', path: '/' },
-  { name: 'Freelancerlar', path: '/freelance' },
-];
+  return buildMetadata({
+    title: seo.title,
+    description: seo.description,
+    path: '/freelance',
+    locale,
+  });
+}
 
-export default async function FreelancePage() {
+export default async function FreelancePage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
+  const m = await getMessages(locale);
+  const crumbs = [
+    { name: m.materials.breadcrumbHome, path: '/' },
+    { name: m.nav.freelancers, path: '/freelance' },
+  ];
+
   const [freelancers, cities] = await Promise.all([getFreelancers(), getFreelancerCities()]);
 
   /*
@@ -36,7 +50,7 @@ export default async function FreelancePage() {
       item: {
         '@type': 'Person',
         name: freelancer.full_name,
-        jobTitle: WORK_DIRECTION_LABELS[freelancer.direction] ?? freelancer.direction,
+        jobTitle: workDirectionLabel(freelancer.direction, m) ?? freelancer.direction,
         description: freelancer.bio,
         knowsAbout: freelancer.skills,
         ...(freelancer.city ? { homeLocation: freelancer.city } : {}),

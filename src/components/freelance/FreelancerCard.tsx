@@ -1,14 +1,17 @@
+'use client';
+
 import { Briefcase, MapPin, MessageCircle, Star } from 'lucide-react';
 import { Link } from '@/i18n/Link';
 
 import { cn } from '@/lib/cn';
-import { formatSom } from '@/lib/format';
 import {
-  AVAILABILITY_LABELS,
-  EXPERIENCE_LEVEL_LABELS,
-  WORK_DIRECTION_LABELS,
+  availabilityLabel,
+  experienceLevelLabel,
+  workDirectionLabel,
   type PublicFreelancer,
 } from '@/shared/types/publicFreelance';
+import { useT } from '@/i18n/useT';
+import { useMoney } from '@/lib/useMoney';
 
 /**
  * Avatar rangi ID'dan hosil qilinadi — backend brend rangi bermaydi,
@@ -44,6 +47,8 @@ function initialsOf(name: string): string {
  * sahifasiga oddiy havola: mijoz JS'i shart emas.
  */
 export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer }) {
+  const { m } = useT();
+  const money = useMoney();
   const isBusy = freelancer.availability === 'busy';
   const rating = Number(freelancer.rating);
 
@@ -78,7 +83,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
               'absolute right-0.5 bottom-0.5 size-3 rounded-full border-2 border-background',
               isBusy ? 'bg-orange-500' : 'bg-emerald-500',
             )}
-            title={AVAILABILITY_LABELS[freelancer.availability]}
+            title={availabilityLabel(freelancer.availability, m)}
           />
         </div>
 
@@ -106,7 +111,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
 
       <div className="mt-2 flex flex-wrap gap-1">
         <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground ring-1 ring-border">
-          {EXPERIENCE_LEVEL_LABELS[freelancer.experience_level]?.split('—')[0]?.trim() ??
+          {experienceLevelLabel(freelancer.experience_level, m)?.split('—')[0]?.trim() ??
             freelancer.experience_level}
         </span>
         <span
@@ -117,12 +122,12 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
               : 'bg-emerald-50 text-emerald-700 ring-emerald-200/90 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/25',
           )}
         >
-          {AVAILABILITY_LABELS[freelancer.availability]}
+          {availabilityLabel(freelancer.availability, m)}
         </span>
       </div>
 
       <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-        {WORK_DIRECTION_LABELS[freelancer.direction] ?? freelancer.direction}
+        {workDirectionLabel(freelancer.direction, m) ?? freelancer.direction}
       </p>
 
       {freelancer.skills.length > 0 && (
@@ -150,7 +155,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
           <dt className="text-[10px] text-muted-foreground">Narx</dt>
           <dd className="text-[11px] leading-tight font-bold text-emerald-700 dark:text-emerald-400">
             {/* Narx berilmagan bo'lsa kelishuv asosida ishlaydi. */}
-            {freelancer.price_from ? formatSom(Number(freelancer.price_from)) : 'Kelishuv'}
+            {freelancer.price_from ? money.som(Number(freelancer.price_from)) : 'Kelishuv'}
           </dd>
         </div>
       </dl>

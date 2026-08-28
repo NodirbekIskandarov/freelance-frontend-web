@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 import {
   WORK_DIRECTIONS,
-  WORK_DIRECTION_LABELS,
+  workDirectionLabel,
   type PublicFreelancer,
 } from '@/shared/types/publicFreelance';
 
@@ -29,6 +29,7 @@ import {
   type FreelanceFilterState,
   type FreelanceSortId,
 } from './filter';
+import { useT } from '@/i18n/useT';
 
 const INITIAL_VISIBLE = 8;
 const LOAD_STEP = 4;
@@ -74,6 +75,7 @@ export function FreelancerDirectory({
   freelancers: PublicFreelancer[];
   cities: CityOption[];
 }) {
+  const { m } = useT();
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<FreelanceFilterState>(DEFAULT_FREELANCE_FILTERS);
   const [sortId, setSortId] = useState<FreelanceSortId>('rating');
@@ -194,7 +196,7 @@ export function FreelancerDirectory({
                       : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400',
                   )}
                 >
-                  {option.label}
+                  {option.label(m)}
                 </button>
               ))}
             </div>
@@ -228,7 +230,7 @@ export function FreelancerDirectory({
                   <option value="all">Barcha yo&apos;nalishlar</option>
                   {WORK_DIRECTIONS.map((direction) => (
                     <option key={direction} value={direction}>
-                      {WORK_DIRECTION_LABELS[direction]}
+                      {workDirectionLabel(direction, m)}
                     </option>
                   ))}
                 </select>
@@ -257,9 +259,8 @@ export function FreelancerDirectory({
               {filters.direction !== 'all' && (
                 <ActiveChip
                   label={
-                    WORK_DIRECTION_LABELS[
-                      filters.direction as keyof typeof WORK_DIRECTION_LABELS
-                    ] ?? filters.direction
+                    workDirectionLabel(filters.direction as keyof typeof workDirectionLabel, m) ??
+                    filters.direction
                   }
                   onClear={() => updateFilters({ direction: 'all' })}
                 />

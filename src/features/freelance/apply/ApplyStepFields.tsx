@@ -8,9 +8,9 @@ import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
   EXPERIENCE_LEVELS as REAL_EXPERIENCE_LEVELS,
-  EXPERIENCE_LEVEL_LABELS as REAL_EXPERIENCE_LABELS,
+  experienceLevelLabel as REAL_EXPERIENCE_LABELS,
   WORK_DIRECTIONS,
-  WORK_DIRECTION_LABELS,
+  workDirectionLabel,
 } from '@/shared/types/publicFreelance';
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_TYPES } from '@/shared/types/publicFreelance';
 import type { FreelancerApplicationDraft } from '@/shared/types/freelancerApplication';
@@ -20,22 +20,13 @@ import {
   useVerifyApplicationPhoneMutation,
 } from '../publicFreelancersApi';
 import type { DraftErrors } from './steps';
+import { useT } from '@/i18n/useT';
 
 export interface StepFieldsProps {
   draft: FreelancerApplicationDraft;
   errors: DraftErrors;
   update: (patch: Partial<FreelancerApplicationDraft>) => void;
 }
-
-const directionOptions = WORK_DIRECTIONS.map((value) => ({
-  value,
-  label: WORK_DIRECTION_LABELS[value],
-}));
-
-const experienceOptions = REAL_EXPERIENCE_LEVELS.map((level) => ({
-  value: level,
-  label: REAL_EXPERIENCE_LABELS[level],
-}));
 
 function Grid({ children }: { children: React.ReactNode }) {
   return <div className="grid gap-4 sm:grid-cols-2">{children}</div>;
@@ -296,6 +287,20 @@ function AdditionalStep({ draft, errors, update }: StepFieldsProps) {
 }
 
 function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
+
+  /* Ro'yxatlar komponent ICHIDA: yorliqlar tilga bog'liq va modul
+     yuklanganda qaysi til tanlanganini bilib bo'lmaydi. */
+  const directionOptions = WORK_DIRECTIONS.map((value) => ({
+    value,
+    label: workDirectionLabel(value, m),
+  }));
+
+  const experienceOptions = REAL_EXPERIENCE_LEVELS.map((level) => ({
+    value: level,
+    label: REAL_EXPERIENCE_LABELS(level, m),
+  }));
+
   return (
     <div className="space-y-4">
       <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-xs leading-relaxed text-emerald-900/80 dark:text-emerald-200/80">
@@ -345,6 +350,7 @@ function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
 }
 
 function ConfirmStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
   const summary: { label: string; value: string }[] = [
     { label: 'Ism-familiya', value: `${draft.firstName} ${draft.lastName}`.trim() },
     { label: 'Telefon', value: draft.phone },
@@ -360,7 +366,7 @@ function ConfirmStep({ draft, errors, update }: StepFieldsProps) {
     { label: 'OTM', value: draft.university },
     { label: 'Fakultet', value: draft.faculty },
     { label: "Yo'nalish", value: draft.major || '—' },
-    { label: 'Tajriba', value: REAL_EXPERIENCE_LABELS[draft.experienceLevel] },
+    { label: 'Tajriba', value: REAL_EXPERIENCE_LABELS(draft.experienceLevel, m) },
     { label: "Ko'nikmalar", value: draft.skills },
   ];
 

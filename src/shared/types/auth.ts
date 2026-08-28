@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /**
  * Auth domeni — haqiqiy backend shakli
  * (`https://api.yopamiz.uz/api/schema/`, "Auth" bo'limi).
@@ -17,13 +19,17 @@ export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
 export const FREELANCER_STATUSES = ['none', 'pending', 'active', 'suspended', 'rejected'] as const;
 export type FreelancerStatus = (typeof FREELANCER_STATUSES)[number];
 
-export const FREELANCER_STATUS_LABELS: Record<FreelancerStatus, string> = {
-  none: 'Talaba',
-  pending: 'Ariza ko‘rib chiqilmoqda',
-  active: 'Freelancer',
-  suspended: 'Vaqtincha to‘xtatilgan',
-  rejected: 'Ariza rad etilgan',
-};
+export function freelancerStatusLabel(status: FreelancerStatus, messages: Messages): string {
+  const labels: Record<FreelancerStatus, string> = {
+    none: messages.freelance.statusNone,
+    pending: messages.freelance.statusPending,
+    active: messages.freelance.statusActive,
+    suspended: messages.freelance.statusSuspended,
+    rejected: messages.freelance.statusRejected,
+  };
+
+  return labels[status];
+}
 
 export interface UserProfile {
   id: string;

@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /** Sahifalangan ro'yxatlarning umumiy query parametrlari. */
 interface ApiListQuery {
   page?: number;
@@ -25,36 +27,44 @@ export const WORK_DIRECTIONS = [
 ] as const;
 export type WorkDirection = (typeof WORK_DIRECTIONS)[number];
 
-export const WORK_DIRECTION_LABELS: Record<WorkDirection, string> = {
-  subject: 'Fanlar',
-  programming: 'Dasturlash',
-  coursework: 'Kurs ishlari',
-  independent: 'Mustaqil ishlar',
-  diploma: 'Diplom ishlari',
-  lab: 'Laboratoriya ishlari',
-  drawing: 'Chizmachilik',
-  translation: 'Tarjima',
-  content: 'Matn va kontent',
-  other: 'Boshqa ishlar',
-};
+/** Yorliqlar lug'atdan — bu fayllar serverda ham ishlatiladi. */
+export function workDirectionLabel(direction: WorkDirection, messages: Messages): string {
+  const labels: Record<WorkDirection, string> = {
+    subject: messages.freelance.dirSubject,
+    programming: messages.freelance.dirProgramming,
+    coursework: messages.freelance.dirCoursework,
+    independent: messages.freelance.dirIndependent,
+    diploma: messages.freelance.dirDiploma,
+    lab: messages.freelance.dirLab,
+    drawing: messages.freelance.dirDrawing,
+    translation: messages.freelance.dirTranslation,
+    content: messages.freelance.dirContent,
+    other: messages.freelance.dirOther,
+  };
+
+  return labels[direction];
+}
 
 export const EXPERIENCE_LEVELS = ['beginner', 'intermediate', 'professional', 'expert'] as const;
 export type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number];
 
-export const EXPERIENCE_LEVEL_LABELS: Record<ExperienceLevel, string> = {
-  beginner: "Boshlang'ich — 1 yilgacha",
-  intermediate: "O'rta — 1–3 yil",
-  professional: 'Professional — 3–5 yil',
-  expert: 'Ekspert — 5 yildan ortiq',
-};
+export function experienceLevelLabel(level: ExperienceLevel, messages: Messages): string {
+  const labels: Record<ExperienceLevel, string> = {
+    beginner: messages.freelance.expBeginner,
+    intermediate: messages.freelance.expIntermediate,
+    professional: messages.freelance.expProfessional,
+    expert: messages.freelance.expExpert,
+  };
+
+  return labels[level];
+}
 
 export const AVAILABILITIES = ['available', 'busy'] as const;
 export type Availability = (typeof AVAILABILITIES)[number];
 
-export const AVAILABILITY_LABELS: Record<Availability, string> = {
-  available: "Bo'sh",
-  busy: 'Band',
-};
+export function availabilityLabel(value: Availability, messages: Messages): string {
+  return value === 'available' ? messages.freelance.available : messages.freelance.busy;
+}
 
 export interface PublicFreelancer {
   id: string;

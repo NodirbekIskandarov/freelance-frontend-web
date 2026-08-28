@@ -13,6 +13,19 @@ export const uz = {
       description:
         "Yopamiz.uz haqida savollar: topshiriq joylash, to'lov, kafolat, freelancer bo'lish va komissiya. Barcha javoblar bir sahifada.",
     },
+    freelance: {
+      title: 'Freelancer qidirish — ishonchli mutaxassislar',
+      description:
+        "Yopamiz.uz'da tasdiqlangan freelancerlar: dasturlash, chizmachilik, kurs ishlari va tarjima. Reyting, narx va shahar bo'yicha tanlang.",
+    },
+    freelancerNotFound: {
+      title: 'Freelancer topilmadi',
+      description: "So'ralgan mutaxassis katalogda mavjud emas.",
+    },
+    freelancer: {
+      title: '{name} — {direction}',
+      description: "{name}: {direction} bo'yicha {jobs} ta bajarilgan ish, reyting {rating}.",
+    },
     materials: {
       title: 'Tayyor materiallar — universitetlar bo‘yicha topshiriqlar',
       description:
@@ -546,6 +559,81 @@ export const uz = {
     downloadFailed: 'Yuklab olishda xato',
     empty: 'Katalogdan yechim sotib oling — u shu yerda doimiy saqlanadi.',
     purchasedAt: 'Sotib olingan: {date}',
+  },
+
+  freelance: {
+    dirSubject: 'Fanlar',
+    dirProgramming: 'Dasturlash',
+    dirCoursework: 'Kurs ishlari',
+    dirIndependent: 'Mustaqil ishlar',
+    dirDiploma: 'Diplom ishlari',
+    dirLab: 'Laboratoriya ishlari',
+    dirDrawing: 'Chizmachilik',
+    dirTranslation: 'Tarjima',
+    dirContent: 'Matn va kontent',
+    dirOther: 'Boshqa ishlar',
+    allDirections: "Barcha yo'nalishlar",
+
+    expBeginner: "Boshlang'ich — 1 yilgacha",
+    expIntermediate: "O'rta — 1–3 yil",
+    expProfessional: 'Professional — 3–5 yil',
+    expExpert: 'Ekspert — 5 yildan ortiq',
+
+    available: "Bo'sh",
+    busy: 'Band',
+
+    taskOpen: 'Ochiq',
+    taskInProgress: 'Bajarilmoqda',
+    taskDelivered: 'Topshirildi',
+    taskCompleted: 'Yakunlandi',
+    taskCancelled: 'Bekor qilindi',
+
+    offerPending: 'Kutilmoqda',
+    offerAccepted: 'Qabul qilindi',
+    offerDeclined: 'Rad etildi',
+    offerWithdrawn: 'Qaytarib olindi',
+
+    statusNone: 'Talaba',
+    statusPending: 'Ariza ko‘rib chiqilmoqda',
+    statusActive: 'Freelancer',
+    statusSuspended: 'Vaqtincha to‘xtatilgan',
+    statusRejected: 'Ariza rad etilgan',
+
+    sortRating: "Reyting bo'yicha",
+    sortNewest: "Yangi qo'shilganlar",
+    sortPriceAsc: 'Narx: arzon',
+    sortPriceDesc: 'Narx: qimmat',
+
+    days: '{count} kun',
+    negotiable: 'Kelishiladi',
+  },
+
+  freelancerCabinet: {
+    activeJobs: 'Faol ishlar',
+    doneJobs: 'Yakunlangan',
+    pendingOffers: 'Javob kutayotgan takliflar',
+    openTasks: 'Ochiq topshiriqlar',
+    pendingWithdrawal: 'Yechib olish kutilmoqda',
+    earnedTotal: 'Jami ishlangan',
+    commissionNote:
+      "Yuqoridagi summalar platforma komissiyasi ayrilgandan keyingi, ya'ni qo'lingizga tegadigan miqdor. Pulni yechib olish",
+    noEarnings: "Hali daromad yo'q. Yakunlangan ish uchun to'lov shu yerda ko'rinadi.",
+    noOffers: "Ochiq topshiriqlar bo'limidan topshiriq tanlab, birinchi taklifingizni yuboring.",
+    withdrawOffer: 'Qaytarib olish',
+    noJobs: "Ochiq topshiriqlarga taklif yuboring — qabul qilingan ishlar shu yerda ko'rinadi.",
+    deliverAgain: 'Qayta topshirish',
+    deliver: 'Ishni topshirish',
+    deliverNotePlaceholder: "Nima qilindi, qanday ishlatiladi, e'tibor beriladigan joylar...",
+    delivering: 'Yuborilmoqda...',
+    deliverSubmit: 'Topshirish',
+    searchTasks: "Topshiriq nomi bo'yicha qidirish",
+    direction: "Yo'nalish",
+    noTasks: "Filtrni o'zgartirib ko'ring — yangi topshiriqlar muntazam qo'shiladi.",
+    sendOffer: 'Taklif yuborish',
+    offerPrice: "Narx (so'm)",
+    offerMessagePlaceholder: "Nima uchun aynan siz? Tajriba, o'xshash ishlar, ish tartibi...",
+    sending: 'Yuborilmoqda...',
+    send: 'Yuborish',
   },
 
   materials: {

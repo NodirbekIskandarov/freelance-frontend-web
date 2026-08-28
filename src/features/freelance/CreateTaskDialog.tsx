@@ -7,23 +7,27 @@ import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { DEADLINE_OPTIONS, type DeadlineDays } from '@/shared/types/exchange';
-import { WORK_DIRECTION_LABELS, WORK_DIRECTIONS } from '@/shared/types/publicFreelance';
+import { workDirectionLabel, WORK_DIRECTIONS } from '@/shared/types/publicFreelance';
 import type { WorkDirection } from '@/shared/types/publicFreelance';
 
 import { useCreateTaskMutation } from './exchangeApi';
-
-const directionOptions = WORK_DIRECTIONS.map((value) => ({
-  value,
-  label: WORK_DIRECTION_LABELS[value],
-}));
-
-const deadlineOptions = DEADLINE_OPTIONS.map((days) => ({
-  value: String(days),
-  label: `${days} kun`,
-}));
+import { useT } from '@/i18n/useT';
 
 export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t, m } = useT();
   const [createTask, { isLoading, error, reset }] = useCreateTaskMutation();
+
+  /* Ro'yxatlar komponent ICHIDA: yorliqlar tilga bog'liq va modul
+     yuklanganda qaysi til tanlanganini bilib bo'lmaydi. */
+  const directionOptions = WORK_DIRECTIONS.map((value) => ({
+    value,
+    label: workDirectionLabel(value, m),
+  }));
+
+  const deadlineOptions = DEADLINE_OPTIONS.map((days) => ({
+    value: String(days),
+    label: t((x) => x.freelance.days, { count: days }),
+  }));
 
   const [title, setTitle] = useState('');
   const [direction, setDirection] = useState<WorkDirection>('programming');

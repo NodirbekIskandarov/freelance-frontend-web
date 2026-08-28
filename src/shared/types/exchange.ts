@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 import type { WorkDirection } from './publicFreelance';
 
 /**
@@ -18,23 +20,31 @@ export const TASK_STATUSES = [
 ] as const;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
-export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
-  open: 'Ochiq',
-  in_progress: 'Bajarilmoqda',
-  delivered: 'Topshirildi',
-  completed: 'Yakunlandi',
-  cancelled: 'Bekor qilindi',
-};
+export function taskStatusLabel(status: TaskStatus, messages: Messages): string {
+  const labels: Record<TaskStatus, string> = {
+    open: messages.freelance.taskOpen,
+    in_progress: messages.freelance.taskInProgress,
+    delivered: messages.freelance.taskDelivered,
+    completed: messages.freelance.taskCompleted,
+    cancelled: messages.freelance.taskCancelled,
+  };
+
+  return labels[status];
+}
 
 export const OFFER_STATUSES = ['pending', 'accepted', 'declined', 'withdrawn'] as const;
 export type OfferStatus = (typeof OFFER_STATUSES)[number];
 
-export const OFFER_STATUS_LABELS: Record<OfferStatus, string> = {
-  pending: 'Kutilmoqda',
-  accepted: 'Qabul qilindi',
-  declined: 'Rad etildi',
-  withdrawn: 'Qaytarib olindi',
-};
+export function offerStatusLabel(status: OfferStatus, messages: Messages): string {
+  const labels: Record<OfferStatus, string> = {
+    pending: messages.freelance.offerPending,
+    accepted: messages.freelance.offerAccepted,
+    declined: messages.freelance.offerDeclined,
+    withdrawn: messages.freelance.offerWithdrawn,
+  };
+
+  return labels[status];
+}
 
 /** Muddat tanlovi kunlarda — backend `enum` sifatida qabul qiladi. */
 export const DEADLINE_OPTIONS = [1, 3, 5, 7, 14, 30] as const;

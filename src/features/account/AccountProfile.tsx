@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { TextField } from '@/components/ui/Field';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { FREELANCER_STATUS_LABELS, displayName, type AppUser } from '@/shared/types/auth';
+import { freelancerStatusLabel, displayName, type AppUser } from '@/shared/types/auth';
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation,
 } from '@/features/profile/profileApi';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -24,14 +26,14 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 /** O'zgartirib bo'lmaydigan maydonlar — ular boshqa oqimlarda boshqariladi. */
-function readOnlyRows(user: AppUser): { label: string; value: string }[] {
+function readOnlyRows(user: AppUser, m: Messages): { label: string; value: string }[] {
   return [
     { label: 'Telefon raqam', value: user.phone ?? '—' },
     { label: 'Email', value: user.email || '—' },
     { label: 'Universitet', value: user.profile?.university_display || '—' },
     {
       label: 'Holat',
-      value: FREELANCER_STATUS_LABELS[user.freelancer_profile?.status ?? 'none'],
+      value: freelancerStatusLabel(user.freelancer_profile?.status ?? 'none', m),
     },
   ];
 }
@@ -171,6 +173,7 @@ function ProfileForm({ user, onDone }: { user: AppUser; onDone: () => void }) {
 }
 
 export function AccountProfile() {
+  const { m } = useT();
   const { data: user, isLoading, error } = useGetProfileQuery();
   const [editing, setEditing] = useState(false);
 
@@ -207,7 +210,7 @@ export function AccountProfile() {
         ) : (
           <dl className="divide-y divide-border">
             <Row label="Ism familiya" value={displayName(user)} />
-            {readOnlyRows(user).map((row) => (
+            {readOnlyRows(user, m).map((row) => (
               <Row key={row.label} label={row.label} value={row.value} />
             ))}
             <Row label="Telegram" value={user.profile?.telegram || '—'} />

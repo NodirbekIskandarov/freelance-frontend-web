@@ -15,12 +15,14 @@ import {
 } from '@/features/freelance/exchangeApi';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { TASK_STATUS_LABELS, TASK_STATUSES, type TaskStatus } from '@/shared/types/exchange';
+import { taskStatusLabel, TASK_STATUSES, type TaskStatus } from '@/shared/types/exchange';
 import type { ExchangeTask } from '@/shared/types/exchange';
-import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { workDirectionLabel } from '@/shared/types/publicFreelance';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 export function FreelancerOrders() {
+  const { m } = useT();
   const [status, setStatus] = useState<TaskStatus | 'all'>('all');
   const [deliverTask, setDeliverTask] = useState<ExchangeTask | null>(null);
 
@@ -48,7 +50,7 @@ export function FreelancerOrders() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : TASK_STATUS_LABELS[item]}
+            {item === 'all' ? 'Barchasi' : taskStatusLabel(item, m)}
           </button>
         ))}
       </div>
@@ -80,6 +82,7 @@ export function FreelancerOrders() {
 }
 
 function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void }) {
+  const { m } = useT();
   const money = useMoney();
   // Fayl va daromad hisobi faqat tafsilotda keladi.
   const { data: detail } = useGetTaskQuery(job.id);
@@ -90,7 +93,7 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-bold text-foreground">{job.title}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            {job.client?.full_name ?? 'Mijoz'} &middot; {WORK_DIRECTION_LABELS[job.direction]}
+            {job.client?.full_name ?? 'Mijoz'} &middot; {workDirectionLabel(job.direction, m)}
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground/80">
             <CalendarDays className="size-3.5" />

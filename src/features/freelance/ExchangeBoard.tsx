@@ -20,7 +20,7 @@ import { TextAreaField } from '@/components/ui/Field';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { ExchangeOffer, ExchangeTask } from '@/shared/types/exchange';
-import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { workDirectionLabel } from '@/shared/types/publicFreelance';
 
 import { CreateTaskDialog } from './CreateTaskDialog';
 import { ReviewTaskModal } from './ReviewTaskModal';
@@ -33,6 +33,7 @@ import {
   useGetTaskQuery,
 } from './exchangeApi';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 export function ExchangeBoard() {
   const { data, isLoading, error } = useGetMyTasksQuery({
@@ -212,6 +213,7 @@ function TaskListItem({
   active: boolean;
   onSelect: () => void;
 }) {
+  const { m } = useT();
   const money = useMoney();
 
   return (
@@ -234,7 +236,7 @@ function TaskListItem({
       </div>
 
       <p className="mt-1.5 text-[11px] text-muted-foreground">
-        {WORK_DIRECTION_LABELS[task.direction]} &middot; {task.deadline_days} kun &middot;{' '}
+        {workDirectionLabel(task.direction, m)} &middot; {task.deadline_days} kun &middot;{' '}
         {task.reference}
       </p>
 
@@ -246,6 +248,7 @@ function TaskListItem({
 }
 
 function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void }) {
+  const { m } = useT();
   const money = useMoney();
   // Tafsilot alohida so'raladi: ro'yxat javobida fayl va komissiya yo'q.
   const { data: detail } = useGetTaskQuery(task.id);
@@ -271,7 +274,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
           <TaskStatusBadge status={task.status} className="shrink-0" />
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          {WORK_DIRECTION_LABELS[task.direction]} &middot; {task.deadline_days} kun &middot;{' '}
+          {workDirectionLabel(task.direction, m)} &middot; {task.deadline_days} kun &middot;{' '}
           <span className="font-mono">{task.reference}</span>
         </p>
 

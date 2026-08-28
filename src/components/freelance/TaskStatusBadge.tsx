@@ -1,7 +1,10 @@
+'use client';
+
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import {
-  OFFER_STATUS_LABELS,
-  TASK_STATUS_LABELS,
+  offerStatusLabel,
+  taskStatusLabel,
   type OfferStatus,
   type TaskStatus,
 } from '@/shared/types/exchange';
@@ -25,8 +28,10 @@ const base =
   'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap leading-none';
 
 export function TaskStatusBadge({ status, className }: { status: TaskStatus; className?: string }) {
+  const { m } = useT();
+
   return (
-    <span className={cn(base, taskTones[status], className)}>{TASK_STATUS_LABELS[status]}</span>
+    <span className={cn(base, taskTones[status], className)}>{taskStatusLabel(status, m)}</span>
   );
 }
 
@@ -37,7 +42,9 @@ export function OfferStatusBadge({
   status: OfferStatus;
   className?: string;
 }) {
+  const { m } = useT();
+
   return (
-    <span className={cn(base, offerTones[status], className)}>{OFFER_STATUS_LABELS[status]}</span>
+    <span className={cn(base, offerTones[status], className)}>{offerStatusLabel(status, m)}</span>
   );
 }

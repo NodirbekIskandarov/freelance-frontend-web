@@ -183,7 +183,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
 
   const chips = useMemo(
     () => [{ value: 'all', label: m.common.all }, ...directionOptions],
-    [directionOptions],
+    [directionOptions, m.common.all],
   );
 
   return (

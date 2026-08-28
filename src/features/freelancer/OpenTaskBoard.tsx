@@ -12,23 +12,22 @@ import { useGetTaskQuery, useSubmitOfferMutation } from '@/features/freelance/ex
 import { useGetOpenTasksQuery } from '@/features/freelance/exchangeApi';
 import { DEADLINE_OPTIONS, type DeadlineDays, type ExchangeTask } from '@/shared/types/exchange';
 import {
-  WORK_DIRECTION_LABELS,
+  workDirectionLabel,
   WORK_DIRECTIONS,
   type WorkDirection,
 } from '@/shared/types/publicFreelance';
 import { useMoney } from '@/lib/useMoney';
-
-const directionOptions = [
-  { value: '', label: "Barcha yo'nalishlar" },
-  ...WORK_DIRECTIONS.map((value) => ({ value, label: WORK_DIRECTION_LABELS[value] })),
-];
-
-const deadlineOptions = DEADLINE_OPTIONS.map((days) => ({
-  value: String(days),
-  label: `${days} kun`,
-}));
+import { useT } from '@/i18n/useT';
 
 export function OpenTaskBoard() {
+  const { t, m } = useT();
+
+  /* Ro'yxatlar komponent ICHIDA: yorliqlar tilga bog'liq. */
+  const directionOptions = [
+    { value: '', label: m.freelance.allDirections },
+    ...WORK_DIRECTIONS.map((value) => ({ value, label: workDirectionLabel(value, m) })),
+  ];
+
   const [direction, setDirection] = useState('');
   const [search, setSearch] = useState('');
   const [offerTask, setOfferTask] = useState<ExchangeTask | null>(null);
@@ -94,6 +93,7 @@ export function OpenTaskBoard() {
 }
 
 function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }) {
+  const { m } = useT();
   const money = useMoney();
   // Fayl faqat tafsilotda keladi — kartani ochmasdan ham ko'rsatish uchun
   // yengil so'rov yuboriladi; RTK Query uni kesh orqali bir marta oladi.
@@ -105,7 +105,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-bold text-foreground">{task.title}</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            {WORK_DIRECTION_LABELS[task.direction]} &middot; {task.deadline_days} kun &middot;{' '}
+            {workDirectionLabel(task.direction, m)} &middot; {task.deadline_days} kun &middot;{' '}
             <span className="font-mono">{task.reference}</span>
           </p>
         </div>
@@ -149,6 +149,13 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
 }
 
 function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () => void }) {
+  const { t, m } = useT();
+
+  const deadlineOptions = DEADLINE_OPTIONS.map((days) => ({
+    value: String(days),
+    label: t((x) => x.freelance.days, { count: days }),
+  }));
+
   const money = useMoney();
   const [submitOffer, { isLoading, error, reset }] = useSubmitOfferMutation();
   const [price, setPrice] = useState('');
