@@ -26,6 +26,16 @@ export const uz = {
       title: '{name} — {direction}',
       description: "{name}: {direction} bo'yicha {jobs} ta bajarilgan ish, reyting {rating}.",
     },
+    legal: {
+      title: 'Foydalanish shartlari va maxfiylik siyosati',
+      description:
+        "Yopamiz.uz platformasidan foydalanish qoidalari, to'lov va qaytarish shartlari hamda shaxsiy ma'lumotlarni qayta ishlash siyosati.",
+    },
+    about: {
+      title: 'Biz haqimizda',
+      description:
+        "Yopamiz.uz — O'zbekiston talabalari uchun akademik yordam platformasi. Tayyor materiallar, tekshirilgan freelancerlar va himoyalangan to'lov.",
+    },
     materials: {
       title: 'Tayyor materiallar — universitetlar bo‘yicha topshiriqlar',
       description:
@@ -636,6 +646,34 @@ export const uz = {
     send: 'Yuborish',
   },
 
+  about: {
+    crumb: 'Biz haqimizda',
+    heading: 'Talabalar uchun bitta ishonchli joy',
+    lead: "Yopamiz.uz — O'zbekiston talabalari uchun akademik yordam platformasi. Bu yerda tayyor materiallarni topasiz yoki o'z topshirig'ingizni birjaga joylab, tekshirilgan mutaxassisdan yordam olasiz. Maqsadimiz — talabani ishonchsiz e'lonlar va noaniq kelishuvlardan xalos qilish.",
+    statUniversities: 'universitet',
+    statSubjects: 'fan',
+    statFreelancers: 'freelancer',
+    statSuccess: 'muvaffaqiyatli ish',
+    valuesTitle: 'Nimaga tayanamiz',
+    value1: 'Ishonch',
+    value1Body:
+      "Har bir freelancer hujjatlari bilan tasdiqlanadi. To'lov ish topshirilgunicha platformada saqlanadi.",
+    value2: 'Akademik halollik',
+    value2Body:
+      "Freelancerlar ishni o'zlari bajaradi — tayyor nusxa sotish taqiqlanadi. Materiallar tekshiruvdan o'tadi.",
+    value3: 'Tezlik',
+    value3Body:
+      'Tayyor materialni darhol yuklab olasiz, birjaga joylangan topshiriqqa esa odatda bir necha soatda taklif keladi.',
+    value4: 'Qo‘llab-quvvatlash',
+    value4Body:
+      "Nizo chiqsa jamoa masalani ko'rib chiqadi: pul qaytarish yoki ishni qayta bajartirish imkoniyati bor.",
+    joinTitle: "Bizga qo'shilishni xohlaysizmi?",
+    joinBody:
+      "Agar biror sohada kuchli bo'lsangiz — freelancer bo'lib, talabalarga yordam bering va daromad qiling. Ariza 1–3 ish kunida ko'rib chiqiladi.",
+    joinAction: "Freelancer bo'lish",
+    browseMaterials: "Materiallarni ko'rish",
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',
@@ -654,6 +692,12 @@ export const uz = {
     noSubjectsYet: "Bu institutda hozircha fan yo'q — birinchi bo'lib ariza qoldiring.",
     changeFilter: "Filtrni o'zgartirib ko'ring yoki ariza qoldiring.",
     showingRange: "{total} ta fandan {from}–{to} ko'rsatilmoqda",
+    legalHeading: 'Foydalanish shartlari',
+    legalLead:
+      "Platformadan foydalanish qoidalari va shaxsiy ma'lumotlarni qayta ishlash siyosati.",
+    legalCrumb: 'Qoidalar',
+    contents: 'Mundarija',
+    questionsAt: "Savollar bo'yicha:",
     breadcrumbHome: 'Bosh sahifa',
     breadcrumbMaterials: 'Tayyor materiallar',
     heading: 'Tayyor materiallar',

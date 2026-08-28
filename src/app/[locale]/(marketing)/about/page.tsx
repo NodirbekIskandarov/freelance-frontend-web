@@ -4,55 +4,66 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { siteConfig } from '@/config/site';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { getMessages } from '@/i18n/messages';
+import type { Messages } from '@/i18n/messages/uz';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 
-export const metadata = buildMetadata({
-  title: 'Biz haqimizda',
-  description:
-    "Yopamiz.uz — O'zbekiston talabalari uchun akademik yordam platformasi. Tayyor materiallar, tekshirilgan freelancerlar va himoyalangan to'lov.",
-  path: '/about',
-});
+export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const seo = (await getMessages(locale)).seo.about;
 
-const crumbs = [
-  { name: 'Bosh sahifa', path: '/' },
-  { name: 'Biz haqimizda', path: '/about' },
-];
+  return buildMetadata({ title: seo.title, description: seo.description, path: '/about', locale });
+}
 
+/* Matn TARJIMADAN: ro'yxat modul yuklanganda tuziladi va o'sha paytda
+   qaysi til tanlanganini bilib bo'lmaydi. */
 const values = [
   {
     icon: ShieldCheck,
-    title: 'Ishonch',
-    body: "Har bir freelancer hujjatlari bilan tasdiqlanadi. To'lov ish topshirilgunicha platformada saqlanadi.",
+    title: (m: Messages) => m.about.value1,
+    body: (m: Messages) => m.about.value1Body,
   },
   {
     icon: GraduationCap,
-    title: 'Akademik halollik',
-    body: "Freelancerlar ishni o'zlari bajaradi — tayyor nusxa sotish taqiqlanadi. Materiallar tekshiruvdan o'tadi.",
+    title: (m: Messages) => m.about.value2,
+    body: (m: Messages) => m.about.value2Body,
   },
   {
     icon: Sparkles,
-    title: 'Tezlik',
-    body: 'Tayyor materialni darhol yuklab olasiz, birjaga joylangan topshiriqqa esa odatda bir necha soatda taklif keladi.',
+    title: (m: Messages) => m.about.value3,
+    body: (m: Messages) => m.about.value3Body,
   },
   {
     icon: HeartHandshake,
-    title: 'Qo‘llab-quvvatlash',
-    body: "Nizo chiqsa jamoa masalani ko'rib chiqadi: pul qaytarish yoki ishni qayta bajartirish imkoniyati bor.",
+    title: (m: Messages) => m.about.value4,
+    body: (m: Messages) => m.about.value4Body,
   },
 ];
 
-const stats = [
-  { value: '10', label: 'universitet' },
-  { value: '47', label: 'fan' },
-  { value: '500+', label: 'freelancer' },
-  { value: '98%', label: 'muvaffaqiyatli ish' },
-];
+export default async function AboutPage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const messages = await getMessages(locale);
+  const m = messages.about;
 
-export default function AboutPage() {
+  const crumbs = [
+    { name: messages.materials.breadcrumbHome, path: '/' },
+    { name: m.crumb, path: '/about' },
+  ];
+
+  const stats = [
+    { value: '10', label: m.statUniversities },
+    { value: '47', label: m.statSubjects },
+    { value: '500+', label: m.statFreelancers },
+    { value: '98%', label: m.statSuccess },
+  ];
+
   const organizationJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: 'Biz haqimizda',
+    name: m.crumb,
     url: absoluteUrl('/about'),
     mainEntity: {
       '@type': 'Organization',
@@ -78,14 +89,9 @@ export default function AboutPage() {
 
         <header className="mt-6 max-w-3xl">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Talabalar uchun bitta ishonchli joy
+            {m.heading}
           </h1>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            Yopamiz.uz — O&apos;zbekiston talabalari uchun akademik yordam platformasi. Bu yerda
-            tayyor materiallarni topasiz yoki o&apos;z topshirig&apos;ingizni birjaga joylab,
-            tekshirilgan mutaxassisdan yordam olasiz. Maqsadimiz — talabani ishonchsiz e&apos;lonlar
-            va noaniq kelishuvlardan xalos qilish.
-          </p>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">{m.lead}</p>
         </header>
 
         <dl className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -103,37 +109,38 @@ export default function AboutPage() {
         </dl>
 
         <section className="mt-12">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Nimaga tayanamiz</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">{m.valuesTitle}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {values.map((value) => (
+            {values.map((value, index) => (
               <article
-                key={value.title}
+                key={index}
                 className="rounded-2xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <span className="grid size-10 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
                   <value.icon className="size-5" />
                 </span>
-                <h3 className="mt-3 text-base font-bold text-foreground">{value.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{value.body}</p>
+                <h3 className="mt-3 text-base font-bold text-foreground">
+                  {value.title(messages)}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  {value.body(messages)}
+                </p>
               </article>
             ))}
           </div>
         </section>
 
         <section className="mt-12 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 sm:p-8">
-          <h2 className="text-xl font-bold tracking-tight text-foreground">
-            Bizga qo&apos;shilishni xohlaysizmi?
-          </h2>
+          <h2 className="text-xl font-bold tracking-tight text-foreground">{m.joinTitle}</h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Agar biror sohada kuchli bo&apos;lsangiz — freelancer bo&apos;lib, talabalarga yordam
-            bering va daromad qiling. Ariza 1–3 ish kunida ko&apos;rib chiqiladi.
+            {m.joinBody}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <ButtonLink href="/freelance/apply" variant="emerald">
-              Freelancer bo&apos;lish
+              {m.joinAction}
             </ButtonLink>
             <ButtonLink href="/materials" variant="outline">
-              Materiallarni ko&apos;rish
+              {m.browseMaterials}
             </ButtonLink>
           </div>
         </section>

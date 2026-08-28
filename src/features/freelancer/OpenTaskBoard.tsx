@@ -20,7 +20,7 @@ import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
 
 export function OpenTaskBoard() {
-  const { t, m } = useT();
+  const { m } = useT();
 
   /* Ro'yxatlar komponent ICHIDA: yorliqlar tilga bog'liq. */
   const directionOptions = [
