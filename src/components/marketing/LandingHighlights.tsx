@@ -1,5 +1,5 @@
 import { BookOpen, ClipboardList, Landmark, Layers, ArrowRight, CircleCheck } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 
 import { Container } from '@/components/ui/Container';
 import { toSlug, toSlugId } from '@/lib/slug';

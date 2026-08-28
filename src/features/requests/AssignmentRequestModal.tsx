@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { ASSIGNMENT_TAB_ORDER, assignmentTypeLabel } from '@/shared/types/assignmentTypes';
@@ -13,11 +14,6 @@ import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 
 import { useSubmitAssignmentRequestMutation } from './requestsApi';
-
-const TYPE_OPTIONS = ASSIGNMENT_TAB_ORDER.map((type) => ({
-  value: type,
-  label: assignmentTypeLabel(type),
-}));
 
 /** Backenddagi chegara (`MAX_REQUESTED_VARIANTS`). */
 const MAX_VARIANTS = 100;
@@ -67,8 +63,16 @@ export function AssignmentRequestModal({
   subjectSemester?: number | null;
   onClose: () => void;
 }) {
+  const { m } = useT();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [submit, { isLoading, error, reset }] = useSubmitAssignmentRequestMutation();
+
+  /* Ro'yxat komponent ichida: yorliqlar tilga bog'liq va modul
+     yuklanganda qaysi til tanlanganini bilib bo'lmaydi. */
+  const typeOptions = ASSIGNMENT_TAB_ORDER.map((item) => ({
+    value: item,
+    label: assignmentTypeLabel(item, m.assignmentTypes),
+  }));
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [type, setType] = useState<string>(ASSIGNMENT_TAB_ORDER[0]);
@@ -195,7 +199,7 @@ export function AssignmentRequestModal({
               aria-label="Ish turi"
               value={type}
               onChange={setType}
-              options={TYPE_OPTIONS}
+              options={typeOptions}
             />
           </div>
 

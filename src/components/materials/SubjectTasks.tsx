@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 
 import { AssignmentComments } from '@/features/comments/AssignmentComments';
 import { AssignmentRequestModal } from '@/features/requests/AssignmentRequestModal';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { useUrlState } from '@/lib/useUrlState';
 import type { PublicSolution, Subject } from '@/shared/types/catalogue';
@@ -72,6 +73,7 @@ export function SubjectTasks({
   /** Chuqur havola bilan kelinganda oldindan tanlanadigan topshiriq. */
   initialTaskId?: string;
 }) {
+  const { t, m } = useT();
   const initial = tasks.find((task) => task.id === initialTaskId) ?? tasks[0];
 
   /*
@@ -206,7 +208,9 @@ export function SubjectTasks({
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
-                    <span className="whitespace-nowrap">{assignmentTypeLabel(item)}</span>
+                    <span className="whitespace-nowrap">
+                      {assignmentTypeLabel(item, m.assignmentTypes)}
+                    </span>
                     <span
                       className={cn(
                         'inline-flex min-w-[1.25rem] items-center justify-center rounded-md px-1 text-[11px] tabular-nums',
@@ -233,7 +237,7 @@ export function SubjectTasks({
                 id="task-search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Qidirish..."
+                placeholder={m.tasks.searchPlaceholder}
                 className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
               />
               {query && (
@@ -258,7 +262,7 @@ export function SubjectTasks({
               )}
             >
               <SlidersHorizontal className="size-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">Filtr</span>
+              <span className="hidden sm:inline">{m.tasks.filter}</span>
               {filtersActive ? (
                 <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-card" />
               ) : null}
@@ -270,20 +274,22 @@ export function SubjectTasks({
       <section className="mt-3 grid gap-3 lg:grid-cols-[320px_1fr] lg:items-start lg:gap-4">
         <aside className="flex w-full min-w-0 flex-col rounded-2xl border border-border/70 bg-card">
           <div className="border-b border-border/60 px-3 py-2.5 sm:px-4">
-            <p className="text-[13px] font-medium text-foreground">{assignmentTypeLabel(type)}</p>
-            <p className="text-[11px] text-muted-foreground">{filtered.length} ta topshiriq</p>
+            <p className="text-[13px] font-medium text-foreground">
+              {assignmentTypeLabel(type, m.assignmentTypes)}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              {t((x) => x.materials.taskCount, { count: filtered.length })}
+            </p>
           </div>
 
           <div className="max-h-[420px] min-h-0 flex-1 space-y-1 overflow-y-auto p-2 sm:p-2.5">
             {filtered.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center">
                 <p className="text-sm font-medium text-foreground">
-                  {counts[type] ? 'Topshiriq topilmadi' : "Bu bo'lim hozircha bo'sh"}
+                  {counts[type] ? m.tasks.notFound : m.tasks.sectionEmpty}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {counts[type]
-                    ? "Qidiruv yoki filtrni o'zgartiring."
-                    : "Birinchi bo'lib topshiriq yuklang."}
+                  {counts[type] ? m.tasks.changeSearch : m.tasks.beFirst}
                 </p>
               </div>
             ) : (
@@ -320,20 +326,22 @@ export function SubjectTasks({
                         {task.title}
                       </span>
                       <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
-                        {subject.course ? `${subject.course}-kurs · ` : ''}
+                        {subject.course
+                          ? `${t((x) => x.materials.course, { course: subject.course })} · `
+                          : ''}
                         {task.variants.length > 0
-                          ? `${task.variants.length} ta variant`
-                          : 'Variantsiz'}
+                          ? t((x) => x.tasks.variantCount, { count: task.variants.length })
+                          : m.tasks.noVariants}
                       </span>
                     </span>
 
                     <span
                       title={
                         availability === 'has_solution'
-                          ? 'Yechim bor'
+                          ? m.tasks.hasSolution
                           : availability === 'demand'
-                            ? 'Talab mavjud'
-                            : "Yechim yo'q"
+                            ? m.tasks.hasDemand
+                            : m.tasks.noSolution
                       }
                       className={cn(
                         'size-2 shrink-0 rounded-full',
@@ -357,9 +365,11 @@ export function SubjectTasks({
               <header className="border-b border-border/60 pb-4">
                 <h2 className="text-base font-bold text-foreground sm:text-lg">{active.title}</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {assignmentTypeLabel(active.type)}
-                  {subject.course ? ` · ${subject.course}-kurs` : ''} · {active.variants.length} ta
-                  variant
+                  {assignmentTypeLabel(active.type, m.assignmentTypes)}
+                  {subject.course
+                    ? ` · ${t((x) => x.materials.course, { course: subject.course })}`
+                    : ''}{' '}
+                  · {t((x) => x.tasks.variantCount, { count: active.variants.length })}
                 </p>
 
                 {active.description && (
@@ -393,10 +403,8 @@ export function SubjectTasks({
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <FileText className="size-8 text-muted-foreground" />
-              <p className="mt-3 text-sm font-medium text-foreground">Topshiriq tanlanmagan</p>
-              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Chapdagi ro&apos;yxatdan tanlang yoki yangi topshiriq yuklang.
-              </p>
+              <p className="mt-3 text-sm font-medium text-foreground">{m.tasks.nothingSelected}</p>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.tasks.pickFromList}</p>
             </div>
           )}
         </div>

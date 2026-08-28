@@ -19,14 +19,6 @@ export const ASSIGNMENT_TYPES = [
 ] as const;
 export type AssignmentType = (typeof ASSIGNMENT_TYPES)[number];
 
-export const ASSIGNMENT_TYPE_LABELS: Record<AssignmentType, string> = {
-  independent: 'Mustaqil ishlar',
-  practical: 'Amaliy ishlar',
-  laboratory: 'Laboratoriya ishlari',
-  course_work: 'Kurs ishlari',
-  other: 'Boshqa',
-};
-
 /** Fan sahifasidagi bo'limlar — dizayndagi ketma-ketlik. */
 export const ASSIGNMENT_TAB_ORDER = ['independent', 'practical', 'laboratory'] as const;
 
@@ -37,6 +29,14 @@ export function isVisibleAssignmentType(type: string): type is VisibleAssignment
   return (ASSIGNMENT_TAB_ORDER as readonly string[]).includes(type);
 }
 
-export function assignmentTypeLabel(type: string): string {
-  return ASSIGNMENT_TYPE_LABELS[type as AssignmentType] ?? ASSIGNMENT_TYPE_LABELS.other;
+/**
+ * Turning ko'rinadigan nomi.
+ *
+ * Yorliqlar bu faylda EMAS, tarjima lug'atida: ilgari o'zbekcha nomlar
+ * shu yerda turardi va rus tilida ham o'zbekcha chiqardi. Lug'at
+ * parametr sifatida beriladi — shunda funksiya serverda ham, mijozda
+ * ham bir xil ishlaydi.
+ */
+export function assignmentTypeLabel(type: string, labels: Record<AssignmentType, string>): string {
+  return labels[type as AssignmentType] ?? labels.other;
 }

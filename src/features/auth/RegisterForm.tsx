@@ -1,11 +1,12 @@
 'use client';
 
 import { ArrowLeft, Loader2, ShieldCheck, UserRound } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { useUpdateProfileMutation } from '@/features/profile/profileApi';
+import { useT } from '@/i18n/useT';
 import { getApiErrorMessage } from '@/shared/api';
 import type { AppUser } from '@/shared/types/auth';
 
@@ -53,6 +54,7 @@ function isExistingAccount(user: AppUser): boolean {
  */
 export function RegisterForm() {
   const router = useRouter();
+  const { t, m } = useT();
 
   const [sendCode, { isLoading: isSending }] = useSendPhoneCodeMutation();
   const [verifyCode, { isLoading: isVerifying }] = useVerifyPhoneCodeMutation();
@@ -74,7 +76,7 @@ export function RegisterForm() {
     event.preventDefault();
 
     if (!isCompletePhone(phone)) {
-      setError("Telefon raqam to'liq emas. Masalan: 90 123 45 67");
+      setError(m.auth.phoneIncomplete);
       return;
     }
     setError(null);
@@ -93,7 +95,7 @@ export function RegisterForm() {
     event.preventDefault();
 
     if (code.length !== CODE_LENGTH) {
-      setError(`Kod ${CODE_LENGTH} xonali bo'lishi kerak`);
+      setError(t((x) => x.register.codeLength, { length: CODE_LENGTH }));
       return;
     }
     setError(null);
@@ -121,13 +123,13 @@ export function RegisterForm() {
     event.preventDefault();
 
     if (!fullName.trim()) {
-      setError('Ism familiyani kiriting');
+      setError(m.register.fullNameRequired);
       return;
     }
 
     const check = validatePassword(password);
     if (!check.valid) {
-      setError(check.errors[0] ?? null);
+      setError(check.failed[0] ? m.password[check.failed[0]] : null);
       return;
     }
     setError(null);
@@ -165,8 +167,8 @@ export function RegisterForm() {
       <AuthCard>
         <AuthCardHeader
           icon={<ShieldCheck className="size-6" />}
-          title="Raqamni tasdiqlang"
-          subtitle={`+998 ${phone} raqamiga yuborilgan kodni kiriting.`}
+          title={m.register.codeTitle}
+          subtitle={t((x) => x.register.codeSubtitle, { phone })}
         />
 
         <form onSubmit={handleVerify} className="flex flex-col gap-4">
@@ -183,11 +185,7 @@ export function RegisterForm() {
               onClick={() => setCode(demoCode)}
               className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2 text-center text-xs text-muted-foreground transition-colors hover:bg-amber-500/10"
             >
-              SMS hali ulanmagan. Sinov kodi:{' '}
-              <span className="font-mono font-semibold text-amber-700 dark:text-amber-400">
-                {demoCode}
-              </span>{' '}
-              — bosing, o&apos;zi qo&apos;yiladi.
+              {t((x) => x.register.demoHint, { code: demoCode })}
             </button>
           ) : null}
 
@@ -199,7 +197,7 @@ export function RegisterForm() {
             disabled={code.length !== CODE_LENGTH}
           >
             {isVerifying && <Loader2 className="size-4 animate-spin" />}
-            {isVerifying ? 'Tekshirilmoqda...' : 'Tasdiqlash'}
+            {isVerifying ? m.register.verifying : m.register.verify}
           </AuthPrimaryButton>
 
           <div className="flex items-center justify-between text-sm">
@@ -212,7 +210,7 @@ export function RegisterForm() {
               className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="size-4" />
-              Raqamni o&apos;zgartirish
+              {m.register.changePhone}
             </button>
 
             <button
@@ -222,11 +220,11 @@ export function RegisterForm() {
                 void sendCode({ phone: toApiPhone(phone) })
                   .unwrap()
                   .then((result) => setDemoCode(result.demo_code ?? null))
-                  .catch(() => setError("Kodni qayta yuborib bo'lmadi"))
+                  .catch(() => setError(m.register.resendFailed))
               }
               className="font-medium text-emerald-600 transition-colors hover:underline disabled:opacity-60 dark:text-emerald-400"
             >
-              {isSending ? 'Yuborilmoqda...' : 'Kodni qayta yuborish'}
+              {isSending ? m.register.sending : m.register.resend}
             </button>
           </div>
         </form>
@@ -239,31 +237,31 @@ export function RegisterForm() {
       <AuthCard>
         <AuthCardHeader
           icon={<UserRound className="size-6" />}
-          title="Ma'lumotlaringizni kiriting"
-          subtitle="Raqam tasdiqlandi. Endi ism va parol qo'ying."
+          title={m.register.profileTitle}
+          subtitle={m.register.profileSubtitle}
         />
 
         <form onSubmit={handleFinish} className="flex flex-col gap-4">
           <div>
-            <AuthFieldLabel htmlFor="register-name">Ism familiya</AuthFieldLabel>
+            <AuthFieldLabel htmlFor="register-name">{m.register.fullName}</AuthFieldLabel>
             <AuthInput
               id="register-name"
               required
               autoComplete="name"
-              placeholder="Dilnoza Karimova"
+              placeholder={m.register.fullNamePlaceholder}
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
             />
           </div>
 
           <div>
-            <AuthFieldLabel htmlFor="register-password">Parol</AuthFieldLabel>
+            <AuthFieldLabel htmlFor="register-password">{m.auth.password}</AuthFieldLabel>
             <AuthInput
               id="register-password"
               type="password"
               required
               autoComplete="new-password"
-              placeholder="••••••••"
+              placeholder={m.auth.passwordPlaceholder}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
@@ -274,7 +272,7 @@ export function RegisterForm() {
 
           <AuthPrimaryButton type="submit" loading={isSavingFinal}>
             {isSavingFinal && <Loader2 className="size-4 animate-spin" />}
-            {isSavingFinal ? 'Saqlanmoqda...' : 'Yakunlash'}
+            {isSavingFinal ? m.common.saving : m.register.finish}
           </AuthPrimaryButton>
         </form>
       </AuthCard>
@@ -285,8 +283,8 @@ export function RegisterForm() {
     <AuthCard>
       <AuthCardHeader
         icon={<UserRound className="size-6" />}
-        title="Ro'yxatdan o'tish"
-        subtitle="Raqamingizni kiriting — tasdiqlash kodi yuboramiz."
+        title={m.register.title}
+        subtitle={m.register.subtitle}
       />
 
       <GoogleLoginButton />
@@ -301,17 +299,17 @@ export function RegisterForm() {
 
         <AuthPrimaryButton type="submit" loading={isSending}>
           {isSending && <Loader2 className="size-4 animate-spin" />}
-          {isSending ? 'Yuborilmoqda...' : 'Kod yuborish'}
+          {isSending ? m.register.sending : m.register.sendCode}
         </AuthPrimaryButton>
       </form>
 
       <AuthCardFooter>
-        Hisobingiz bormi?{' '}
+        {m.register.haveAccount}{' '}
         <Link
           href="/login"
           className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
         >
-          Kiring
+          {m.register.goLogin}
         </Link>
       </AuthCardFooter>
     </AuthCard>

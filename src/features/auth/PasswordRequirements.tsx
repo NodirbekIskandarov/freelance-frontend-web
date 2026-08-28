@@ -2,9 +2,10 @@
 
 import { Check, KeyRound, X } from 'lucide-react';
 
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
-import { PASSWORD_RULES, validatePassword } from './passwordPolicy';
+import { validatePassword } from './passwordPolicy';
 
 /**
  * Parol qoidalari — yozilayotgan paytda jonli belgilanadi.
@@ -20,12 +21,13 @@ export function PasswordRequirements({
   password: string;
   className?: string;
 }) {
+  const { m } = useT();
   const { checks, valid } = validatePassword(password);
 
   const items = [
-    { ok: checks.minLength, label: PASSWORD_RULES[0] },
-    { ok: checks.hasLetter, label: PASSWORD_RULES[1] },
-    { ok: checks.hasDigit, label: PASSWORD_RULES[2] },
+    { ok: checks.minLength, label: m.password.minLength },
+    { ok: checks.hasLetter, label: m.password.hasLetter },
+    { ok: checks.hasDigit, label: m.password.hasDigit },
   ];
 
   const doneCount = items.filter((item) => item.ok).length;
@@ -33,7 +35,7 @@ export function PasswordRequirements({
   return (
     <div
       role="group"
-      aria-label="Parol talablari"
+      aria-label={m.password.ariaLabel}
       className={cn(
         'overflow-hidden rounded-xl border',
         valid && password
@@ -46,7 +48,7 @@ export function PasswordRequirements({
       <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-2 dark:border-white/10">
         <span className="flex items-center gap-2 text-xs font-semibold text-foreground dark:text-zinc-200">
           <KeyRound className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-          Parol qo&apos;yish qoidalari
+          {m.password.rulesTitle}
         </span>
         <span
           className={cn(
@@ -89,7 +91,9 @@ export function PasswordRequirements({
       </ul>
 
       <p className="border-t border-border/60 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground dark:border-white/10">
-        <span className="font-medium text-foreground/80 dark:text-zinc-400">Misol: </span>
+        <span className="font-medium text-foreground/80 dark:text-zinc-400">
+          {m.password.example}
+        </span>
         <span className="font-mono text-emerald-700 dark:text-emerald-400">Aliyev2024</span>
         <span className="mx-1">·</span>
         <span className="font-mono text-emerald-700 dark:text-emerald-400">Vali_2024</span>

@@ -1,45 +1,101 @@
 import type { MetadataRoute } from 'next';
 
 import { siteConfig } from '@/config/site';
+import { LOCALES, LOCALE_TAGS, localizeHref, type Locale } from '@/i18n/config';
+import { setRequestLocale } from '@/i18n/requestLocale';
 import { getAllCataloguePaths } from '@/server/catalogue';
 
 /**
  * Katalog yo'llari bir joydan (`getAllCataloguePaths`) keladi — sitemap
  * ham, `generateStaticParams` ham. Yangi universitet qo'shilganda
  * ikkalasi birdan yangilanadi, biri esdan chiqib qolmaydi.
+ *
+ * Har yo'l HAR TIL uchun alohida yozuv bo'lib chiqadi va `alternates`
+ * orqali bir-biriga bog'lanadi. Faqat bitta tilni ko'rsatish ikkinchisini
+ * qidiruv tizimidan yashirardi.
  */
+function entry(
+  path: string,
+  locale: Locale,
+  options: Pick<MetadataRoute.Sitemap[number], 'changeFrequency' | 'priority'>,
+): MetadataRoute.Sitemap[number] {
+  return {
+    url: `${siteConfig.url}${localizeHref(path, locale)}`,
+    alternates: {
+      languages: Object.fromEntries(
+        LOCALES.map((item) => [LOCALE_TAGS[item], `${siteConfig.url}${localizeHref(path, item)}`]),
+      ),
+    },
+    ...options,
+  };
+}
+
+const STATIC_PATHS: {
+  path: string;
+  changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'];
+  priority: number;
+}[] = [
+  { path: '/', changeFrequency: 'daily', priority: 1 },
+  { path: '/materials', changeFrequency: 'daily', priority: 0.9 },
+  { path: '/freelance', changeFrequency: 'daily', priority: 0.8 },
+  { path: '/freelance/apply', changeFrequency: 'monthly', priority: 0.5 },
+  { path: '/faq', changeFrequency: 'monthly', priority: 0.5 },
+  { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
+  { path: '/legal', changeFrequency: 'yearly', priority: 0.3 },
+  { path: '/login', changeFrequency: 'yearly', priority: 0.3 },
+  { path: '/register', changeFrequency: 'yearly', priority: 0.3 },
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { universities, subjects, assignments } = await getAllCataloguePaths();
+  const routes: MetadataRoute.Sitemap = [];
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: siteConfig.url, changeFrequency: 'daily', priority: 1 },
-    { url: `${siteConfig.url}/materials`, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${siteConfig.url}/freelance`, changeFrequency: 'daily', priority: 0.8 },
-    { url: `${siteConfig.url}/freelance/apply`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${siteConfig.url}/faq`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${siteConfig.url}/about`, changeFrequency: 'monthly', priority: 0.4 },
-    { url: `${siteConfig.url}/legal`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteConfig.url}/login`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteConfig.url}/register`, changeFrequency: 'yearly', priority: 0.3 },
-  ];
+  for (const locale of LOCALES) {
+    /*
+     * Slug'lar nomdan yasaladi, nom esa tarjima qilinadi — ya'ni har til
+     * uchun yo'llar ALOHIDA olinishi kerak. Bitta tilning slug'larini
+     * ikkalasiga ishlatish rus sahifalari uchun mavjud bo'lmagan
+     * manzillarni ro'yxatga yozib qo'yardi.
+     */
+    setRequestLocale(locale);
+    const { universities, subjects, assignments } = await getAllCataloguePaths();
 
-  const universityRoutes: MetadataRoute.Sitemap = universities.map((item) => ({
-    url: `${siteConfig.url}/materials/${item.universitySlug}`,
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+    for (const item of STATIC_PATHS) {
+      routes.push(
+        entry(item.path, locale, {
+          changeFrequency: item.changeFrequency,
+          priority: item.priority,
+        }),
+      );
+    }
 
-  const subjectRoutes: MetadataRoute.Sitemap = subjects.map((item) => ({
-    url: `${siteConfig.url}/materials/${item.universitySlug}/${item.subjectSlug}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+    for (const item of universities) {
+      routes.push(
+        entry(`/materials/${item.universitySlug}`, locale, {
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        }),
+      );
+    }
 
-  const assignmentRoutes: MetadataRoute.Sitemap = assignments.map((item) => ({
-    url: `${siteConfig.url}/materials/${item.universitySlug}/${item.subjectSlug}/${item.assignmentSlug}`,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
+    for (const item of subjects) {
+      routes.push(
+        entry(`/materials/${item.universitySlug}/${item.subjectSlug}`, locale, {
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        }),
+      );
+    }
 
-  return [...staticRoutes, ...universityRoutes, ...subjectRoutes, ...assignmentRoutes];
+    for (const item of assignments) {
+      routes.push(
+        entry(
+          `/materials/${item.universitySlug}/${item.subjectSlug}/${item.assignmentSlug}`,
+          locale,
+          { changeFrequency: 'weekly', priority: 0.6 },
+        ),
+      );
+    }
+  }
+
+  return routes;
 }

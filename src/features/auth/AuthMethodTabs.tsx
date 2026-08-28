@@ -2,6 +2,7 @@
 
 import { Mail, Phone } from 'lucide-react';
 
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 export type AuthMethod = 'phone' | 'email';
@@ -27,16 +28,18 @@ export function AuthMethodTabs({
   onChange: (method: AuthMethod) => void;
   emailEnabled?: boolean;
 }) {
+  const { m } = useT();
+
   const tabs = [
-    { id: 'phone' as const, label: 'Telefon', icon: Phone, disabled: false },
-    { id: 'email' as const, label: 'Email', icon: Mail, disabled: !emailEnabled },
+    { id: 'phone' as const, label: m.auth.methodPhone, icon: Phone, disabled: false },
+    { id: 'email' as const, label: m.auth.methodEmail, icon: Mail, disabled: !emailEnabled },
   ];
 
   return (
     <div>
       <div
         role="tablist"
-        aria-label="Kirish usuli"
+        aria-label={m.auth.methodTabsLabel}
         className="grid grid-cols-2 gap-1 rounded-xl border border-border/70 bg-muted/40 p-1 dark:border-white/10 dark:bg-white/[0.04]"
       >
         {tabs.map((tab) => {
@@ -67,7 +70,7 @@ export function AuthMethodTabs({
 
       {!emailEnabled && (
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Email bilan kirish uchun uni profilingizdagi «Kirish usullari»da bog&apos;lang.
+          {m.auth.emailComingSoon}
         </p>
       )}
     </div>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { useChangePasswordMutation } from '@/features/auth/authApi';
 import { PasswordRequirements } from '@/features/auth/PasswordRequirements';
 import { validatePassword } from '@/features/auth/passwordPolicy';
+import { useT } from '@/i18n/useT';
 import { getApiErrorMessage } from '@/shared/api/errors';
 
 import { useGetLoginMethodsQuery } from './identitiesApi';
@@ -30,6 +31,7 @@ const fieldClass =
   'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 export function ChangePassword() {
+  const { m } = useT();
   const { data } = useGetLoginMethodsQuery();
   const [changePassword, { isLoading }] = useChangePasswordMutation();
 
@@ -57,11 +59,11 @@ export function ChangePassword() {
     setDone(false);
 
     if (!validatePassword(password).valid) {
-      setError('Yangi parol talablarga javob bermayapti.');
+      setError(m.changePassword.weak);
       return;
     }
     if (password !== confirmPassword) {
-      setError('Parollar mos kelmadi.');
+      setError(m.changePassword.mismatch);
       return;
     }
 
@@ -88,18 +90,16 @@ export function ChangePassword() {
         <div>
           <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <KeyRound className="size-4 text-emerald-600 dark:text-emerald-400" />
-            {hasPassword ? 'Parolni o‘zgartirish' : 'Parol qo‘yish'}
+            {hasPassword ? m.changePassword.titleChange : m.changePassword.titleSet}
           </h3>
           <p className="mt-1 max-w-lg text-xs leading-relaxed text-muted-foreground">
-            {hasPassword
-              ? 'Parolni bilgan har kim hisobingizga kira oladi — uni vaqti-vaqti bilan yangilab turing.'
-              : 'Hisobingiz parolsiz ochilgan. Parol qo‘ysangiz, kod kutmasdan ham kirishingiz mumkin bo‘ladi.'}
+            {hasPassword ? m.changePassword.descChange : m.changePassword.descSet}
           </p>
         </div>
 
         {!open && (
           <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-            {hasPassword ? 'O‘zgartirish' : 'Parol qo‘yish'}
+            {hasPassword ? m.changePassword.actionChange : m.changePassword.actionSet}
           </Button>
         )}
       </div>
@@ -107,7 +107,7 @@ export function ChangePassword() {
       {done && !open && (
         <p className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-300">
           <Check className="size-3.5" />
-          Parol yangilandi.
+          {m.changePassword.done}
         </p>
       )}
 
@@ -119,7 +119,7 @@ export function ChangePassword() {
                 htmlFor="current-password"
                 className="mb-1.5 block text-xs font-medium text-foreground"
               >
-                Joriy parol
+                {m.changePassword.current}
               </label>
               <input
                 id="current-password"
@@ -139,7 +139,7 @@ export function ChangePassword() {
               htmlFor="new-password"
               className="mb-1.5 block text-xs font-medium text-foreground"
             >
-              Yangi parol
+              {m.changePassword.new}
             </label>
             <input
               id="new-password"
@@ -160,7 +160,7 @@ export function ChangePassword() {
               htmlFor="new-password-confirm"
               className="mb-1.5 block text-xs font-medium text-foreground"
             >
-              Yangi parolni takrorlang
+              {m.changePassword.repeat}
             </label>
             <input
               id="new-password-confirm"
@@ -183,7 +183,7 @@ export function ChangePassword() {
           <div className="flex flex-wrap gap-2">
             <Button type="submit" variant="emerald" size="sm" disabled={isLoading}>
               {isLoading && <Loader2 className="size-3.5 animate-spin" />}
-              {isLoading ? 'Saqlanmoqda...' : 'Saqlash'}
+              {isLoading ? m.common.saving : m.common.save}
             </Button>
             <Button
               variant="ghost"
@@ -193,7 +193,7 @@ export function ChangePassword() {
                 setOpen(false);
               }}
             >
-              Bekor qilish
+              {m.common.cancel}
             </Button>
           </div>
         </form>

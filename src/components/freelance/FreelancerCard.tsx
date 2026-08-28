@@ -1,5 +1,5 @@
 import { Briefcase, MapPin, MessageCircle, Star } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 
 import { cn } from '@/lib/cn';
 import { formatSom } from '@/lib/format';
@@ -171,13 +171,13 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
             Hozir band
           </span>
         ) : (
-          <a
+          <Link
             href="/login"
             className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 text-xs font-semibold text-white transition-colors hover:bg-emerald-500"
           >
             <MessageCircle className="size-3.5" />
             Yozish
-          </a>
+          </Link>
         )}
       </div>
     </article>

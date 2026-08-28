@@ -1,7 +1,7 @@
 'use client';
 
 import { Briefcase, CircleCheck, Send, Wallet } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 
 import { TaskStatusBadge } from '@/components/freelance/TaskStatusBadge';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';

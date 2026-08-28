@@ -6,6 +6,9 @@ import { useState } from 'react';
 
 import { ButtonLink } from '@/components/ui/Button';
 import { PUBLIC_NAV_ITEMS, type PublicNavItem } from '@/config/nav';
+import { useI18n } from '@/i18n/I18nProvider';
+import { localizeHref, stripLocale, type Locale } from '@/i18n/config';
+import type { Messages } from '@/i18n/messages/uz';
 import { cn } from '@/lib/cn';
 import { selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
@@ -18,9 +21,13 @@ import { LocaleToggle } from './LocaleToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 function isNavItemActive(item: PublicNavItem, pathname: string): boolean {
-  if (item.href === '/') return pathname === '/';
+  // Manzilda til bo'lagi bor (`/uz/materials`), menyudagi yo'l esa
+  // tilsiz — solishtirishdan oldin bo'lakni olib tashlaymiz.
+  const path = stripLocale(pathname);
+
+  if (item.href === '/') return path === '/';
   if (item.href.startsWith('/#')) return false;
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  return path === item.href || path.startsWith(`${item.href}/`);
 }
 
 function NavLink({
@@ -28,12 +35,18 @@ function NavLink({
   active,
   mobile,
   onNavigate,
+  messages,
+  locale,
 }: {
   item: PublicNavItem;
   active: boolean;
   mobile?: boolean;
   onNavigate?: () => void;
+  messages: Messages;
+  locale: Locale;
 }) {
+  const label = item.label(messages);
+
   if (item.comingSoon) {
     return (
       <span
@@ -41,16 +54,18 @@ function NavLink({
           'inline-flex cursor-not-allowed items-center gap-1 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground/50',
           mobile && 'w-full px-3 py-2.5',
         )}
-        title="Tez orada"
+        title={messages.common.comingSoon}
       >
-        {item.label}
+        {label}
       </span>
     );
   }
 
   return (
     <a
-      href={item.href}
+      /* `<a>` ataylab: menyudagi ba'zi yo'llar langarli (`/#xizmatlar`)
+         va ular `next/link` bilan sahifani to'liq yangilamasdi. */
+      href={localizeHref(item.href, locale)}
       onClick={onNavigate}
       className={cn(
         'inline-flex items-center rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
@@ -60,13 +75,14 @@ function NavLink({
         mobile && 'w-full px-3 py-2.5',
       )}
     >
-      {item.label}
+      {label}
     </a>
   );
 }
 
 export function Header() {
   const pathname = usePathname();
+  const { locale, messages } = useI18n();
   const user = useAppSelector(selectCurrentUser);
   const [open, setOpen] = useState(false);
 
@@ -92,10 +108,16 @@ export function Header() {
 
         <nav
           className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto lg:flex [&::-webkit-scrollbar]:hidden"
-          aria-label="Asosiy menyu"
+          aria-label={messages.nav.mainMenu}
         >
           {PUBLIC_NAV_ITEMS.map((item) => (
-            <NavLink key={item.label} item={item} active={isNavItemActive(item, pathname)} />
+            <NavLink
+              key={item.href}
+              item={item}
+              active={isNavItemActive(item, pathname)}
+              messages={messages}
+              locale={locale}
+            />
           ))}
         </nav>
 
@@ -111,10 +133,10 @@ export function Header() {
           ) : (
             <>
               <ButtonLink href="/login" variant="outline">
-                Kirish
+                {messages.header.login}
               </ButtonLink>
               <ButtonLink href="/register" variant="emerald">
-                Ro&apos;yxatdan o&apos;tish
+                {messages.header.register}
               </ButtonLink>
             </>
           )}
@@ -125,7 +147,7 @@ export function Header() {
           <ThemeToggle compact />
           <button
             type="button"
-            aria-label="Menyu"
+            aria-label={messages.nav.menu}
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
             className="grid size-9 place-items-center rounded-lg border border-border text-foreground"
@@ -140,11 +162,13 @@ export function Header() {
           <div className="grid gap-0.5 rounded-2xl border border-border bg-card p-2 shadow-lg dark:border-white/10 dark:bg-zinc-900">
             {PUBLIC_NAV_ITEMS.map((item) => (
               <NavLink
-                key={item.label}
+                key={item.href}
                 item={item}
                 active={isNavItemActive(item, pathname)}
                 mobile
                 onNavigate={() => setOpen(false)}
+                messages={messages}
+                locale={locale}
               />
             ))}
 
@@ -161,7 +185,7 @@ export function Header() {
                     size="lg"
                     onClick={() => setOpen(false)}
                   >
-                    Kirish
+                    {messages.header.login}
                   </ButtonLink>
                   <ButtonLink
                     href="/register"
@@ -169,7 +193,7 @@ export function Header() {
                     size="lg"
                     onClick={() => setOpen(false)}
                   >
-                    Ro&apos;yxatdan o&apos;tish
+                    {messages.header.register}
                   </ButtonLink>
                 </>
               )}

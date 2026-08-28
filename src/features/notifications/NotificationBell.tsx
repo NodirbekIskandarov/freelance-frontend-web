@@ -1,7 +1,7 @@
 'use client';
 
 import { Bell } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 

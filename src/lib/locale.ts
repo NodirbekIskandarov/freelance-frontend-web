@@ -1,68 +1,32 @@
-export const LOCALES = ['uz', 'ru'] as const;
-export type Locale = (typeof LOCALES)[number];
+import { DEFAULT_LOCALE, LOCALE_COOKIE, localeFromPathname, type Locale } from '@/i18n/config';
 
-export const DEFAULT_LOCALE: Locale = 'uz';
-
-export const LOCALE_LABELS: Record<Locale, string> = {
-  uz: "O'zbekcha",
-  ru: 'Русский',
-};
-
-/** Tanlagichdagi qisqa yorliq — navbarda joy tor. */
-export const LOCALE_SHORT: Record<Locale, string> = {
-  uz: 'UZ',
-  ru: 'RU',
-};
-
-const STORAGE_KEY = 'yopamiz.locale';
-const LOCALE_EVENT = 'yopamiz:locale';
-
-function isLocale(value: unknown): value is Locale {
-  return typeof value === 'string' && (LOCALES as readonly string[]).includes(value);
-}
+export { DEFAULT_LOCALE, LOCALES, LOCALE_LABELS, type Locale } from '@/i18n/config';
+export { LOCALE_SHORT_LABELS as LOCALE_SHORT } from '@/i18n/config';
 
 /**
- * Tanlangan til.
+ * Joriy til — MANZILDAN.
  *
- * `localStorage` VA cookie'da saqlanadi. Ikkisi ham kerak: birinchisini
- * mijoz o'qiydi, ikkinchisi esa server so'rovlariga ilashadi — Next.js
- * Server Component brauzer xotirasini ko'rmaydi.
+ * Ilgari u `localStorage` da saqlanardi va manzil bilan bog'liq emasdi:
+ * bitta havola ikki odamda ikki xil tilda ochilardi. Endi manzil yagona
+ * manba, cookie esa faqat KEYINGI tashrifda qaysi tilga yo'naltirishni
+ * eslab qolish uchun.
  */
 export function getLocale(): Locale {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
 
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (isLocale(stored)) return stored;
-  } catch {
-    // Shaxsiy rejimda `localStorage` o'qish ham xato berishi mumkin.
-  }
-
-  return DEFAULT_LOCALE;
+  return localeFromPathname(window.location.pathname) ?? DEFAULT_LOCALE;
 }
 
-export function setLocale(locale: Locale): void {
-  if (typeof window === 'undefined') return;
+/**
+ * Tanlovni cookie'ga yozish.
+ *
+ * Sahifani BU FUNKSIYA almashtirmaydi — buni til tanlagich navigatsiya
+ * orqali qiladi. Bu yerda faqat middleware keyingi safar to'g'ri tilga
+ * yo'naltirishi uchun iz qoldiriladi.
+ */
+export function rememberLocale(locale: Locale): void {
+  if (typeof document === 'undefined') return;
 
-  try {
-    window.localStorage.setItem(STORAGE_KEY, locale);
-  } catch {
-    // Saqlab bo'lmasa ham joriy seans uchun til o'zgaradi.
-  }
-
-  // `max-age` bir yil, `SameSite=Lax` — bu shaxsiy ma'lumot emas, faqat
-  // ko'rsatish tili.
-  document.cookie = `${STORAGE_KEY}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
-
-  window.dispatchEvent(new Event(LOCALE_EVENT));
-}
-
-export function subscribeToLocale(onChange: () => void): () => void {
-  window.addEventListener(LOCALE_EVENT, onChange);
-  // Boshqa yorliqdagi o'zgarish ham yetib kelsin.
-  window.addEventListener('storage', onChange);
-  return () => {
-    window.removeEventListener(LOCALE_EVENT, onChange);
-    window.removeEventListener('storage', onChange);
-  };
+  // Bir yil, `SameSite=Lax` — bu shaxsiy ma'lumot emas, faqat ko'rsatish tili.
+  document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 }

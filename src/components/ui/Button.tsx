@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
 
 import { cn } from '@/lib/cn';

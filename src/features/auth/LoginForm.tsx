@@ -1,10 +1,11 @@
 'use client';
 
 import { KeyRound, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
+import { useT } from '@/i18n/useT';
 import { getApiErrorMessage } from '@/shared/api';
 
 import {
@@ -26,6 +27,7 @@ import { PhoneField } from './PhoneField';
 
 export function LoginForm() {
   const router = useRouter();
+  const { m } = useT();
   const [login, { isLoading, error }] = useLoginMutation();
 
   const [method, setMethod] = useState<AuthMethod>('phone');
@@ -48,12 +50,12 @@ export function LoginForm() {
     if (method === 'email') {
       identifier = email.trim();
       if (!identifier.includes('@')) {
-        setLocalError('Email manzilni to‘liq kiriting.');
+        setLocalError(m.auth.emailIncomplete);
         return;
       }
     } else {
       if (!isCompletePhone(phone)) {
-        setLocalError("Telefon raqam to'liq emas. Masalan: 90 123 45 67");
+        setLocalError(m.auth.phoneIncomplete);
         return;
       }
       identifier = toApiPhone(phone);
@@ -74,8 +76,8 @@ export function LoginForm() {
     <AuthCard>
       <AuthCardHeader
         icon={<KeyRound className="size-6" />}
-        title="Kirish"
-        subtitle="Google, telefon raqam yoki email bilan kiring."
+        title={m.auth.loginTitle}
+        subtitle={m.auth.loginSubtitle}
       />
 
       <GoogleLoginButton />
@@ -89,13 +91,13 @@ export function LoginForm() {
 
         {method === 'email' ? (
           <div>
-            <AuthFieldLabel htmlFor="login-email">Email</AuthFieldLabel>
+            <AuthFieldLabel htmlFor="login-email">{m.auth.email}</AuthFieldLabel>
             <AuthInput
               id="login-email"
               type="email"
               required
               autoComplete="email"
-              placeholder="ism@example.com"
+              placeholder={m.auth.emailPlaceholder}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -106,14 +108,14 @@ export function LoginForm() {
 
         <div>
           <div className="flex items-baseline justify-between gap-3">
-            <AuthFieldLabel htmlFor="login-password">Parol</AuthFieldLabel>
+            <AuthFieldLabel htmlFor="login-password">{m.auth.password}</AuthFieldLabel>
             {/* Havola aynan shu yerda: parol esdan chiqqani maydonga
                 yozayotganda ma'lum bo'ladi, kartaning pastida emas. */}
             <Link
               href="/forgot-password"
               className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
             >
-              Parolni unutdingizmi?
+              {m.auth.forgot}
             </Link>
           </div>
           <AuthInput
@@ -121,7 +123,7 @@ export function LoginForm() {
             type="password"
             required
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder={m.auth.passwordPlaceholder}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
@@ -131,17 +133,17 @@ export function LoginForm() {
 
         <AuthPrimaryButton type="submit" loading={isLoading}>
           {isLoading && <Loader2 className="size-4 animate-spin" />}
-          {isLoading ? 'Kirilmoqda...' : 'Kirish'}
+          {isLoading ? m.auth.submittingLogin : m.auth.submitLogin}
         </AuthPrimaryButton>
       </form>
 
       <AuthCardFooter>
-        Hisobingiz yo&apos;qmi?{' '}
+        {m.auth.noAccount}{' '}
         <Link
           href="/register"
           className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
         >
-          Ro&apos;yxatdan o&apos;ting
+          {m.auth.goRegister}
         </Link>
       </AuthCardFooter>
     </AuthCard>

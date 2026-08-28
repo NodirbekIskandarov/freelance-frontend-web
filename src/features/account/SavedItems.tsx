@@ -1,7 +1,7 @@
 'use client';
 
 import { BookmarkX, FileText, Star, UserRound } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { useState } from 'react';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';

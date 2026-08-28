@@ -1,7 +1,7 @@
 'use client';
 
 import { LayoutDashboard, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

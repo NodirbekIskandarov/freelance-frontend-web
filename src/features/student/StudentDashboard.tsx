@@ -1,7 +1,7 @@
 'use client';
 
 import { BookMarked, CircleCheck, Download, ShoppingBag, Wallet } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';

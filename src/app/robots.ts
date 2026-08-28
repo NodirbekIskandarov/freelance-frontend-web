@@ -1,6 +1,17 @@
 import type { MetadataRoute } from 'next';
 
 import { siteConfig } from '@/config/site';
+import { LOCALES } from '@/i18n/config';
+
+/** Shaxsiy bo'limlar — indekslanmasligi kerak. */
+const PRIVATE_PATHS = [
+  '/student/',
+  '/freelancer/',
+  '/freelance/exchange',
+  '/wallet',
+  '/saved',
+  '/appeals',
+];
 
 /**
  * Eski ilovada bu fayl umuman yo'q edi — qidiruv botlari `/student`,
@@ -13,14 +24,15 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
+        /*
+         * Yo'llar til bo'lagi bilan yoziladi: manzillar endi
+         * `/uz/student/…` ko'rinishida va tilsiz naqsh ularning
+         * hech biriga to'g'ri kelmasdi.
+         */
         disallow: [
-          '/student/',
-          '/freelancer/',
-          '/freelance/exchange',
+          // `/api/` til bo'lagisiz — u sahifa emas.
           '/api/',
-          '/wallet',
-          '/saved',
-          '/appeals',
+          ...LOCALES.flatMap((locale) => PRIVATE_PATHS.map((path) => `/${locale}${path}`)),
         ],
       },
     ],

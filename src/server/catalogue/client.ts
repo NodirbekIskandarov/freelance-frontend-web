@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { LOCALE_TAGS } from '@/i18n/config';
+import { getRequestLocale } from '@/i18n/requestLocale';
 import { env } from '@/lib/env';
 import type { ApiPaginated } from '@/shared/types/catalogue';
 
@@ -77,20 +79,21 @@ async function request<T>(path: string, params?: Record<string, string | number>
     try {
       const response = await fetch(url, {
         /*
-         * Til ATAYLAB qat'iy `uz`.
+         * Til MANZILDAN keladi.
          *
-         * Bu sahifalar ISR bilan statik chiziladi va BARCHA tashrif
-         * buyuruvchiga bir xil ketadi — ular tanlagan tilga qarab
-         * o'zgara olmaydi. Sarlavhani yozib qo'yish natijani
-         * aniqlashtiradi: usiz javob server sozlamasiga bog'liq bo'lardi
-         * va build muhiti o'zgarsa katalog jimgina boshqa tilga
-         * o'tib ketishi mumkin edi.
+         * Ilgari bu yerda qat'iy `uz` turardi: sahifalar ISR bilan
+         * statik chizilardi va hammaga bir xil ketardi. Endi har til
+         * o'z manzilida (`/uz/materials`, `/ru/materials`) va ikkalasi
+         * ham alohida statik chiziladi, ya'ni fan va institut nomlari
+         * ham tarjima qilingan holda keladi.
          *
-         * Tilni tanlash mijozdagi so'rovlarda ishlaydi. Katalog
-         * sahifalarini ham tilga bo'lish uchun manzilga til segmenti
-         * kerak (`/ru/materials/...`) — bu alohida ish.
+         * Sarlavha `fetch` keshining kalitiga kiradi, shuning uchun
+         * ikki til bir-birining javobini olib qo'ymaydi.
          */
-        headers: { Accept: 'application/json', 'Accept-Language': 'uz' },
+        headers: {
+          Accept: 'application/json',
+          'Accept-Language': LOCALE_TAGS[getRequestLocale()],
+        },
         next: { revalidate: REVALIDATE_SECONDS },
         // `AbortSignal.timeout` — osilib qolgan ulanish butun build'ni
         // ushlab turmasligi uchun. Node 18+ da mavjud.

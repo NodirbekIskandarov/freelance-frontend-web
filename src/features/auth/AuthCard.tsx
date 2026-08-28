@@ -1,5 +1,8 @@
+'use client';
+
 import type { InputHTMLAttributes, ReactNode } from 'react';
 
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 /**
@@ -50,13 +53,15 @@ export function AuthCardHeader({
 
 /** «yoki» ajratgichi — ijtimoiy tugma bilan forma orasida. */
 export function AuthSeparator() {
+  const { m } = useT();
+
   return (
     <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
         <div className="w-full border-t border-border/70 dark:border-white/10" />
       </div>
       <div className="relative flex justify-center text-xs tracking-wider uppercase">
-        <span className="bg-card px-3 text-muted-foreground dark:bg-transparent">yoki</span>
+        <span className="bg-card px-3 text-muted-foreground dark:bg-transparent">{m.auth.or}</span>
       </div>
     </div>
   );

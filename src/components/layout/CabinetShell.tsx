@@ -16,7 +16,7 @@ import {
   Wallet,
   type LucideIcon,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 

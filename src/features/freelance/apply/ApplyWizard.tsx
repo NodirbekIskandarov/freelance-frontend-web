@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckCircle2, Clock, Shield } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/Link';
 import { useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
