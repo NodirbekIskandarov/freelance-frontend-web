@@ -8,6 +8,8 @@ import { setRequestLocale } from '@/i18n/requestLocale';
 import { DEFAULT_LOCALE, isLocale, LOCALES, LOCALE_TAGS, type Locale } from '@/i18n/config';
 import { absoluteUrl, JsonLd } from '@/lib/seo';
 
+import { ThemeSync } from './ThemeSync';
+
 import { StoreProvider } from '../providers';
 import '../globals.css';
 
@@ -69,6 +71,11 @@ export const viewport: Viewport = {
  * ko'rib, keyin qorong'iga o'tadi (FOUC). Shu skript `<head>` chizilgach
  * darhol ishlaydi — eski ilovadagi bilan bir xil: soat bo'yicha avtomatik
  * (20:00–08:00 qorong'i) yoki foydalanuvchi tanlovi (localStorage).
+ *
+ * `__applyTheme` tashqariga chiqariladi: til almashganda React `<html>`
+ * atributlarini server qiymatiga qaytaradi va `dark` klassi o'chib
+ * ketadi, bu skript esa qayta ishga tushmaydi (`window` o'sha-o'sha).
+ * Uni qayta chaqirish `ThemeSync` ning ishi.
  */
 const themeInitScript = `(function(){
   var KEY="theme-mode",root=document.documentElement;
@@ -78,11 +85,12 @@ const themeInitScript = `(function(){
     root.classList.toggle("dark",resolved==="dark");
     root.dataset.themeMode=mode;
   }
-  var mode=localStorage.getItem(KEY)||"auto";
-  apply(mode);
-  setInterval(function(){if((localStorage.getItem(KEY)||"auto")==="auto")apply("auto")},60000);
+  function current(){return localStorage.getItem(KEY)||"auto"}
+  apply(current());
+  setInterval(function(){if(current()==="auto")apply("auto")},60000);
   window.__setThemeMode=function(next){localStorage.setItem(KEY,next);apply(next)};
-  window.__getThemeMode=function(){return localStorage.getItem(KEY)||"auto"};
+  window.__getThemeMode=current;
+  window.__applyTheme=function(){apply(current())};
 })();`;
 
 const organizationJsonLd = {
@@ -128,6 +136,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       <body className="flex min-h-full flex-col font-sans">
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <JsonLd data={organizationJsonLd} />
+        <ThemeSync />
         <I18nProvider locale={locale} messages={messages}>
           <StoreProvider>{children}</StoreProvider>
         </I18nProvider>

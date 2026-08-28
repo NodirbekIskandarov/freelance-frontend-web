@@ -11,6 +11,8 @@ declare global {
   interface Window {
     __setThemeMode?: (mode: ThemeMode) => void;
     __getThemeMode?: () => ThemeMode;
+    /** Saqlangan tanlovni DOM'ga qaytadan qo'llaydi — `ThemeSync` uchun. */
+    __applyTheme?: () => void;
   }
 }
 
