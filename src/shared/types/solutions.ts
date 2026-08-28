@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /**
  * Foydalanuvchining O'ZI yuklagan yechimlari va sotib olish oqimi.
  *
@@ -15,13 +17,15 @@ export const SOLUTION_STATUSES = [
 ] as const;
 export type SolutionStatus = (typeof SOLUTION_STATUSES)[number];
 
-export const SOLUTION_STATUS_LABELS: Record<SolutionStatus, string> = {
-  pending: 'Tekshiruvda',
-  approved: 'Tasdiqlangan',
-  published: 'Sotuvda',
-  rejected: 'Rad etilgan',
-  archived: 'Arxivlangan',
-};
+/**
+ * Holat yorlig'i — lug'atdan.
+ *
+ * Ilgari bu yerda o'zbekcha matn turardi va rus tilida ham o'zbekcha
+ * chiqardi.
+ */
+export function solutionStatusLabel(status: SolutionStatus, messages: Messages): string {
+  return messages.solutionStatus[status];
+}
 
 export interface MySolution {
   id: string;

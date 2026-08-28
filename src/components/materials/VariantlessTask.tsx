@@ -11,7 +11,8 @@ import {
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import { useGetMySolutionsQuery } from '@/features/solutions/solutionsApi';
 import { getApiErrorMessage } from '@/shared/api/errors';
-import { SOLUTION_STATUS_LABELS } from '@/shared/types/solutions';
+import { solutionStatusLabel } from '@/shared/types/solutions';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
@@ -36,6 +37,7 @@ export function VariantlessTask({
   assignmentId: string;
   assignmentTitle: string;
 }) {
+  const { t, m } = useT();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const [requestSolution, requestState] = useRequestAssignmentSolutionMutation();
@@ -58,9 +60,7 @@ export function VariantlessTask({
   return (
     <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
       <p className="text-sm font-semibold text-foreground">Yagona topshiriq</p>
-      <p className="mt-0.5 text-xs text-muted-foreground">
-        Bu topshiriq variantlarga bo&apos;linmagan — hamma uchun bitta.
-      </p>
+      <p className="mt-0.5 text-xs text-muted-foreground">{m.variants.variantless}</p>
 
       {/*
         Chop etilgan yechim bu yerda BO'LISHI MUMKIN EMAS: yechim variantga
@@ -72,12 +72,12 @@ export function VariantlessTask({
         {alreadyRequested && (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
             <Flame className="size-3" />
-            Talab qoldirildi
+            {m.variants.requestLeft}
           </span>
         )}
 
         <p className="text-[11px] leading-snug text-muted-foreground">
-          Yechim hali yuklanmagan. Talab qoldiring — chiqqanda birinchilardan bo&apos;lib bilasiz.
+          {m.variants.notUploadedYet}
         </p>
 
         <Button
@@ -93,10 +93,10 @@ export function VariantlessTask({
           }}
         >
           {requestState.isLoading
-            ? 'Yuborilmoqda…'
+            ? m.variants.sending
             : alreadyRequested
-              ? 'So‘rov yuborildi'
-              : "So'rov qoldirish"}
+              ? m.variants.requestSent
+              : m.variants.leaveRequest}
         </Button>
 
         {requestState.error && !alreadyRequested && (
@@ -130,7 +130,7 @@ export function VariantlessTask({
                         : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
                   )}
                 >
-                  {SOLUTION_STATUS_LABELS[item.status]}
+                  {solutionStatusLabel(item.status, m)}
                 </span>
               </li>
             ))}
@@ -146,17 +146,17 @@ export function VariantlessTask({
               onClick={() => setUploadOpen(true)}
             >
               <Upload className="size-3.5" />
-              Yechim yuborish
+              {m.variants.upload}
             </Button>
             <p className="mt-2 text-[11px] text-muted-foreground">
               {mine.length > 0
-                ? `Yana ${uploadsLeft} ta yubora olasiz.`
-                : `Bu topshiriqqa ${MAX_UPLOADS} tagacha yechim yuborish mumkin.`}
+                ? t((x) => x.variants.uploadsLeft, { count: uploadsLeft })
+                : t((x) => x.variants.assignmentUploadHint, { max: MAX_UPLOADS })}
             </p>
           </>
         ) : (
           <p className="text-[11px] leading-snug text-muted-foreground">
-            Bu topshiriqqa {MAX_UPLOADS} ta yechim yuborib bo&apos;lgansiz.
+            {t((x) => x.variants.assignmentLimitReached, { max: MAX_UPLOADS })}
           </p>
         )}
       </div>

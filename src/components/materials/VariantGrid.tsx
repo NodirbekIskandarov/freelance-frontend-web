@@ -15,8 +15,10 @@ import {
   useGetMySolutionsQuery,
   usePurchaseSolutionMutation,
 } from '@/features/solutions/solutionsApi';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
-import { SOLUTION_STATUS_LABELS } from '@/shared/types/solutions';
+import { solutionStatusLabel } from '@/shared/types/solutions';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { getApiErrorMessage } from '@/shared/api/errors';
@@ -61,11 +63,11 @@ function statusOf(variant: VariantWithCount, justRequested: boolean): VariantSta
   return 'empty';
 }
 
-const STATUS_LABELS: Record<VariantStatus, string> = {
-  available: 'Yechim bor',
-  requested: 'Talab mavjud',
-  empty: "Hech kim so'ramagan",
-};
+const STATUS_LABELS = (m: Messages): Record<VariantStatus, string> => ({
+  available: m.variants.statusAvailable,
+  requested: m.variants.statusRequested,
+  empty: m.variants.statusEmpty,
+});
 
 const DOT: Record<VariantStatus, string> = {
   available: 'bg-emerald-500',
@@ -100,6 +102,7 @@ export function VariantGrid({
   /** Tanlangan variant uchun yechimlar — serverdan oldindan kelgan. */
   solutionsByVariant: Record<string, PublicSolution[]>;
 }) {
+  const { t, m } = useT();
   const money = useMoney();
   const [selectedId, setSelectedId] = useState(variants[0]?.id ?? '');
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
@@ -175,7 +178,7 @@ export function VariantGrid({
   if (variants.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center text-sm text-muted-foreground">
-        Bu topshiriqda variantlar yo&apos;q.
+        {m.variants.noVariants}
       </p>
     );
   }
@@ -256,7 +259,7 @@ export function VariantGrid({
                     {locked ? (
                       // Matn o'ralishi kerak: tor kartada bir qatorga sig'maydi.
                       <p className="text-[11px] leading-tight break-words text-muted-foreground">
-                        Tayyor emas
+                        {m.variants.notReady}
                       </p>
                     ) : (
                       <>
@@ -274,8 +277,12 @@ export function VariantGrid({
                           {/* Talab qancha ekani muhim: bitta so'rov bilan
                               o'ntasi bir xil ko'rinmasin. */}
                           {status === 'requested'
-                            ? `${requestCountOf(variant, justRequested)} ta so'rov`
-                            : `${variant.solutionCount} ta yechim`}
+                            ? t((x) => x.variants.requestCount, {
+                                count: requestCountOf(variant, justRequested),
+                              })
+                            : t((x) => x.variants.solutionCount, {
+                                count: variant.solutionCount,
+                              })}
                         </p>
                       </>
                     )}
@@ -294,7 +301,7 @@ export function VariantGrid({
               ) : (
                 <span className={cn('size-2 rounded-full', DOT[status])} />
               )}
-              {STATUS_LABELS[status]}
+              {STATUS_LABELS(m)[status]}
             </span>
           ))}
         </div>
@@ -313,7 +320,8 @@ export function VariantGrid({
                 <p className="text-sm font-medium text-foreground">{solution.title}</p>
                 <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                   <Star className="size-3 fill-amber-400 text-amber-400" />
-                  {Number(solution.average_rating).toFixed(1)} · {solution.sold_count} sotuv
+                  {Number(solution.average_rating).toFixed(1)} ·{' '}
+                  {t((x) => x.variants.sales, { count: solution.sold_count })}
                 </p>
                 <p className="mt-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {money.decimalSom(solution.price)}
@@ -329,7 +337,7 @@ export function VariantGrid({
                     className="mt-2 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     <Download className="size-3.5" />
-                    Yuklab olish
+                    {m.variants.download}
                   </a>
                 ) : boughtIds.includes(solution.id) || ownedIds.has(solution.id) ? (
                   <OwnedSolutionButton solutionId={solution.id} className="mt-2 w-full" />
@@ -352,11 +360,11 @@ export function VariantGrid({
                     }}
                   >
                     {purchaseState.isLoading && purchaseState.originalArgs === solution.id ? (
-                      'Sotib olinmoqda…'
+                      m.variants.buying
                     ) : (
                       <>
                         <ShoppingCart className="size-3.5" />
-                        Sotib olish
+                        {m.variants.buy}
                       </>
                     )}
                   </Button>
@@ -380,13 +388,12 @@ export function VariantGrid({
             {selectedRequestCount > 0 && (
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
                 <Flame className="size-3" />
-                Talab mavjud · {selectedRequestCount}
+                {t((x) => x.variants.demandWithCount, { count: selectedRequestCount })}
               </span>
             )}
 
             <p className="text-[11px] leading-snug text-muted-foreground">
-              Variant yuklanmagan. Talab qoldiring — yechim chiqqanda birinchilardan bo&apos;lib
-              bilasiz.
+              {m.variants.notUploaded}
             </p>
 
             <Button
@@ -402,10 +409,10 @@ export function VariantGrid({
               }}
             >
               {requestState.isLoading
-                ? 'Yuborilmoqda…'
+                ? m.variants.sending
                 : alreadyRequested
-                  ? 'So‘rov yuborildi'
-                  : "So'rov qoldirish"}
+                  ? m.variants.requestSent
+                  : m.variants.leaveRequest}
             </Button>
 
             {requestState.error && !alreadyRequested && (
@@ -448,7 +455,7 @@ export function VariantGrid({
                           : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
                     )}
                   >
-                    {SOLUTION_STATUS_LABELS[item.status]}
+                    {solutionStatusLabel(item.status, m)}
                   </span>
                 </li>
               ))}
@@ -465,21 +472,21 @@ export function VariantGrid({
                   onClick={() => setUploadOpen(true)}
                 >
                   <Upload className="size-3.5" />
-                  Yechim yuborish
+                  {m.variants.upload}
                 </Button>
                 <p className="mt-2 text-center text-[11px] text-muted-foreground">
                   {mine.length > 0
-                    ? `Yana ${uploadsLeft} ta yubora olasiz.`
+                    ? t((x) => x.variants.uploadsLeft, { count: uploadsLeft })
                     : selectedRequestCount > 0 && selectedStatus !== 'available'
-                      ? `${selectedRequestCount} kishi shu variantni kutyapti.`
-                      : `Bir variantga ${MAX_UPLOADS_PER_VARIANT} tagacha yechim yuborish mumkin.`}
+                      ? t((x) => x.variants.peopleWaiting, { count: selectedRequestCount })
+                      : t((x) => x.variants.uploadLimitHint, { max: MAX_UPLOADS_PER_VARIANT })}
                 </p>
               </>
             ) : (
               /* Chegaraga yetildi. Tugmani ko'rsatib, keyin serverdan xato
                  qaytarish o'rniga sababi shu yerda aytiladi. */
               <p className="text-center text-[11px] leading-snug text-muted-foreground">
-                Bu variantga {MAX_UPLOADS_PER_VARIANT} ta yechim yuborib bo&apos;lgansiz.
+                {t((x) => x.variants.uploadLimitReached, { max: MAX_UPLOADS_PER_VARIANT })}
               </p>
             )
           ) : (
@@ -490,7 +497,7 @@ export function VariantGrid({
             */
             <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
               <Lock className="mt-px size-3 shrink-0" />
-              Bu variantga yechim qabul qilish yopilgan.
+              {m.variants.uploadsClosed}
             </p>
           )}
         </div>

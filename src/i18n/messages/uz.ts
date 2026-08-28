@@ -290,6 +290,46 @@ export const uz = {
     catAccount: 'Hisob',
   },
 
+  variants: {
+    variantless: "Bu topshiriq variantlarga bo'linmagan — hamma uchun bitta.",
+    requestLeft: 'Talab qoldirildi',
+    notUploadedYet:
+      "Yechim hali yuklanmagan. Talab qoldiring — chiqqanda birinchilardan bo'lib bilasiz.",
+    assignmentUploadHint: 'Bu topshiriqqa {max} tagacha yechim yuborish mumkin.',
+    assignmentLimitReached: "Bu topshiriqqa {max} ta yechim yuborib bo'lgansiz.",
+    statusAvailable: 'Yechim bor',
+    statusRequested: 'Talab mavjud',
+    statusEmpty: "Hech kim so'ramagan",
+    noVariants: "Bu topshiriqda variantlar yo'q.",
+    notReady: 'Tayyor emas',
+    requestCount: "{count} ta so'rov",
+    solutionCount: '{count} ta yechim',
+    sales: '{count} sotuv',
+    download: 'Yuklab olish',
+    buying: 'Sotib olinmoqda…',
+    buy: 'Sotib olish',
+    demandWithCount: 'Talab mavjud · {count}',
+    notUploaded:
+      "Variant yuklanmagan. Talab qoldiring — yechim chiqqanda birinchilardan bo'lib bilasiz.",
+    sending: 'Yuborilmoqda…',
+    requestSent: "So'rov yuborildi",
+    leaveRequest: "So'rov qoldirish",
+    upload: 'Yechim yuborish',
+    uploadsLeft: 'Yana {count} ta yubora olasiz.',
+    peopleWaiting: '{count} kishi shu variantni kutyapti.',
+    uploadLimitHint: 'Bir variantga {max} tagacha yechim yuborish mumkin.',
+    uploadLimitReached: "Bu variantga {max} ta yechim yuborib bo'lgansiz.",
+    uploadsClosed: 'Bu variantga yechim qabul qilish yopilgan.',
+  },
+
+  solutionStatus: {
+    pending: 'Tekshiruvda',
+    approved: 'Tasdiqlangan',
+    published: 'Sotuvda',
+    rejected: 'Rad etilgan',
+    archived: 'Arxivlangan',
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',
