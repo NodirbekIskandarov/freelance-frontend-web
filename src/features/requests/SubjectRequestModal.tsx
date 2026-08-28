@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { useAppSelector } from '@/store/hooks';
@@ -54,6 +55,7 @@ export function SubjectRequestModal({
   onClose: () => void;
 }) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { t, m } = useT();
   const [submit, { isLoading, error, reset }] = useSubmitSubjectRequestMutation();
 
   const [name, setName] = useState('');
@@ -94,17 +96,17 @@ export function SubjectRequestModal({
     <Modal
       open={open}
       onClose={close}
-      title="Ariza qoldirish"
-      description={`${universityName} uchun ro'yxatda yo'q fan bo'lsa, ma'lumotlarni yuboring. Tekshirgach saytga qo'shamiz.`}
+      title={m.requests.subjectTitle}
+      description={t((x) => x.requests.subjectDesc, { university: universityName })}
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>
-            Yopish
+            {m.common.close}
           </Button>
         ) : isAuthenticated ? (
           <>
             <Button variant="outline" onClick={close}>
-              Bekor qilish
+              {m.common.cancel}
             </Button>
             <Button
               type="submit"
@@ -112,7 +114,7 @@ export function SubjectRequestModal({
               variant="emerald"
               disabled={isLoading || !name.trim()}
             >
-              {isLoading ? 'Yuborilmoqda...' : 'Arizani yuborish'}
+              {isLoading ? m.requests.submitting : m.requests.submit}
             </Button>
           </>
         ) : undefined
@@ -121,43 +123,39 @@ export function SubjectRequestModal({
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
           <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
-          <p className="mt-3 text-sm font-medium text-foreground">Ariza yuborildi</p>
+          <p className="mt-3 text-sm font-medium text-foreground">{m.requests.sentTitle}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Moderatsiyadan o&apos;tgach fan katalogga qo&apos;shiladi. Holatini
-            &laquo;Arizalarim&raquo; bo&apos;limida kuzatib borasiz.
+            {m.requests.subjectSentText}
           </p>
         </div>
       ) : !isAuthenticated ? (
         <div className="py-2">
-          <p className="text-sm text-muted-foreground">
-            Ariza qoldirish uchun avval hisobingizga kiring — arizangiz holatini kuzatib borishingiz
-            uchun shart.
-          </p>
+          <p className="text-sm text-muted-foreground">{m.requests.subjectLoginRequired}</p>
           <ButtonLink href="/login" variant="emerald" className="mt-4">
-            Kirish
+            {m.header.login}
           </ButtonLink>
         </div>
       ) : (
         <form id="subject-request-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <FieldLabel htmlFor="subject-request-name">Fan nomi</FieldLabel>
+            <FieldLabel htmlFor="subject-request-name">{m.requests.subjectName}</FieldLabel>
             <input
               id="subject-request-name"
               required
               maxLength={200}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Masalan: Dasturlash asoslari"
+              placeholder={m.requests.subjectNamePlaceholder}
               className={cn(fieldClass, 'h-11')}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <FieldLabel htmlFor="subject-request-course">Kurs</FieldLabel>
+              <FieldLabel htmlFor="subject-request-course">{m.requests.course}</FieldLabel>
               <Select
                 id="subject-request-course"
-                aria-label="Kurs"
+                aria-label={m.requests.course}
                 value={course}
                 onChange={setCourse}
                 options={COURSE_OPTIONS}
@@ -165,10 +163,10 @@ export function SubjectRequestModal({
             </div>
 
             <div>
-              <FieldLabel htmlFor="subject-request-semester">Semestr</FieldLabel>
+              <FieldLabel htmlFor="subject-request-semester">{m.requests.semester}</FieldLabel>
               <Select
                 id="subject-request-semester"
-                aria-label="Semestr"
+                aria-label={m.requests.semester}
                 value={semester}
                 onChange={setSemester}
                 options={SEMESTER_OPTIONS}
@@ -177,14 +175,14 @@ export function SubjectRequestModal({
           </div>
 
           <div>
-            <FieldLabel htmlFor="subject-request-note">Qo&apos;shimcha izoh (ixtiyoriy)</FieldLabel>
+            <FieldLabel htmlFor="subject-request-note">{m.requests.extraNote}</FieldLabel>
             <textarea
               id="subject-request-note"
               rows={3}
               maxLength={2000}
               value={note}
               onChange={(event) => setNote(event.target.value)}
-              placeholder="Masalan: 3-kurs, 5-semestr uchun kerak"
+              placeholder={m.requests.extraNotePlaceholder}
               className={cn(fieldClass, 'resize-none py-2.5')}
             />
           </div>

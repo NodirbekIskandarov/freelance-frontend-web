@@ -18,6 +18,8 @@ import {
   useGetMySolutionRequestsQuery,
   useGetMySubjectRequestsQuery,
 } from './requestsApi';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 
 /*
  * Institut arizasi bu yerda YO'Q.
@@ -28,9 +30,9 @@ import {
  * taassurot bilan ochardi.
  */
 const TABS = [
-  { key: 'subjects', label: 'Fanlar' },
-  { key: 'assignments', label: 'Topshiriqlar' },
-  { key: 'variants', label: 'Variant so‘rovlari' },
+  { key: 'subjects', label: (m: Messages) => m.requests.tabSubjects },
+  { key: 'assignments', label: (m: Messages) => m.requests.tabAssignments },
+  { key: 'variants', label: (m: Messages) => m.requests.tabVariants },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -128,6 +130,7 @@ function Skeletons() {
 }
 
 export function MyRequests() {
+  const { t, m } = useT();
   const [tab, setTab] = useState<TabKey>('subjects');
 
   const query = { page_size: 50, ordering: '-created_at' };
@@ -165,7 +168,7 @@ export function MyRequests() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item.label}
+            {item.label(m)}
             {counts[item.key] > 0 && (
               <span
                 className={cn(
@@ -185,7 +188,7 @@ export function MyRequests() {
           (subjects.isLoading ? (
             <Skeletons />
           ) : subjects.data?.results.length === 0 ? (
-            <EmptyState message="Katalogda yo'q fanni qo'shishni so'rasangiz, u shu yerda ko'rinadi." />
+            <EmptyState message={m.requests.emptySubjects} />
           ) : (
             <div className="grid gap-3">
               {subjects.data?.results.map((row: MySubjectRequest) => (
@@ -211,7 +214,7 @@ export function MyRequests() {
           (assignments.isLoading ? (
             <Skeletons />
           ) : assignments.data?.results.length === 0 ? (
-            <EmptyState message="Katalogda yo'q topshiriqni qo'shishni so'rasangiz, u shu yerda ko'rinadi." />
+            <EmptyState message={m.requests.emptyAssignments} />
           ) : (
             <div className="grid gap-3">
               {assignments.data?.results.map((row: MyAssignmentRequest) => (
@@ -250,7 +253,7 @@ export function MyRequests() {
           (variants.isLoading ? (
             <Skeletons />
           ) : variants.data?.results.length === 0 ? (
-            <EmptyState message="Yechimi yo'q variantga «Menga ham kerak» bossangiz, u shu yerda ko'rinadi." />
+            <EmptyState message={m.requests.emptyVariants} />
           ) : (
             <div className="grid gap-3">
               {variants.data?.results.map((row: MySolutionRequest) => (
@@ -260,7 +263,7 @@ export function MyRequests() {
                   meta={[
                     row.university_name,
                     row.subject_name,
-                    `${row.request_count} ta so'rov`,
+                    t((x) => x.requests.requestCount, { count: row.request_count }),
                   ].join(' · ')}
                   createdAt={row.created_at}
                   extra={

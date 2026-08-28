@@ -63,7 +63,7 @@ export function AssignmentRequestModal({
   subjectSemester?: number | null;
   onClose: () => void;
 }) {
-  const { m } = useT();
+  const { t, m } = useT();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [submit, { isLoading, error, reset }] = useSubmitAssignmentRequestMutation();
 
@@ -97,13 +97,13 @@ export function AssignmentRequestModal({
     event.preventDefault();
 
     if (hasVariants === null) {
-      setLocalError('Variantli yoki variantsiz ekanini tanlang');
+      setLocalError(m.requests.variantModeRequired);
       return;
     }
 
     const count = Number(variantCount);
     if (hasVariants && (!Number.isInteger(count) || count < 1 || count > MAX_VARIANTS)) {
-      setLocalError(`Variantlar soni 1 dan ${MAX_VARIANTS} gacha bo'lishi kerak`);
+      setLocalError(t((x) => x.requests.variantCountRange, { max: MAX_VARIANTS }));
       return;
     }
     setLocalError(null);
@@ -138,18 +138,18 @@ export function AssignmentRequestModal({
     <Modal
       open={open}
       onClose={close}
-      title="Topshiriqni yuklash"
-      description="Ariza admin tasdiqlagach ro'yxatga qo'shiladi. Bonus olish imkoniyati ham bor."
+      title={m.requests.assignmentTitle}
+      description={m.requests.assignmentDesc}
       className="w-[min(32rem,calc(100vw-2rem))]"
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>
-            Yopish
+            {m.common.close}
           </Button>
         ) : isAuthenticated ? (
           <>
             <Button variant="outline" onClick={close}>
-              Bekor qilish
+              {m.common.cancel}
             </Button>
             <Button
               type="submit"
@@ -157,7 +157,7 @@ export function AssignmentRequestModal({
               variant="emerald"
               disabled={isLoading || !title.trim()}
             >
-              {isLoading ? 'Yuborilmoqda...' : 'Arizani yuborish'}
+              {isLoading ? m.requests.submitting : m.requests.submit}
             </Button>
           </>
         ) : undefined
@@ -166,20 +166,16 @@ export function AssignmentRequestModal({
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
           <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
-          <p className="mt-3 text-sm font-medium text-foreground">Ariza yuborildi</p>
+          <p className="mt-3 text-sm font-medium text-foreground">{m.requests.sentTitle}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Moderatsiyadan o&apos;tgach topshiriq ro&apos;yxatga qo&apos;shiladi. Tasdiqlangan ariza
-            uchun bonus olishingiz mumkin.
+            {m.requests.assignmentSentText}
           </p>
         </div>
       ) : !isAuthenticated ? (
         <div className="py-2">
-          <p className="text-sm text-muted-foreground">
-            Topshiriq yuklash uchun avval hisobingizga kiring — arizangiz holatini kuzatib
-            borishingiz uchun shart.
-          </p>
+          <p className="text-sm text-muted-foreground">{m.requests.assignmentLoginRequired}</p>
           <ButtonLink href="/login" variant="emerald" className="mt-4">
-            Kirish
+            {m.header.login}
           </ButtonLink>
         </div>
       ) : (
@@ -193,10 +189,10 @@ export function AssignmentRequestModal({
           </div>
 
           <div>
-            <FieldLabel htmlFor="assignment-type">Ish turi</FieldLabel>
+            <FieldLabel htmlFor="assignment-type">{m.requests.workType}</FieldLabel>
             <Select
               id="assignment-type"
-              aria-label="Ish turi"
+              aria-label={m.requests.workType}
               value={type}
               onChange={setType}
               options={typeOptions}
@@ -205,20 +201,20 @@ export function AssignmentRequestModal({
 
           <fieldset className="rounded-xl border border-border/70 p-3.5">
             <legend className="px-1 text-sm font-medium text-foreground">
-              Variantlik
+              {m.requests.variantMode}
               <span aria-hidden className="ml-0.5 text-destructive">
                 *
               </span>
             </legend>
 
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Mustaqil, amaliy va laboratoriya ishlarida ham tanlanadi.
+              {m.requests.variantModeHint}
             </p>
 
             <div className="mt-3 grid grid-cols-2 gap-2">
               {[
-                { value: true, label: 'Variantli' },
-                { value: false, label: 'Variantsiz' },
+                { value: true, label: m.requests.withVariants },
+                { value: false, label: m.requests.withoutVariants },
               ].map((option) => (
                 <label
                   key={option.label}
@@ -249,7 +245,7 @@ export function AssignmentRequestModal({
             {hasVariants === true && (
               <div className="mt-3">
                 <FieldLabel htmlFor="assignment-variant-count" required>
-                  Nechta variant
+                  {m.requests.variantCount}
                 </FieldLabel>
                 <input
                   id="assignment-variant-count"
@@ -260,47 +256,45 @@ export function AssignmentRequestModal({
                   required
                   value={variantCount}
                   onChange={(event) => setVariantCount(event.target.value)}
-                  placeholder="Masalan: 20"
+                  placeholder={m.requests.variantCountPlaceholder}
                   className={cn(fieldClass, 'h-10')}
                 />
               </div>
             )}
 
             {hasVariants === false && (
-              <p className="mt-3 text-xs text-muted-foreground">
-                Bitta umumiy topshiriq — variantlar bo&apos;lmaydi.
-              </p>
+              <p className="mt-3 text-xs text-muted-foreground">{m.requests.withoutVariantsHint}</p>
             )}
           </fieldset>
 
           <div>
-            <FieldLabel htmlFor="assignment-title">Topshiriq nomi</FieldLabel>
+            <FieldLabel htmlFor="assignment-title">{m.requests.assignmentName}</FieldLabel>
             <input
               id="assignment-title"
               required
               maxLength={200}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="Masalan: Mustaqil ish 12-variant"
+              placeholder={m.requests.assignmentNamePlaceholder}
               className={cn(fieldClass, 'h-11')}
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="assignment-description">Izoh (ixtiyoriy)</FieldLabel>
+            <FieldLabel htmlFor="assignment-description">{m.requests.note}</FieldLabel>
             <textarea
               id="assignment-description"
               rows={3}
               maxLength={2000}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="Qo'shimcha ma'lumot"
+              placeholder={m.requests.notePlaceholder}
               className={cn(fieldClass, 'resize-none py-2.5')}
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="assignment-file">Topshiriq fayli</FieldLabel>
+            <FieldLabel htmlFor="assignment-file">{m.requests.assignmentFile}</FieldLabel>
 
             <input
               id="assignment-file"
@@ -316,7 +310,7 @@ export function AssignmentRequestModal({
                 <span className="min-w-0 flex-1 truncate text-sm text-foreground">{file.name}</span>
                 <button
                   type="button"
-                  aria-label="Faylni olib tashlash"
+                  aria-label={m.requests.removeFile}
                   onClick={() => {
                     setFile(null);
                     // Bir xil faylni qayta tanlash uchun: `input` qiymati
@@ -335,7 +329,7 @@ export function AssignmentRequestModal({
                 className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-border/70 px-4 py-8 text-sm text-muted-foreground transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/[0.03]"
               >
                 <Upload className="size-5 text-emerald-600 dark:text-emerald-400" />
-                PDF yoki hujjatni tanlang
+                {m.requests.pickFile}
               </button>
             )}
           </div>

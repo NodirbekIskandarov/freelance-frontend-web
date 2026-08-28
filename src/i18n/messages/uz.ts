@@ -425,6 +425,56 @@ export const uz = {
     pending: 'Kutilayotgan',
   },
 
+  requests: {
+    assignmentTitle: 'Topshiriqni yuklash',
+    assignmentDesc:
+      "Ariza admin tasdiqlagach ro'yxatga qo'shiladi. Bonus olish imkoniyati ham bor.",
+    subjectTitle: 'Ariza qoldirish',
+    subjectDesc:
+      "{university} uchun ro'yxatda yo'q fan bo'lsa, ma'lumotlarni yuboring. Tekshirgach saytga qo'shamiz.",
+    submit: 'Arizani yuborish',
+    submitting: 'Yuborilmoqda...',
+    sentTitle: 'Ariza yuborildi',
+    assignmentSentText:
+      "Moderatsiyadan o'tgach topshiriq ro'yxatga qo'shiladi. Tasdiqlangan ariza uchun bonus olishingiz mumkin.",
+    subjectSentText:
+      "Moderatsiyadan o'tgach fan katalogga qo'shiladi. Holatini «Arizalarim» bo'limida kuzatib borasiz.",
+    assignmentLoginRequired:
+      'Topshiriq yuklash uchun avval hisobingizga kiring — arizangiz holatini kuzatib borishingiz uchun shart.',
+    subjectLoginRequired:
+      'Ariza qoldirish uchun avval hisobingizga kiring — arizangiz holatini kuzatib borishingiz uchun shart.',
+    workType: 'Ish turi',
+    variantMode: 'Variantlik',
+    variantModeHint: 'Mustaqil, amaliy va laboratoriya ishlarida ham tanlanadi.',
+    withVariants: 'Variantli',
+    withoutVariants: 'Variantsiz',
+    variantModeRequired: 'Variantli yoki variantsiz ekanini tanlang',
+    variantCount: 'Nechta variant',
+    variantCountPlaceholder: 'Masalan: 20',
+    variantCountRange: "Variantlar soni 1 dan {max} gacha bo'lishi kerak",
+    withoutVariantsHint: "Bitta umumiy topshiriq — variantlar bo'lmaydi.",
+    assignmentName: 'Topshiriq nomi',
+    assignmentNamePlaceholder: 'Masalan: Mustaqil ish 12-variant',
+    note: 'Izoh (ixtiyoriy)',
+    notePlaceholder: "Qo'shimcha ma'lumot",
+    assignmentFile: 'Topshiriq fayli',
+    removeFile: 'Faylni olib tashlash',
+    pickFile: 'PDF yoki hujjatni tanlang',
+    subjectName: 'Fan nomi',
+    subjectNamePlaceholder: 'Masalan: Dasturlash asoslari',
+    course: 'Kurs',
+    semester: 'Semestr',
+    extraNote: "Qo'shimcha izoh (ixtiyoriy)",
+    extraNotePlaceholder: 'Masalan: 3-kurs, 5-semestr uchun kerak',
+    tabSubjects: 'Fanlar',
+    tabAssignments: 'Topshiriqlar',
+    tabVariants: "Variant so'rovlari",
+    emptySubjects: "Katalogda yo'q fanni qo'shishni so'rasangiz, u shu yerda ko'rinadi.",
+    emptyAssignments: "Katalogda yo'q topshiriqni qo'shishni so'rasangiz, u shu yerda ko'rinadi.",
+    emptyVariants: "Yechimi yo'q variantga «Menga ham kerak» bossangiz, u shu yerda ko'rinadi.",
+    requestCount: "{count} ta so'rov",
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',
