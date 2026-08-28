@@ -31,6 +31,7 @@ import {
   useGetWalletTransactionsQuery,
   useGetWithdrawalsQuery,
 } from './accountApi';
+import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
 
 function formatDate(value: string): string {
@@ -47,6 +48,7 @@ function WithdrawModal({
   balance: string;
   onClose: () => void;
 }) {
+  const { m } = useT();
   const money = useMoney();
   const [create, { isLoading, error }] = useCreateWithdrawalMutation();
   const [amount, setAmount] = useState('');
@@ -81,36 +83,36 @@ function WithdrawModal({
     <Modal
       open={open}
       onClose={onClose}
-      title="Pul yechib olish"
+      title={m.wallet.withdrawTitle}
       description={`Mavjud balans: ${money.decimalSom(balance)}`}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
-            Bekor qilish
+            {m.common.cancel}
           </Button>
           <Button
             variant="emerald"
             disabled={isLoading || !canSubmit}
             onClick={() => void handleSubmit()}
           >
-            {isLoading ? 'Yuborilmoqda…' : 'Yuborish'}
+            {isLoading ? m.wallet.sending : m.wallet.send}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
         <TextField
-          label="Summa"
+          label={m.wallet.amount}
           required
           inputMode="decimal"
           placeholder="50000"
           value={amount}
-          error={tooMuch ? 'Balansdan ortiq summa' : undefined}
+          error={tooMuch ? m.wallet.overBalance : undefined}
           onChange={(event) => setAmount(event.target.value)}
         />
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-foreground">Usul</span>
+          <span className="mb-2 block text-sm font-medium text-foreground">{m.wallet.method}</span>
           <select
             value={method}
             onChange={(event) => setMethod(event.target.value as WithdrawalMethod)}
@@ -125,7 +127,7 @@ function WithdrawModal({
         </label>
 
         <TextField
-          label={method === 'card' ? 'Karta raqami' : 'Telefon raqami'}
+          label={method === 'card' ? m.wallet.methodCard : m.wallet.methodPhone}
           required
           placeholder={method === 'card' ? '8600 XXXX XXXX XXXX' : '+998901234567'}
           value={destination}
@@ -133,7 +135,7 @@ function WithdrawModal({
         />
 
         <TextField
-          label="Karta egasi (ixtiyoriy)"
+          label={m.wallet.cardHolder}
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
@@ -149,6 +151,7 @@ function WithdrawModal({
 }
 
 export function WalletView() {
+  const { m } = useT();
   const money = useMoney();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -168,7 +171,7 @@ export function WalletView() {
               <WalletIcon className="size-5" />
             </span>
             <div>
-              <p className="text-xs text-muted-foreground">Joriy balans</p>
+              <p className="text-xs text-muted-foreground">{m.wallet.balance}</p>
               <p className="text-2xl font-bold text-foreground tabular-nums">
                 {money.decimalSom(wallet.balance)}
               </p>
@@ -181,24 +184,27 @@ export function WalletView() {
             onClick={() => setModalOpen(true)}
           >
             <Send className="size-4" />
-            Pul yechish
+            {m.wallet.withdraw}
           </Button>
         </div>
 
         {/* Muzlatilgan hamyonda amallar bloklanadi — sababi ko'rsatilishi kerak. */}
         {wallet.is_frozen && (
           <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-xs text-amber-800 dark:text-amber-300">
-            Hamyoningiz vaqtincha muzlatilgan. Sabab bo&apos;yicha qo&apos;llab-quvvatlashga
-            murojaat qiling.
+            {m.wallet.frozen}
           </p>
         )}
 
         <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { label: "To'ldirilgan", value: wallet.totals.topped_up, icon: ArrowDownLeft },
-            { label: 'Ishlangan', value: wallet.totals.earned, icon: PiggyBank },
-            { label: 'Sarflangan', value: wallet.totals.spent, icon: ArrowUpRight },
-            { label: 'Kutilayotgan', value: wallet.totals.pending_withdrawal, icon: Clock },
+            { label: m.wallet.earned, value: wallet.totals.earned, icon: PiggyBank },
+            { label: m.wallet.spent, value: wallet.totals.spent, icon: ArrowUpRight },
+            {
+              label: m.wallet.pending,
+              value: wallet.totals.pending_withdrawal,
+              icon: Clock,
+            },
           ].map((item) => (
             <div key={item.label} className="rounded-xl border border-border/60 bg-background p-3">
               <dt className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -215,7 +221,7 @@ export function WalletView() {
 
       {withdrawals && withdrawals.results.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-bold text-foreground">Yechish so&apos;rovlari</h2>
+          <h2 className="text-lg font-bold text-foreground">{m.wallet.withdrawals}</h2>
           <div className="mt-4 grid gap-3">
             {withdrawals.results.map((item) => (
               <article
@@ -256,11 +262,11 @@ export function WalletView() {
       )}
 
       <section className="mt-8">
-        <h2 className="text-lg font-bold text-foreground">Tranzaksiyalar</h2>
+        <h2 className="text-lg font-bold text-foreground">{m.wallet.transactions}</h2>
 
         {!transactions || transactions.results.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Hali tranzaksiya yo&apos;q.
+            {m.wallet.noTransactions}
           </p>
         ) : (
           <div className="mt-4 grid gap-3">

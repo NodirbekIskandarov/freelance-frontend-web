@@ -9,10 +9,11 @@ import { Modal } from '@/components/ui/Modal';
 import { GoogleCredentialButton, isGoogleConfigured } from '@/features/auth/GoogleCredentialButton';
 import { OtpInput } from '@/features/auth/OtpInput';
 import { PhoneField } from '@/features/auth/PhoneField';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
-  LOGIN_METHOD_LABELS,
+  loginMethodLabel,
   type LoginMethod,
   type LoginMethodKind,
 } from '@/shared/types/identities';
@@ -51,6 +52,7 @@ function LinkModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const { m } = useT();
   const [identifier, setIdentifier] = useState('');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
@@ -116,7 +118,7 @@ function LinkModal({
     <Modal
       open={open}
       onClose={close}
-      title={isPhone ? "Telefon raqamni bog'lash" : "Email bog'lash"}
+      title={isPhone ? m.loginMethods.linkPhone : m.loginMethods.linkEmail}
       description={
         sent
           ? `${identifier} manziliga yuborilgan kodni kiriting.`
@@ -133,7 +135,7 @@ function LinkModal({
               disabled={confirmState.isLoading || code.length < 4}
               onClick={() => void handleConfirm()}
             >
-              {confirmState.isLoading ? 'Tekshirilmoqda...' : 'Tasdiqlash'}
+              {confirmState.isLoading ? m.loginMethods.checking : m.loginMethods.confirm}
             </Button>
           ) : (
             <Button
@@ -141,7 +143,7 @@ function LinkModal({
               disabled={startState.isLoading || identifier.trim().length < 4}
               onClick={() => void handleSend()}
             >
-              {startState.isLoading ? 'Yuborilmoqda...' : 'Kod yuborish'}
+              {startState.isLoading ? m.loginMethods.sending : m.loginMethods.sendCode}
             </Button>
           )}
         </>
@@ -153,7 +155,7 @@ function LinkModal({
 
           {hint && (
             <p className="mt-3 rounded-xl border border-amber-500/40 bg-amber-500/[0.06] px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
-              Sinov rejimi — kod: <strong className="font-mono">{hint}</strong>
+              {m.loginMethods.demoHint} <strong className="font-mono">{hint}</strong>
             </p>
           )}
 
@@ -166,7 +168,7 @@ function LinkModal({
             }}
             className="mt-3 text-xs text-muted-foreground underline-offset-2 hover:underline"
           >
-            Boshqa {isPhone ? 'raqam' : 'manzil'} kiritish
+            {isPhone ? m.loginMethods.otherPhone : m.loginMethods.otherEmail}
           </button>
         </div>
       ) : isPhone ? (
@@ -174,14 +176,14 @@ function LinkModal({
       ) : (
         <div>
           <label htmlFor="link-email" className="mb-1.5 block text-sm font-medium text-foreground">
-            Email manzil
+            {m.loginMethods.emailLabel}
           </label>
           <input
             id="link-email"
             type="email"
             value={identifier}
             onChange={(event) => setIdentifier(event.target.value)}
-            placeholder="ism@example.com"
+            placeholder={m.auth.emailPlaceholder}
             className={fieldClass}
           />
         </div>
@@ -200,6 +202,7 @@ function LinkModal({
 }
 
 function MethodRow({ method }: { method: LoginMethod }) {
+  const { m } = useT();
   const [unlink, { isLoading, error }] = useUnlinkMethodMutation();
   const Icon = ICONS[method.kind];
 
@@ -219,19 +222,19 @@ function MethodRow({ method }: { method: LoginMethod }) {
       <span className="min-w-0 flex-1">
         <span className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-foreground">
-            {LOGIN_METHOD_LABELS[method.kind]}
+            {loginMethodLabel(method.kind, m)}
           </span>
           {method.verified ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
               <Check className="size-3" />
-              Tasdiqlangan
+              {m.loginMethods.verified}
             </span>
           ) : (
             /* Tasdiqlanmagan usul kirish yo'li EMAS — buni ochiq aytish
                kerak, aks holda odam u bilan kira olaman deb o'ylardi. */
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/12 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
               <TriangleAlert className="size-3" />
-              Tasdiqlanmagan
+              {m.loginMethods.unverified}
             </span>
           )}
         </span>
@@ -252,7 +255,7 @@ function MethodRow({ method }: { method: LoginMethod }) {
           onClick={() => void unlink({ kind: method.kind })}
         >
           <Link2Off className="size-3.5" />
-          {isLoading ? 'Uzilmoqda...' : 'Uzish'}
+          {isLoading ? m.loginMethods.unlinking : m.loginMethods.unlink}
         </Button>
       ) : (
         /*
@@ -260,7 +263,7 @@ function MethodRow({ method }: { method: LoginMethod }) {
           degan savol javobsiz qolmasin.
         */
         <span className="text-[11px] text-muted-foreground">
-          {method.verified ? 'Yagona kirish yo‘li' : 'Avval tasdiqlang'}
+          {method.verified ? m.loginMethods.onlyWay : m.loginMethods.verifyFirst}
         </span>
       )}
     </li>
@@ -275,6 +278,7 @@ function MethodRow({ method }: { method: LoginMethod }) {
  * tushiladi.
  */
 export function LoginMethods() {
+  const { m } = useT();
   const { data, isLoading, error } = useGetLoginMethodsQuery();
   const [linking, setLinking] = useState<'phone' | 'email' | null>(null);
   const [linkGoogle, googleState] = useLinkGoogleMutation();
@@ -297,10 +301,9 @@ export function LoginMethods() {
     <div className="rounded-xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Kirish usullari</h3>
+          <h3 className="text-sm font-semibold text-foreground">{m.loginMethods.title}</h3>
           <p className="mt-1 max-w-lg text-xs leading-relaxed text-muted-foreground">
-            Hisobingizga bir nechta yo&apos;l bilan kirishingiz mumkin. Har birini qo&apos;shishda
-            tasdiqlash so&apos;raladi, oxirgi qolganini esa uzib bo&apos;lmaydi.
+            {m.loginMethods.lead}
           </p>
         </div>
       </div>
@@ -315,19 +318,19 @@ export function LoginMethods() {
         {!linked.has('phone') && (
           <Button variant="outline" size="sm" onClick={() => setLinking('phone')}>
             <Plus className="size-3.5" />
-            Telefon qo&apos;shish
+            {m.loginMethods.addPhone}
           </Button>
         )}
         {!linked.has('email') && (
           <Button variant="outline" size="sm" onClick={() => setLinking('email')}>
             <Plus className="size-3.5" />
-            Email qo&apos;shish
+            {m.loginMethods.addEmail}
           </Button>
         )}
         {/* Tasdiqlanmagan manzil ham qayta tasdiqlanishi kerak. */}
         {linked.has('email') && !data.methods.find((item) => item.kind === 'email')?.verified && (
           <Button variant="outline" size="sm" onClick={() => setLinking('email')}>
-            Emailni tasdiqlash
+            {m.loginMethods.verifyEmail}
           </Button>
         )}
       </div>
@@ -342,9 +345,7 @@ export function LoginMethods() {
       */}
       {!linked.has('google') && isGoogleConfigured && (
         <div className="mt-4 border-t border-border/50 pt-4">
-          <p className="mb-2 text-xs text-muted-foreground">
-            Google hisobingizni bog&apos;lang — keyin u bilan ham kirishingiz mumkin bo&apos;ladi.
-          </p>
+          <p className="mb-2 text-xs text-muted-foreground">{m.loginMethods.googleHint}</p>
           <GoogleCredentialButton onCredential={handleGoogle} text="signin_with" />
 
           {googleState.error && (

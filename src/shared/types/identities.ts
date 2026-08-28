@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /**
  * Hisobga kirish usullari — `/me/login-methods/`.
  *
@@ -34,8 +36,13 @@ export interface CodeSent {
   demo_code: string | null;
 }
 
-export const LOGIN_METHOD_LABELS: Record<LoginMethodKind, string> = {
-  phone: 'Telefon raqam',
-  email: 'Email',
-  google: 'Google',
-};
+/** Yorliq lug'atdan — matn bu faylda saqlanib qolsa rus tilida ham o'zbekcha chiqardi. */
+export function loginMethodLabel(kind: LoginMethodKind, messages: Messages): string {
+  const labels: Record<LoginMethodKind, string> = {
+    phone: messages.loginMethods.kindPhone,
+    email: messages.loginMethods.kindEmail,
+    google: messages.loginMethods.kindGoogle,
+  };
+
+  return labels[kind];
+}
