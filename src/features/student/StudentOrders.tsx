@@ -9,6 +9,7 @@ import { orderStatusLabel, ORDER_STATUSES, type OrderStatus } from '@/shared/typ
 import { useGetMyOrdersQuery } from '../account/accountApi';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
+import { useDates } from '@/lib/useDates';
 
 const statusTones: Record<OrderStatus, string> = {
   paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
@@ -17,13 +18,8 @@ const statusTones: Record<OrderStatus, string> = {
   refunded: 'bg-blue-500/12 text-blue-700 dark:text-blue-400',
 };
 
-function formatDate(value: string | null): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
-
 export function StudentOrders() {
+  const dates = useDates();
   const money = useMoney();
   const [status, setStatus] = useState<OrderStatus | 'all'>('all');
 
@@ -82,7 +78,7 @@ export function StudentOrders() {
                   {order.assignment_title} &middot; {order.variant_label}
                 </p>
                 <p className="mt-1 font-mono text-xs text-muted-foreground/80">
-                  {order.reference} &middot; {formatDate(order.paid_at ?? order.created_at)}
+                  {order.reference} &middot; {dates.dateTime(order.paid_at ?? order.created_at)}
                 </p>
               </div>
 

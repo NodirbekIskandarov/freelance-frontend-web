@@ -10,11 +10,7 @@ import { LIBRARY_ORDERING_OPTIONS, type LibraryItem } from '@/shared/types/libra
 import { useGetLibraryQuery, useLazyGetLibraryItemQuery } from './libraryApi';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('ru-RU');
-}
+import { useDates } from '@/lib/useDates';
 
 /**
  * Fayl havolasi ro'yxatda kelmaydi — u faqat tafsilot so'rovida
@@ -62,6 +58,7 @@ function DownloadButton({ item }: { item: LibraryItem }) {
 }
 
 export function LibraryList() {
+  const dates = useDates();
   const money = useMoney();
   const { t, m } = useT();
   const [ordering, setOrdering] = useState<string>('-purchased_at');
@@ -122,7 +119,7 @@ export function LibraryList() {
               <p className="mt-1 text-xs text-muted-foreground">{item.variant_label}</p>
               <p className="mt-1 flex items-center gap-3 text-xs text-muted-foreground/80">
                 <span>
-                  {t((x) => x.library.purchasedAt, { date: formatDate(item.purchased_at) })}
+                  {t((x) => x.library.purchasedAt, { date: dates.date(item.purchased_at) })}
                 </span>
                 {Number(item.average_rating) > 0 && (
                   <span className="inline-flex items-center gap-1">

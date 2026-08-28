@@ -1,10 +1,13 @@
 'use client';
 
-import { Gift } from 'lucide-react';
+import { ArrowUpRight, Gift } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
+import { Link } from '@/i18n/Link';
 import { cn } from '@/lib/cn';
+import { toSlug, toSlugId } from '@/lib/slug';
+import { isVisibleAssignmentType } from '@/shared/types/assignmentTypes';
 import {
   REQUEST_STATUS_LABELS,
   type MyAssignmentRequest,
@@ -20,6 +23,7 @@ import {
 } from './requestsApi';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
+import { useDates } from '@/lib/useDates';
 
 /*
  * Institut arizasi bu yerda YO'Q.
@@ -43,11 +47,6 @@ const statusTones: Record<RequestStatus, string> = {
   rejected: 'bg-destructive/12 text-destructive',
 };
 
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
-
 function StatusBadge({ status }: { status: RequestStatus }) {
   return (
     <span
@@ -61,6 +60,44 @@ function StatusBadge({ status }: { status: RequestStatus }) {
   );
 }
 
+/**
+ * Katalogdagi manzil.
+ *
+ * Fan va topshiriq bo'lagi «nom-qisqaID» ko'rinishida: katalog qidirishni
+ * ID bo'yicha qiladi, ya'ni admin sarlavhani to'g'rilagan bo'lsa ham
+ * havola ishlayveradi. Universitet bo'lagi esa QISQA NOMDAN yasaladi va
+ * u aniq mos kelishi shart — shuning uchun `university_short_name`
+ * backenddan alohida keladi.
+ */
+function cataloguePath(
+  universityShortName: string,
+  universityName: string,
+  parts: string[],
+): string {
+  return ['/materials', toSlug(universityShortName || universityName), ...parts].join('/');
+}
+
+/**
+ * Topshiriq sahifasi HAMMA tur uchun mavjud emas.
+ *
+ * Katalog `course_work` va `other` turlarini ataylab chiqarmaydi —
+ * ularning manzili 404 beradi. Bunday holatda havola FANGA olib
+ * boradi: odam baribir o'sha yerga tushadi, faqat bir qadam yuqoriroq.
+ */
+function assignmentOrSubjectPath(
+  universityShortName: string,
+  universityName: string,
+  subjectSlug: string,
+  assignmentSlug: string,
+  assignmentType: string,
+): string {
+  const parts = isVisibleAssignmentType(assignmentType)
+    ? [subjectSlug, assignmentSlug]
+    : [subjectSlug];
+
+  return cataloguePath(universityShortName, universityName, parts);
+}
+
 /** Barcha ariza turlari bir xil karta ichida — faqat matni farq qiladi. */
 function RequestCard({
   title,
@@ -69,6 +106,7 @@ function RequestCard({
   rewardGranted,
   rejectReason,
   createdAt,
+  href,
   extra,
 }: {
   title: string;
@@ -77,15 +115,37 @@ function RequestCard({
   rewardGranted?: boolean;
   rejectReason?: string;
   createdAt: string;
+  /**
+   * Katalogdagi yozuv — faqat ariza TASDIQLANGANDA bo'ladi.
+   *
+   * Havola AYNAN sarlavhada, butun karta emas: kartaning ichida
+   * allaqachon havola bor («Fayl»), ikkinchisini ustiga qo'yish esa
+   * yaroqsiz HTML va bosilganda qaysi biri ishlashi noaniq bo'lardi.
+   */
+  href?: string;
   extra?: ReactNode;
 }) {
+  const { m } = useT();
+  const dates = useDates();
+
   return (
     <article className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-bold text-foreground">{title}</h3>
+          {href ? (
+            <Link
+              href={href}
+              title={m.requests.openInCatalogue}
+              className="group inline-flex items-start gap-1 text-sm font-bold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400"
+            >
+              {title}
+              <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
+            </Link>
+          ) : (
+            <h3 className="text-sm font-bold text-foreground">{title}</h3>
+          )}
           <p className="mt-1 text-xs text-muted-foreground">{meta}</p>
-          <p className="mt-1 text-[11px] text-muted-foreground/80">{formatDate(createdAt)}</p>
+          <p className="mt-1 text-[11px] text-muted-foreground/80">{dates.dateTime(createdAt)}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -94,7 +154,7 @@ function RequestCard({
           {rewardGranted && (
             <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/12 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:text-violet-400">
               <Gift className="size-3.5" />
-              Mukofotlandi
+              {m.requests.rewarded}
             </span>
           )}
           {extra}
@@ -197,7 +257,7 @@ export function MyRequests() {
                   title={row.name}
                   meta={[
                     row.university_short_name || row.university_name,
-                    row.course ? `${row.course}-kurs` : '',
+                    row.course ? t((x) => x.materials.course, { course: row.course }) : '',
                   ]
                     .filter(Boolean)
                     .join(' · ')}
@@ -205,6 +265,13 @@ export function MyRequests() {
                   rewardGranted={row.reward_granted}
                   rejectReason={row.reject_reason}
                   createdAt={row.created_at}
+                  href={
+                    row.created_subject
+                      ? cataloguePath(row.university_short_name, row.university_name, [
+                          toSlugId(row.name, row.created_subject),
+                        ])
+                      : undefined
+                  }
                 />
               ))}
             </div>
@@ -224,7 +291,9 @@ export function MyRequests() {
                   meta={[
                     row.university_name,
                     row.subject_name,
-                    row.variant_count ? `${row.variant_count} ta variant` : '',
+                    row.variant_count
+                      ? t((x) => x.tasks.variantCount, { count: row.variant_count })
+                      : '',
                   ]
                     .filter(Boolean)
                     .join(' · ')}
@@ -232,6 +301,17 @@ export function MyRequests() {
                   rewardGranted={row.reward_granted}
                   rejectReason={row.reject_reason}
                   createdAt={row.created_at}
+                  href={
+                    row.created_assignment
+                      ? assignmentOrSubjectPath(
+                          row.university_short_name,
+                          row.university_name,
+                          toSlugId(row.subject_name, row.subject),
+                          toSlugId(row.title, row.created_assignment),
+                          row.type,
+                        )
+                      : undefined
+                  }
                   extra={
                     row.file ? (
                       <a
@@ -240,7 +320,7 @@ export function MyRequests() {
                         rel="noreferrer"
                         className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
                       >
-                        Fayl
+                        {m.requests.file}
                       </a>
                     ) : undefined
                   }
@@ -266,6 +346,13 @@ export function MyRequests() {
                     t((x) => x.requests.requestCount, { count: row.request_count }),
                   ].join(' · ')}
                   createdAt={row.created_at}
+                  href={assignmentOrSubjectPath(
+                    row.university_short_name,
+                    row.university_name,
+                    toSlugId(row.subject_name, row.subject),
+                    toSlugId(row.assignment_title, row.assignment),
+                    row.assignment_type,
+                  )}
                   extra={
                     <span
                       className={cn(

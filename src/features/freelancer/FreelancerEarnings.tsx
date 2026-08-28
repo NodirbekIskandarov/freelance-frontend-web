@@ -9,11 +9,7 @@ import { useGetWalletQuery, useGetWalletTransactionsQuery } from '@/features/acc
 import { TRANSACTION_TYPE_LABELS } from '@/shared/types/account';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
+import { useDates } from '@/lib/useDates';
 
 /**
  * Daromad sahifasi hamyon ustiga qurilgan — backendda alohida
@@ -22,6 +18,7 @@ function formatDate(value: string): string {
  * to'liq tarix va yechib olish `/wallet` sahifasida.
  */
 export function FreelancerEarnings() {
+  const dates = useDates();
   const { m } = useT();
   const money = useMoney();
   const { data: wallet, isLoading, error } = useGetWalletQuery();
@@ -96,7 +93,7 @@ export function FreelancerEarnings() {
                     {entry.description || TRANSACTION_TYPE_LABELS[entry.type]}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground/80">
-                    {formatDate(entry.created_at)}
+                    {dates.dateTime(entry.created_at)}
                   </p>
                 </div>
 

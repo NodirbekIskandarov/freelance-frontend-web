@@ -11,13 +11,10 @@ import { getApiErrorMessage } from '@/shared/api/errors';
 import { offerStatusLabel, OFFER_STATUSES, type OfferStatus } from '@/shared/types/exchange';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
+import { useDates } from '@/lib/useDates';
 
 export function FreelancerOffers() {
+  const dates = useDates();
   const { m } = useT();
   const money = useMoney();
   const [status, setStatus] = useState<OfferStatus | 'all'>('all');
@@ -79,7 +76,7 @@ export function FreelancerOffers() {
               <div className="min-w-0 flex-1">
                 <p className="text-xs leading-relaxed text-muted-foreground">{offer.message}</p>
                 <p className="mt-1 text-[11px] text-muted-foreground/80">
-                  {offer.deadline_days} kun &middot; {formatDate(offer.created_at)}
+                  {offer.deadline_days} kun &middot; {dates.dateTime(offer.created_at)}
                 </p>
               </div>
 

@@ -51,6 +51,8 @@ export interface MyAssignmentRequest extends RequestBase {
   subject_name: string;
   university: string;
   university_name: string;
+  /** Katalog manzilining birinchi bo'lagi shundan yasaladi. */
+  university_short_name: string;
   title: string;
   type: string;
   description: string;
@@ -67,9 +69,12 @@ export interface MySolutionRequest {
   request_count: number;
   assignment: string;
   assignment_title: string;
+  /** Katalog barcha turlarni ko'rsatmaydi — havola shunga qarab quriladi. */
+  assignment_type: string;
   subject: string;
   subject_name: string;
   university_name: string;
+  university_short_name: string;
   is_fulfilled: boolean;
   created_at: string;
 }

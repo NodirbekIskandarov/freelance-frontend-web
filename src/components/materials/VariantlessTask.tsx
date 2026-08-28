@@ -16,6 +16,7 @@ import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
+import { useDates } from '@/lib/useDates';
 
 /** Backenddagi `MAX_SOLUTIONS_PER_USER_PER_VARIANT` bilan bir xil. */
 const MAX_UPLOADS = 2;
@@ -38,6 +39,7 @@ export function VariantlessTask({
   assignmentTitle: string;
 }) {
   const { t, m } = useT();
+  const dates = useDates();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const [requestSolution, requestState] = useRequestAssignmentSolutionMutation();
@@ -117,8 +119,14 @@ export function VariantlessTask({
                 key={item.id}
                 className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-card px-2.5 py-1.5"
               >
-                <span className="min-w-0 truncate text-[11px] text-foreground" title={item.title}>
+                <span
+                  className="min-w-0 flex-1 truncate text-[11px] text-foreground"
+                  title={item.title}
+                >
                   {item.title}
+                  <span className="ml-1.5 text-muted-foreground/80">
+                    {dates.date(item.created_at)}
+                  </span>
                 </span>
                 <span
                   className={cn(

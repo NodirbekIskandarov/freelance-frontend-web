@@ -18,6 +18,7 @@ import {
 
 import { useCreateAppealMutation, useGetAppealsQuery } from './accountApi';
 import { useT } from '@/i18n/useT';
+import { useDates } from '@/lib/useDates';
 
 const statusTones: Record<AppealStatus, string> = {
   open: 'bg-sky-500/12 text-sky-700 dark:text-sky-400',
@@ -25,12 +26,8 @@ const statusTones: Record<AppealStatus, string> = {
   resolved: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
 };
 
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
-
 export function Appeals() {
+  const dates = useDates();
   const { m } = useT();
   const { data, isLoading, error } = useGetAppealsQuery({ page_size: 30 });
   const [createAppeal, { isLoading: isSending, error: createError }] = useCreateAppealMutation();
@@ -145,7 +142,7 @@ export function Appeals() {
                       {appealTopicLabel(appeal.topic, m) ?? appeal.topic}
                     </p>
                     <p className="mt-0.5 font-mono text-xs text-muted-foreground/80">
-                      {appeal.reference} &middot; {formatDate(appeal.created_at)}
+                      {appeal.reference} &middot; {dates.dateTime(appeal.created_at)}
                     </p>
                   </div>
                   <span

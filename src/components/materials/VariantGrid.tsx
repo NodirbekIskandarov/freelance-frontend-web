@@ -24,6 +24,7 @@ import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { PublicSolution, Variant } from '@/shared/types/catalogue';
 import { useMoney } from '@/lib/useMoney';
+import { useDates } from '@/lib/useDates';
 
 export interface VariantWithCount extends Variant {
   solutionCount: number;
@@ -104,6 +105,7 @@ export function VariantGrid({
 }) {
   const { t, m } = useT();
   const money = useMoney();
+  const dates = useDates();
   const [selectedId, setSelectedId] = useState(variants[0]?.id ?? '');
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
   const [purchase, purchaseState] = usePurchaseSolutionMutation();
@@ -330,6 +332,9 @@ export function VariantGrid({
                   {Number(solution.average_rating).toFixed(1)} ·{' '}
                   {t((x) => x.variants.sales, { count: solution.sold_count })}
                 </p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground/80">
+                  {t((x) => x.variants.uploadedOn, { date: dates.date(solution.created_at) })}
+                </p>
                 <p className="mt-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {money.decimalSom(solution.price)}
                 </p>
@@ -449,8 +454,14 @@ export function VariantGrid({
                   key={item.id}
                   className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-card px-2.5 py-1.5"
                 >
-                  <span className="min-w-0 truncate text-[11px] text-foreground" title={item.title}>
+                  <span
+                    className="min-w-0 flex-1 truncate text-[11px] text-foreground"
+                    title={item.title}
+                  >
                     {item.title}
+                    <span className="ml-1.5 text-muted-foreground/80">
+                      {dates.date(item.created_at)}
+                    </span>
                   </span>
                   <span
                     className={cn(

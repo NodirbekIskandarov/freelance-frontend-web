@@ -33,11 +33,7 @@ import {
 } from './accountApi';
 import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ru-RU').slice(0, 16);
-}
+import { useDates } from '@/lib/useDates';
 
 function WithdrawModal({
   open,
@@ -151,6 +147,7 @@ function WithdrawModal({
 }
 
 export function WalletView() {
+  const dates = useDates();
   const { m } = useT();
   const money = useMoney();
   const [modalOpen, setModalOpen] = useState(false);
@@ -236,7 +233,7 @@ export function WalletView() {
                     {WITHDRAWAL_METHOD_LABELS[item.method]} &middot; {item.destination}
                   </p>
                   <p className="mt-0.5 font-mono text-[11px] text-muted-foreground/80">
-                    {item.reference} &middot; {formatDate(item.created_at)}
+                    {item.reference} &middot; {dates.dateTime(item.created_at)}
                   </p>
                   {item.admin_note && (
                     <p className="mt-1 text-xs text-muted-foreground">{item.admin_note}</p>
@@ -299,7 +296,7 @@ export function WalletView() {
                     </h3>
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {TRANSACTION_TYPE_LABELS[transaction.type]} &middot;{' '}
-                      {formatDate(transaction.created_at)}
+                      {dates.dateTime(transaction.created_at)}
                     </p>
                   </div>
 

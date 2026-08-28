@@ -27,6 +27,7 @@ import {
 import { VariantGrid, type VariantWithCount } from './VariantGrid';
 import { VariantlessTask } from './VariantlessTask';
 import { AssignmentFile } from './AssignmentFile';
+import { useDates } from '@/lib/useDates';
 
 export interface TaskNode {
   id: string;
@@ -36,6 +37,8 @@ export interface TaskNode {
   description: string;
   /** Topshiriq sharti — bo'sh bo'lishi mumkin. */
   file: string;
+  /** Katalogga qachon qo'shilgani. */
+  createdAt: string;
   variants: VariantWithCount[];
 }
 
@@ -77,6 +80,7 @@ export function SubjectTasks({
   initialTaskId?: string;
 }) {
   const { t, m } = useT();
+  const dates = useDates();
   const initial = tasks.find((task) => task.id === initialTaskId) ?? tasks[0];
 
   /*
@@ -191,7 +195,7 @@ export function SubjectTasks({
           <div className="min-w-0 [scrollbar-width:none] overflow-x-auto pb-0.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <div
               role="tablist"
-              aria-label="Topshiriq turi"
+              aria-label={m.materials.assignmentTypeLabel}
               className="inline-flex min-w-max gap-1 rounded-xl bg-muted/40 p-1"
             >
               {tabs.map((item) => {
@@ -372,7 +376,8 @@ export function SubjectTasks({
                   {subject.course
                     ? ` · ${t((x) => x.materials.course, { course: subject.course })}`
                     : ''}{' '}
-                  · {t((x) => x.tasks.variantCount, { count: active.variants.length })}
+                  · {t((x) => x.tasks.variantCount, { count: active.variants.length })} ·{' '}
+                  {t((x) => x.variants.addedOn, { date: dates.date(active.createdAt) })}
                 </p>
 
                 {active.description && (

@@ -5,6 +5,7 @@ import { Star } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import type { ExchangeReview } from '@/shared/types/exchange';
 import { useT } from '@/i18n/useT';
+import { useDates } from '@/lib/useDates';
 
 /** Beshta yulduz — to'lganlari sariq, qolgani kulrang. */
 function Stars({ rating, className }: { rating: number; className?: string }) {
@@ -27,16 +28,12 @@ function Stars({ rating, className }: { rating: number; className?: string }) {
   );
 }
 
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('ru-RU');
-}
-
 /**
  * Server Component — sharhlar bot uchun HTML'da bo'lishi kerak.
  * Interaktivlik yo'q: yozish va tahrirlash kabinetda.
  */
 export function FreelancerReviews({ reviews }: { reviews: ExchangeReview[] }) {
+  const dates = useDates();
   const { m } = useT();
   if (reviews.length === 0) {
     return (
@@ -74,7 +71,7 @@ export function FreelancerReviews({ reviews }: { reviews: ExchangeReview[] }) {
             <div className="text-right">
               <Stars rating={review.rating} />
               <p className="mt-0.5 text-[11px] text-muted-foreground">
-                {formatDate(review.created_at)}
+                {dates.date(review.created_at)}
               </p>
             </div>
           </div>
