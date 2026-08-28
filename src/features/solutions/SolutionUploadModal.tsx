@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { useAppSelector } from '@/store/hooks';
@@ -73,6 +74,7 @@ export function SolutionUploadModal({
   assignmentTitle: string;
   onClose: () => void;
 }) {
+  const { t, m } = useT();
   const money = useMoney();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [upload, { isLoading, error, reset }] = useUploadSolutionMutation();
@@ -108,12 +110,12 @@ export function SolutionUploadModal({
 
     const extension = `.${next.name.split('.').pop()?.toLowerCase() ?? ''}`;
     if (!ACCEPTED.includes(extension)) {
-      setLocalError(`Bu format qabul qilinmaydi. Ruxsat etilgan: ${ACCEPTED.join(', ')}`);
+      setLocalError(t((x) => x.upload.badFormat, { formats: ACCEPTED.join(', ') }));
       setFile(null);
       return;
     }
     if (next.size > MAX_SIZE_MB * 1024 * 1024) {
-      setLocalError(`Fayl juda katta (${formatSize(next.size)}). Chegara — ${MAX_SIZE_MB} MB.`);
+      setLocalError(t((x) => x.upload.tooLarge, { size: formatSize(next.size), max: MAX_SIZE_MB }));
       setFile(null);
       return;
     }
@@ -124,8 +126,7 @@ export function SolutionUploadModal({
     if (!title.trim()) setTitle(next.name.replace(/\.[^.]+$/, ''));
   }
 
-  const priceError =
-    price.trim() && !PRICE_PATTERN.test(price.trim()) ? 'Narxni raqamda kiriting' : '';
+  const priceError = price.trim() && !PRICE_PATTERN.test(price.trim()) ? m.upload.priceInvalid : '';
   const canSubmit = Boolean(file) && title.trim().length > 0 && PRICE_PATTERN.test(price.trim());
 
   async function handleSubmit(event: React.FormEvent) {
@@ -157,19 +158,21 @@ export function SolutionUploadModal({
     <Modal
       open={open}
       onClose={close}
-      title="Yechim yuborish"
+      title={m.upload.title}
       description={
-        variantNumber ? `${assignmentTitle} · ${variantNumber}-variant` : assignmentTitle
+        variantNumber
+          ? t((x) => x.upload.variantLabel, { title: assignmentTitle, number: variantNumber })
+          : assignmentTitle
       }
       footer={
         done ? (
           <Button variant="emerald" onClick={close}>
-            Yopish
+            {m.common.close}
           </Button>
         ) : isAuthenticated ? (
           <>
             <Button variant="outline" onClick={close}>
-              Bekor qilish
+              {m.common.cancel}
             </Button>
             <Button
               type="submit"
@@ -177,7 +180,7 @@ export function SolutionUploadModal({
               variant="emerald"
               disabled={isLoading || !canSubmit}
             >
-              {isLoading ? 'Yuborilmoqda...' : 'Yuborish'}
+              {isLoading ? m.upload.submitting : m.upload.submit}
             </Button>
           </>
         ) : undefined
@@ -186,26 +189,20 @@ export function SolutionUploadModal({
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
           <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
-          <p className="mt-3 text-sm font-medium text-foreground">Yechim yuborildi</p>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Moderator tekshirib chiqadi va yakuniy narxni belgilaydi. Tasdiqlangach yechim shu
-            variantda sotuvga chiqadi — holatini &laquo;Yechimlarim&raquo; bo&apos;limida kuzatasiz.
-          </p>
+          <p className="mt-3 text-sm font-medium text-foreground">{m.upload.doneTitle}</p>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.upload.doneText}</p>
         </div>
       ) : !isAuthenticated ? (
         <div className="py-2">
-          <p className="text-sm text-muted-foreground">
-            Yechim yuborish uchun avval hisobingizga kiring — yechim sizning nomingizga
-            biriktiriladi va daromadi hamyoningizga tushadi.
-          </p>
+          <p className="text-sm text-muted-foreground">{m.upload.loginRequired}</p>
           <ButtonLink href="/login" variant="emerald" className="mt-4">
-            Kirish
+            {m.header.login}
           </ButtonLink>
         </div>
       ) : (
         <form id="solution-upload-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <FieldLabel htmlFor="solution-file">Yechim fayli</FieldLabel>
+            <FieldLabel htmlFor="solution-file">{m.upload.fileLabel}</FieldLabel>
 
             {file ? (
               <div className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/[0.06] px-3 py-2.5">
@@ -218,7 +215,7 @@ export function SolutionUploadModal({
                 </span>
                 <button
                   type="button"
-                  aria-label="Faylni olib tashlash"
+                  aria-label={m.upload.removeFile}
                   onClick={() => {
                     pickFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -244,25 +241,28 @@ export function SolutionUploadModal({
             )}
 
             <p className="mt-1.5 text-[11px] text-muted-foreground">
-              {ACCEPTED.join(', ')} · eng ko&apos;pi {MAX_SIZE_MB} MB
+              {t((x) => x.upload.formats, {
+                formats: ACCEPTED.join(', '),
+                max: MAX_SIZE_MB,
+              })}
             </p>
           </div>
 
           <div>
-            <FieldLabel htmlFor="solution-title">Sarlavha</FieldLabel>
+            <FieldLabel htmlFor="solution-title">{m.upload.titleLabel}</FieldLabel>
             <input
               id="solution-title"
               required
               maxLength={255}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="Masalan: 5-variant, to'liq yechim"
+              placeholder={m.upload.titlePlaceholder}
               className={cn(fieldClass, 'h-11')}
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="solution-price">Narxingiz</FieldLabel>
+            <FieldLabel htmlFor="solution-price">{m.upload.priceLabel}</FieldLabel>
             <input
               id="solution-price"
               required
@@ -277,24 +277,22 @@ export function SolutionUploadModal({
               <p className="mt-1.5 text-[11px] text-destructive">{priceError}</p>
             ) : (
               <p className="mt-1.5 text-[11px] text-muted-foreground">
-                So&apos;mda. Bu siz so&apos;ragan narx — moderator uni ko&apos;rib chiqib yakuniy
-                summani belgilaydi.
-                {PRICE_PATTERN.test(price.trim()) && (
-                  <> Siz so&apos;radingiz: {money.decimalSom(price.trim())}.</>
-                )}
+                {m.upload.priceHint}
+                {PRICE_PATTERN.test(price.trim()) &&
+                  t((x) => x.upload.priceAsked, { price: money.decimalSom(price.trim()) })}
               </p>
             )}
           </div>
 
           <div>
-            <FieldLabel htmlFor="solution-description">Izoh (ixtiyoriy)</FieldLabel>
+            <FieldLabel htmlFor="solution-description">{m.upload.descriptionLabel}</FieldLabel>
             <textarea
               id="solution-description"
               rows={3}
               maxLength={2000}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="Masalan: barcha masalalar yechilgan, izohlari bilan"
+              placeholder={m.upload.descriptionPlaceholder}
               className={cn(fieldClass, 'resize-none py-2.5')}
             />
           </div>

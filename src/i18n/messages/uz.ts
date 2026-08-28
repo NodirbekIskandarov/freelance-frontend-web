@@ -330,6 +330,51 @@ export const uz = {
     archived: 'Arxivlangan',
   },
 
+  upload: {
+    title: 'Yechim yuborish',
+    variantLabel: '{title} · {number}-variant',
+    doneTitle: 'Yechim yuborildi',
+    doneText:
+      "Moderator tekshirib chiqadi va yakuniy narxni belgilaydi. Tasdiqlangach yechim shu variantda sotuvga chiqadi — holatini «Yechimlarim» bo'limida kuzatasiz.",
+    loginRequired:
+      'Yechim yuborish uchun avval hisobingizga kiring — yechim sizning nomingizga biriktiriladi va daromadi hamyoningizga tushadi.',
+    fileLabel: 'Yechim fayli',
+    removeFile: 'Faylni olib tashlash',
+    formats: "{formats} · eng ko'pi {max} MB",
+    badFormat: 'Bu format qabul qilinmaydi. Ruxsat etilgan: {formats}',
+    tooLarge: 'Fayl juda katta ({size}). Chegara — {max} MB.',
+    titleLabel: 'Sarlavha',
+    titlePlaceholder: "Masalan: 5-variant, to'liq yechim",
+    priceLabel: 'Narxingiz',
+    pricePlaceholder: '15000',
+    priceInvalid: 'Faqat son kiriting, masalan 15000',
+    priceHint:
+      "So'mda. Bu siz so'ragan narx — moderator uni ko'rib chiqib yakuniy summani belgilaydi.",
+    priceAsked: " Siz so'radingiz: {price}.",
+    descriptionLabel: 'Izoh (ixtiyoriy)',
+    descriptionPlaceholder: 'Masalan: barcha masalalar yechilgan, izohlari bilan',
+    submitting: 'Yuborilmoqda...',
+    submit: 'Yuborish',
+  },
+
+  comments: {
+    title: 'Izohlar',
+    lead: "«{assignment}» haqida fikringiz — qaysi variant chalkash, javob to'g'ri chiqdimi, o'qituvchi nima kutadi.",
+    bodyLabel: 'Izoh matni',
+    placeholder: 'Izohingizni yozing...',
+    submitting: 'Yuborilmoqda...',
+    submit: 'Izoh qoldirish',
+    loginRequired: 'Izoh qoldirish uchun hisobingizga kiring.',
+    empty: "Hozircha izoh yo'q",
+    emptyHint: "Birinchi bo'lib fikringizni yozing.",
+    remove: "Izohni o'chirish",
+    anonymous: 'Foydalanuvchi',
+    justNow: 'hozir',
+    minutesAgo: '{count} daqiqa oldin',
+    hoursAgo: '{count} soat oldin',
+    daysAgo: '{count} kun oldin',
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',
