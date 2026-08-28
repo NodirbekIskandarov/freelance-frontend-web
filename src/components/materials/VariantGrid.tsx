@@ -246,45 +246,52 @@ export function VariantGrid({
                 )}
               >
                 <div className="flex items-start gap-2">
+                  {/*
+                    Raqam HAR DOIM ko'rinadi — bo'sh variantda ham.
+                    Ilgari uning o'rniga qulf chizilardi va odam qaysi
+                    variant ekanini bilmasdi: to'rda faqat «Tayyor emas»
+                    yozuvlari qatorlashib turardi.
+                  */}
                   <span
                     className={cn(
                       'inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold',
-                      locked ? 'bg-zinc-500/10' : BADGE[status],
+                      locked ? 'bg-zinc-500/10 text-zinc-500' : BADGE[status],
                     )}
                   >
-                    {locked ? <Lock className="size-3.5 text-zinc-500" /> : variant.number}
+                    {variant.number}
                   </span>
 
                   <div className="min-w-0 flex-1 pt-0.5">
+                    <p className="text-base leading-none font-semibold text-foreground">
+                      {variant.number}
+                    </p>
+
                     {locked ? (
-                      // Matn o'ralishi kerak: tor kartada bir qatorga sig'maydi.
-                      <p className="text-[11px] leading-tight break-words text-muted-foreground">
+                      // Qulf shu yerda qoladi: pastdagi izohli qator ham
+                      // «hech kim so'ramagan»ni shu belgi bilan ko'rsatadi.
+                      <p className="mt-1.5 flex items-start gap-1 text-[11px] leading-tight break-words text-muted-foreground">
+                        <Lock className="mt-px size-3 shrink-0" />
                         {m.variants.notReady}
                       </p>
                     ) : (
-                      <>
-                        <p className="text-base leading-none font-semibold text-foreground">
-                          {variant.number}
-                        </p>
-                        <p
-                          className={cn(
-                            'mt-1.5 text-[11px] font-medium',
-                            status === 'requested'
-                              ? 'text-amber-700 dark:text-amber-300'
-                              : 'text-muted-foreground',
-                          )}
-                        >
-                          {/* Talab qancha ekani muhim: bitta so'rov bilan
-                              o'ntasi bir xil ko'rinmasin. */}
-                          {status === 'requested'
-                            ? t((x) => x.variants.requestCount, {
-                                count: requestCountOf(variant, justRequested),
-                              })
-                            : t((x) => x.variants.solutionCount, {
-                                count: variant.solutionCount,
-                              })}
-                        </p>
-                      </>
+                      <p
+                        className={cn(
+                          'mt-1.5 text-[11px] font-medium',
+                          status === 'requested'
+                            ? 'text-amber-700 dark:text-amber-300'
+                            : 'text-muted-foreground',
+                        )}
+                      >
+                        {/* Talab qancha ekani muhim: bitta so'rov bilan
+                            o'ntasi bir xil ko'rinmasin. */}
+                        {status === 'requested'
+                          ? t((x) => x.variants.requestCount, {
+                              count: requestCountOf(variant, justRequested),
+                            })
+                          : t((x) => x.variants.solutionCount, {
+                              count: variant.solutionCount,
+                            })}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -466,7 +473,7 @@ export function VariantGrid({
             uploadsLeft > 0 ? (
               <>
                 <Button
-                  variant="outline"
+                  variant="emerald"
                   size="sm"
                   className="w-full"
                   onClick={() => setUploadOpen(true)}

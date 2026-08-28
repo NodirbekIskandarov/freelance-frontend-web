@@ -126,6 +126,7 @@ export default async function SubjectPage(
     title: node.assignment.title,
     type: node.assignment.type,
     description: node.assignment.description,
+    file: node.assignment.file ?? '',
     variants: node.variants,
   }));
 

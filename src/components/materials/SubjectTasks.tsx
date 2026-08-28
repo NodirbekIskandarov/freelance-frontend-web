@@ -26,6 +26,7 @@ import {
 } from './TaskFilterModal';
 import { VariantGrid, type VariantWithCount } from './VariantGrid';
 import { VariantlessTask } from './VariantlessTask';
+import { AssignmentFile } from './AssignmentFile';
 
 export interface TaskNode {
   id: string;
@@ -33,6 +34,8 @@ export interface TaskNode {
   title: string;
   type: string;
   description: string;
+  /** Topshiriq sharti — bo'sh bo'lishi mumkin. */
+  file: string;
   variants: VariantWithCount[];
 }
 
@@ -377,6 +380,10 @@ export function SubjectTasks({
                     {active.description}
                   </p>
                 )}
+
+                {/* Shart VARIANTLARDAN OLDIN: qaysi variantni tanlashni
+                    aynan shu fayl hal qiladi. */}
+                <AssignmentFile url={active.file} />
               </header>
 
               <div className="mt-4">

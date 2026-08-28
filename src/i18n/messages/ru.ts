@@ -861,6 +861,15 @@ export const ru: Messages = {
     recentOrders: 'Последние заказы',
   },
 
+  assignmentFile: {
+    title: 'Условие задания',
+    download: 'Скачать',
+    show: 'Показать',
+    hide: 'Скрыть',
+    cannotShow: 'Ваш браузер не смог отобразить PDF здесь.',
+    openInNewTab: 'Открыть в новой вкладке',
+  },
+
   materials: {
     slideNumber: 'Слайд {index}',
     subjectName: 'Название предмета',

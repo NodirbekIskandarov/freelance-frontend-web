@@ -86,6 +86,13 @@ export interface Assignment {
   /** `AssignmentTypeEnum` — fan sahifasidagi tablar shunga qarab bo'linadi. */
   type: string;
   description: string;
+  /**
+   * Topshiriq shartining fayli — talaba ko'radigan hujjat.
+   *
+   * Yechim EMAS: yechim pullik va u `PublicSolution` da. Bo'sh satr —
+   * fayl biriktirilmagan.
+   */
+  file: string;
   /** Ochiq mavzudagi izohlar soni — tab yorlig'idagi raqam. */
   comment_count?: number;
   is_active: boolean;

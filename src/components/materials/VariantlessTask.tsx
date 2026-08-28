@@ -140,7 +140,7 @@ export function VariantlessTask({
         {uploadsLeft > 0 ? (
           <>
             <Button
-              variant="outline"
+              variant="emerald"
               size="sm"
               className="w-full sm:w-auto"
               onClick={() => setUploadOpen(true)}

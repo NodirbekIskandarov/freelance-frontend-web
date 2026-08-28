@@ -861,6 +861,15 @@ export const uz = {
     recentOrders: "So'nggi buyurtmalar",
   },
 
+  assignmentFile: {
+    title: 'Topshiriq sharti',
+    download: 'Yuklab olish',
+    show: "Ko'rsatish",
+    hide: 'Yashirish',
+    cannotShow: "Brauzeringiz PDF'ni bu yerda ko'rsata olmadi.",
+    openInNewTab: 'Yangi oynada ochish',
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',
