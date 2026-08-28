@@ -16,8 +16,10 @@ import { useGetMyApplicationQuery, useSubmitApplicationMutation } from '../publi
 import { STEP_FIELDS } from './ApplyStepFields';
 import { ApplyStepper } from './ApplyStepper';
 import { APPLY_STEPS, EMPTY_DRAFT, type DraftErrors } from './steps';
+import { useT } from '@/i18n/useT';
 
 export function ApplyWizard() {
+  const { m } = useT();
   const hydrated = useAppSelector(selectAuthHydrated);
   const user = useAppSelector(selectCurrentUser);
 
@@ -35,23 +37,22 @@ export function ApplyWizard() {
   const { data: existing } = useGetMyApplicationQuery(undefined, { skip: !user });
 
   if (!hydrated) {
-    return <p className="py-10 text-center text-sm text-muted-foreground">Yuklanmoqda...</p>;
+    return <p className="py-10 text-center text-sm text-muted-foreground">{m.common.loading}</p>;
   }
 
   if (!user) {
     return (
       <div className="rounded-2xl border border-border bg-card p-8 text-center">
-        <h2 className="text-lg font-semibold text-foreground">Kirish talab qilinadi</h2>
+        <h2 className="text-lg font-semibold text-foreground">{m.apply.loginRequired}</h2>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-          Ariza yuborish uchun avval hisobingizga kiring. Hisobingiz bo&apos;lmasa, ro&apos;yxatdan
-          o&apos;ting — bu bir daqiqa vaqt oladi.
+          {m.apply.loginRequiredText}
         </p>
         <div className="mt-5 flex justify-center gap-2">
           <ButtonLink href="/login" variant="emerald">
-            Kirish
+            {m.header.login}
           </ButtonLink>
           <ButtonLink href="/register" variant="outline">
-            Ro&apos;yxatdan o&apos;tish
+            {m.header.register}
           </ButtonLink>
         </div>
       </div>
@@ -62,11 +63,9 @@ export function ApplyWizard() {
     return (
       <div className="rounded-2xl border border-emerald-500/25 bg-card p-8 text-center">
         <CheckCircle2 className="mx-auto size-10 text-emerald-500" />
-        <h2 className="mt-3 text-lg font-semibold text-foreground">
-          Siz allaqachon freelancer sifatidasiz
-        </h2>
+        <h2 className="mt-3 text-lg font-semibold text-foreground">{m.apply.alreadyFreelancer}</h2>
         <ButtonLink href="/freelancer/dashboard" variant="emerald" className="mt-5">
-          Kabinetga o&apos;tish
+          {m.apply.goToCabinet}
         </ButtonLink>
       </div>
     );
@@ -79,11 +78,9 @@ export function ApplyWizard() {
     return (
       <div className="rounded-2xl border border-amber-500/30 bg-card p-8 text-center">
         <Clock className="mx-auto size-10 text-amber-500" />
-        <h2 className="mt-3 text-lg font-semibold text-foreground">
-          Ariza ko&apos;rib chiqilmoqda
-        </h2>
+        <h2 className="mt-3 text-lg font-semibold text-foreground">{m.apply.underReview}</h2>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-          Arizangiz 1–3 ish kuni ichida admin tomonidan tekshiriladi. Natija haqida xabar beramiz.
+          {m.apply.underReviewText}
         </p>
       </div>
     );
@@ -95,13 +92,13 @@ export function ApplyWizard() {
         <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-emerald-500/15">
           <CheckCircle2 className="size-9 text-emerald-500" />
         </span>
-        <h2 className="mt-4 text-2xl font-bold text-foreground">Arizangiz yuborildi</h2>
+        <h2 className="mt-4 text-2xl font-bold text-foreground">{m.apply.sent}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
           Arizangiz {submitted.review_days} ish kuni ichida admin tomonidan ko&apos;rib chiqiladi.
           Natija haqida xabar beramiz.
         </p>
         <ButtonLink href="/" variant="outline" className="mt-6">
-          Bosh sahifaga
+          {m.apply.toHome}
         </ButtonLink>
       </div>
     );
@@ -197,11 +194,11 @@ export function ApplyWizard() {
               href="/freelance"
               className="text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-              Bekor qilish
+              {m.common.cancel}
             </Link>
           ) : (
             <Button variant="outline" className="h-11" onClick={() => setStepIndex((i) => i - 1)}>
-              Orqaga
+              {m.apply.back}
             </Button>
           )}
 
@@ -211,14 +208,14 @@ export function ApplyWizard() {
             disabled={isLoading}
             onClick={() => void handleNext()}
           >
-            {isLoading ? 'Yuborilmoqda...' : isLastStep ? 'Ariza yuborish' : 'Keyingisi'}
+            {isLoading ? m.apply.submitting : isLastStep ? m.apply.submit : m.apply.next}
           </Button>
         </div>
       </div>
 
       <aside className="space-y-4 lg:w-[280px] lg:shrink-0">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-foreground">Ariza jarayoni</h2>
+          <h2 className="text-sm font-semibold text-foreground">{m.apply.process}</h2>
           <ol className="mt-4 space-y-3">
             {[
               "Ma'lumotlarni to'ldirish",
@@ -241,9 +238,9 @@ export function ApplyWizard() {
           <span className="grid size-10 place-items-center rounded-xl bg-emerald-500/15">
             <Shield className="size-5 text-emerald-600 dark:text-emerald-400" />
           </span>
-          <h2 className="mt-3 text-sm font-semibold text-foreground">Xavfsiz va maxfiy</h2>
+          <h2 className="mt-3 text-sm font-semibold text-foreground">{m.apply.secureTitle}</h2>
           <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-            Hujjatlaringiz maxfiy saqlanadi va faqat admin tekshiruvi uchun ishlatiladi.
+            {m.apply.secureText}
           </p>
         </div>
       </aside>

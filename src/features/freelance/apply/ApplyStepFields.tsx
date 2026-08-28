@@ -33,6 +33,7 @@ function Grid({ children }: { children: React.ReactNode }) {
 }
 
 function PersonalStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
   const [sendCode, { data: codeData, error: sendError, isLoading: isSending }] =
     useSendApplicationPhoneCodeMutation();
   const [verifyCode, { error: verifyError, isLoading: isVerifying }] =
@@ -52,14 +53,14 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
     <div className="space-y-4">
       <Grid>
         <TextField
-          label="Ism"
+          label={m.apply.firstName}
           required
           value={draft.firstName}
           error={errors.firstName}
           onChange={(event) => update({ firstName: event.target.value })}
         />
         <TextField
-          label="Familiya"
+          label={m.apply.lastName}
           required
           value={draft.lastName}
           error={errors.lastName}
@@ -69,11 +70,11 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
 
       <div className="flex items-end gap-2">
         <TextField
-          label="Telefon raqami"
+          label={m.apply.phone}
           required
           type="tel"
           inputMode="tel"
-          placeholder="+998 90 123 45 67"
+          placeholder={m.apply.phonePlaceholder}
           value={draft.phone}
           error={errors.phone}
           className="flex-1"
@@ -85,24 +86,24 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
           disabled={!draft.phone.trim() || isSending}
           onClick={() => void sendCode({ phone: draft.phone })}
         >
-          {isSending ? 'Yuborilmoqda...' : 'Kod yuborish'}
+          {isSending ? m.apply.sending : m.apply.sendCode}
         </Button>
       </div>
 
       {/* Demo kod faqat sinov muhitida qaytariladi. */}
       {codeData?.demo_code && (
         <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
-          Demo kod: <strong>{codeData.demo_code}</strong>
+          {m.apply.demoCode} <strong>{codeData.demo_code}</strong>
         </p>
       )}
       {sendError && <p className="text-xs text-destructive">{getApiErrorMessage(sendError)}</p>}
 
       <div className="flex items-end gap-2">
         <TextField
-          label="Telefon verifikatsiyasi"
+          label={m.apply.phoneVerification}
           inputMode="numeric"
           maxLength={6}
-          placeholder="6 xonali kod"
+          placeholder={m.apply.codePlaceholder}
           value={code}
           error={errors.phoneVerified}
           className="flex-1"
@@ -115,7 +116,7 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
           disabled={code.length !== 6 || draft.phoneVerified || isVerifying}
           onClick={() => void handleVerify()}
         >
-          Tasdiqlash
+          {m.apply.confirm}
         </Button>
       </div>
 
@@ -125,14 +126,14 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
           draft.phoneVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
         )}
       >
-        {draft.phoneVerified ? 'Tasdiqlandi' : 'Tasdiqlanmadi'}
+        {draft.phoneVerified ? m.apply.verified : m.apply.notVerified}
       </p>
       {verifyError && !draft.phoneVerified && (
         <p className="text-xs text-destructive">{getApiErrorMessage(verifyError)}</p>
       )}
 
       <TextField
-        label="Telegram username (ixtiyoriy)"
+        label={m.apply.telegram}
         placeholder="@username"
         value={draft.telegram}
         onChange={(event) => update({ telegram: event.target.value })}
@@ -142,6 +143,7 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
 }
 
 function DocumentStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
   return (
     <div className="space-y-4">
       <div className="flex gap-2 rounded-xl border border-border bg-muted/50 p-1">
@@ -166,7 +168,7 @@ function DocumentStep({ draft, errors, update }: StepFieldsProps) {
       {draft.documentType === 'passport' ? (
         <Grid>
           <TextField
-            label="Pasport seriyasi"
+            label={m.apply.passportSeries}
             required
             placeholder="AA"
             maxLength={2}
@@ -175,7 +177,7 @@ function DocumentStep({ draft, errors, update }: StepFieldsProps) {
             onChange={(event) => update({ passportSeries: event.target.value.toUpperCase() })}
           />
           <TextField
-            label="Pasport raqami"
+            label={m.apply.passportNumber}
             required
             inputMode="numeric"
             placeholder="1234567"
@@ -187,7 +189,7 @@ function DocumentStep({ draft, errors, update }: StepFieldsProps) {
         </Grid>
       ) : (
         <TextField
-          label="ID karta raqami"
+          label={m.apply.idCardNumber}
           required
           placeholder="AB1234567"
           value={draft.idCardNumber}
@@ -197,35 +199,35 @@ function DocumentStep({ draft, errors, update }: StepFieldsProps) {
       )}
 
       <p className="rounded-xl border border-border bg-muted/40 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
-        Hujjat nusxasini yuklash backend ulangach qo&apos;shiladi. Hozircha faqat raqamlar
-        saqlanadi.
+        {m.apply.documentNote}.
       </p>
     </div>
   );
 }
 
 function EducationStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
   return (
     <div className="space-y-4">
       <TextField
-        label="Yashash joyingiz"
+        label={m.apply.city}
         required
-        placeholder="Shahar, tuman"
+        placeholder={m.apply.cityPlaceholder}
         value={draft.city}
         error={errors.city}
         onChange={(event) => update({ city: event.target.value })}
       />
       <Grid>
         <TextField
-          label="O'qish joyingiz"
+          label={m.apply.studyPlace}
           required
-          placeholder="Universitet / OTM"
+          placeholder={m.apply.university}
           value={draft.university}
           error={errors.university}
           onChange={(event) => update({ university: event.target.value })}
         />
         <TextField
-          label="Fakultet"
+          label={m.apply.faculty}
           required
           value={draft.faculty}
           error={errors.faculty}
@@ -234,14 +236,14 @@ function EducationStep({ draft, errors, update }: StepFieldsProps) {
       </Grid>
       <Grid>
         <TextField
-          label="Kurs (ixtiyoriy)"
-          placeholder="Masalan: 3-kurs"
+          label={m.apply.course}
+          placeholder={m.apply.coursePlaceholder}
           value={draft.course}
           onChange={(event) => update({ course: event.target.value })}
         />
         <TextField
-          label="Yo'nalish (ixtiyoriy)"
-          placeholder="Masalan: Dasturiy injiniring"
+          label={m.apply.major}
+          placeholder={m.apply.majorPlaceholder}
           value={draft.major}
           onChange={(event) => update({ major: event.target.value })}
         />
@@ -251,15 +253,16 @@ function EducationStep({ draft, errors, update }: StepFieldsProps) {
 }
 
 function AdditionalStep({ draft, errors, update }: StepFieldsProps) {
+  const { m } = useT();
   return (
     <div className="space-y-4">
       <div>
         <TextAreaField
-          label="Qisqacha ma'lumot"
+          label={m.apply.bio}
           required
           rows={4}
           maxLength={500}
-          placeholder="O'zingiz haqingizda qisqacha yozing..."
+          placeholder={m.apply.bioPlaceholder}
           value={draft.about}
           error={errors.about}
           onChange={(event) => update({ about: event.target.value })}
@@ -268,17 +271,17 @@ function AdditionalStep({ draft, errors, update }: StepFieldsProps) {
       </div>
 
       <TextAreaField
-        label="Nima uchun freelancer bo'lmoqchisiz? (ixtiyoriy)"
+        label={m.apply.motivation}
         rows={3}
         maxLength={500}
-        placeholder="Motivatsiyangiz..."
+        placeholder={m.apply.motivationPlaceholder}
         value={draft.motivation}
         onChange={(event) => update({ motivation: event.target.value })}
       />
 
       <TextField
-        label="Ishlash vaqtingiz (ixtiyoriy)"
-        placeholder="Masalan: Kuniga 3-4 soat"
+        label={m.apply.availability}
+        placeholder={m.apply.availabilityPlaceholder}
         value={draft.availability}
         onChange={(event) => update({ availability: event.target.value })}
       />
@@ -304,20 +307,20 @@ function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
   return (
     <div className="space-y-4">
       <p className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-2.5 text-xs leading-relaxed text-emerald-900/80 dark:text-emerald-200/80">
-        Qaysi <strong>akademik ish turi</strong>da yordam berasiz: fanlar, kurs ishi, mustaqil ish,
-        diplom va boshqalar. Ishni <strong>o&apos;zingiz bajarasiz</strong> — tayyor nusxa sotish
-        taqiqlanadi.
+        {m.apply.directionNoteLead} <strong>{m.apply.directionNoteBold}</strong>
+        {m.apply.directionNoteMid} <strong>{m.apply.directionNoteSelf}</strong>{' '}
+        {m.apply.directionNoteTail}
       </p>
 
       <Grid>
         <SelectField
-          label="Ish turi / Mutaxassislik"
+          label={m.apply.workType}
           options={directionOptions}
           value={draft.direction}
           onChange={(event) => update({ direction: event.target.value })}
         />
         <SelectField
-          label="Tajriba darajasi"
+          label={m.apply.experience}
           options={experienceOptions}
           value={draft.experienceLevel}
           onChange={(event) =>
@@ -329,17 +332,17 @@ function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
       </Grid>
 
       <TextField
-        label="Ko'nikmalar"
+        label={m.apply.skills}
         required
-        placeholder="Masalan: React, Figma, Python"
+        placeholder={m.apply.skillsPlaceholder}
         value={draft.skills}
         error={errors.skills}
-        hint="Vergul bilan ajrating."
+        hint={m.apply.skillsHint}
         onChange={(event) => update({ skills: event.target.value })}
       />
 
       <TextField
-        label="Portfolio havolasi (ixtiyoriy)"
+        label={m.apply.portfolio}
         type="url"
         placeholder="https://..."
         value={draft.portfolioUrl}
@@ -352,34 +355,34 @@ function SpecialityStep({ draft, errors, update }: StepFieldsProps) {
 function ConfirmStep({ draft, errors, update }: StepFieldsProps) {
   const { m } = useT();
   const summary: { label: string; value: string }[] = [
-    { label: 'Ism-familiya', value: `${draft.firstName} ${draft.lastName}`.trim() },
-    { label: 'Telefon', value: draft.phone },
-    { label: 'Telegram', value: draft.telegram || '—' },
+    { label: m.apply.summaryName, value: `${draft.firstName} ${draft.lastName}`.trim() },
+    { label: m.apply.summaryPhone, value: draft.phone },
+    { label: m.apply.summaryTelegram, value: draft.telegram || '—' },
     {
-      label: 'Hujjat',
+      label: m.apply.summaryDocument,
       value:
         draft.documentType === 'passport'
           ? `${draft.passportSeries} ${draft.passportNumber}`.trim()
           : draft.idCardNumber,
     },
-    { label: 'Yashash joyi', value: draft.city },
-    { label: 'OTM', value: draft.university },
-    { label: 'Fakultet', value: draft.faculty },
-    { label: "Yo'nalish", value: draft.major || '—' },
-    { label: 'Tajriba', value: REAL_EXPERIENCE_LABELS(draft.experienceLevel, m) },
-    { label: "Ko'nikmalar", value: draft.skills },
+    { label: m.apply.summaryCity, value: draft.city },
+    { label: m.apply.university, value: draft.university },
+    { label: m.apply.summaryFaculty, value: draft.faculty },
+    { label: m.apply.major, value: draft.major || '—' },
+    { label: m.apply.summaryExperience, value: REAL_EXPERIENCE_LABELS(draft.experienceLevel, m) },
+    { label: m.apply.skills, value: draft.skills },
   ];
 
   const checks = [
     {
       key: 'dataConfirmed' as const,
-      label: "Ma'lumotlarim to'g'ri ekanini tasdiqlayman",
+      label: m.apply.checkData,
     },
     {
       key: 'documentsConfirmed' as const,
-      label: 'Hujjatlarim haqiqiy ekanini tasdiqlayman',
+      label: m.apply.checkDocuments,
     },
-    { key: 'rulesAccepted' as const, label: 'Platforma qoidalariga roziman' },
+    { key: 'rulesAccepted' as const, label: m.apply.checkRules },
   ];
 
   return (
