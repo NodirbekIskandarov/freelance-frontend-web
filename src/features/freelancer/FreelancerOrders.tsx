@@ -14,11 +14,11 @@ import {
   useGetTaskQuery,
 } from '@/features/freelance/exchangeApi';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { TASK_STATUS_LABELS, TASK_STATUSES, type TaskStatus } from '@/shared/types/exchange';
 import type { ExchangeTask } from '@/shared/types/exchange';
 import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { useMoney } from '@/lib/useMoney';
 
 export function FreelancerOrders() {
   const [status, setStatus] = useState<TaskStatus | 'all'>('all');
@@ -80,6 +80,7 @@ export function FreelancerOrders() {
 }
 
 function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void }) {
+  const money = useMoney();
   // Fayl va daromad hisobi faqat tafsilotda keladi.
   const { data: detail } = useGetTaskQuery(job.id);
 
@@ -102,7 +103,7 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
 
         <div className="text-right">
           <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-            {formatDecimalSom(detail?.freelancer_earning ?? job.agreed_price)}
+            {money.decimalSom(detail?.freelancer_earning ?? job.agreed_price)}
           </div>
           <div className="text-[11px] text-muted-foreground">qo&apos;lga tegadi</div>
         </div>

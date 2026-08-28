@@ -5,10 +5,10 @@ import { Link } from '@/i18n/Link';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
-import { formatDecimalSom } from '@/lib/format';
 import { ORDER_STATUS_LABELS } from '@/shared/types/account';
 
 import { useGetMyDashboardQuery } from '../account/accountApi';
+import { useMoney } from '@/lib/useMoney';
 
 const statusTones: Record<string, string> = {
   paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
@@ -18,6 +18,7 @@ const statusTones: Record<string, string> = {
 };
 
 export function StudentDashboard() {
+  const money = useMoney();
   const { data, isLoading, error } = useGetMyDashboardQuery();
 
   if (error) return <ErrorNotice error={error} />;
@@ -57,7 +58,7 @@ export function StudentDashboard() {
         />
         <StatCard
           label="Jami sarflangan"
-          value={formatDecimalSom(buying.spent_total)}
+          value={money.decimalSom(buying.spent_total)}
           icon={Wallet}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
         />
@@ -80,7 +81,7 @@ export function StudentDashboard() {
           />
           <StatCard
             label="Ishlangan"
-            value={formatDecimalSom(data.selling.earned_total)}
+            value={money.decimalSom(data.selling.earned_total)}
             icon={Wallet}
             tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
           />
@@ -124,7 +125,7 @@ export function StudentDashboard() {
                 </span>
 
                 <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                  {formatDecimalSom(order.unit_price)}
+                  {money.decimalSom(order.unit_price)}
                 </div>
               </article>
             ))}

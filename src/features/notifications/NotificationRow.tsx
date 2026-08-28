@@ -21,6 +21,9 @@ import type {
 } from '@/shared/types/notifications';
 
 import { useDeleteNotificationMutation, useMarkNotificationReadMutation } from './notificationsApi';
+import { interpolate } from '@/i18n/interpolate';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 
 const categoryStyles: Record<NotificationCategory, { icon: LucideIcon; tone: string }> = {
   marketplace: { icon: ShoppingBag, tone: 'bg-blue-500/12 text-blue-600 dark:text-blue-400' },
@@ -63,14 +66,18 @@ function hrefFor(notification: Notification): string | null {
   }
 }
 
-function formatWhen(value: string): string {
+function formatWhen(value: string, messages: Messages): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
 
+  const m = messages.notifications;
   const diffMinutes = Math.round((Date.now() - date.getTime()) / 60_000);
-  if (diffMinutes < 1) return 'hozir';
-  if (diffMinutes < 60) return `${diffMinutes} daqiqa oldin`;
-  if (diffMinutes < 24 * 60) return `${Math.round(diffMinutes / 60)} soat oldin`;
+
+  if (diffMinutes < 1) return m.justNow;
+  if (diffMinutes < 60) return interpolate(m.minutesAgo, { count: diffMinutes });
+  if (diffMinutes < 24 * 60) {
+    return interpolate(m.hoursAgo, { count: Math.round(diffMinutes / 60) });
+  }
 
   return date.toLocaleString('ru-RU').slice(0, 16);
 }
@@ -85,6 +92,7 @@ export function NotificationRow({
   compact?: boolean;
 }) {
   const [markRead] = useMarkNotificationReadMutation();
+  const { m } = useT();
   const [remove, removeState] = useDeleteNotificationMutation();
 
   const style = categoryStyles[notification.category] ?? { icon: Bell, tone: 'bg-muted' };
@@ -128,7 +136,7 @@ export function NotificationRow({
         )}
 
         <span className="mt-1 block text-[11px] text-muted-foreground/80">
-          {formatWhen(notification.created_at)}
+          {formatWhen(notification.created_at, m)}
         </span>
       </span>
     </>

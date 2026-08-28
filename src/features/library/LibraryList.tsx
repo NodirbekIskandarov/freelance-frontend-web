@@ -5,10 +5,10 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
-import { formatSom } from '@/lib/format';
 import { LIBRARY_ORDERING_OPTIONS, type LibraryItem } from '@/shared/types/library';
 
 import { useGetLibraryQuery, useLazyGetLibraryItemQuery } from './libraryApi';
+import { useMoney } from '@/lib/useMoney';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -60,6 +60,7 @@ function DownloadButton({ item }: { item: LibraryItem }) {
 }
 
 export function LibraryList() {
+  const money = useMoney();
   const [ordering, setOrdering] = useState<string>('-purchased_at');
   const { data, isLoading, error } = useGetLibraryQuery({ ordering, page_size: 50 });
 
@@ -129,7 +130,7 @@ export function LibraryList() {
 
             <div className="text-right">
               <div className="text-sm font-semibold text-foreground">
-                {formatSom(Number(item.price_paid))}
+                {money.som(Number(item.price_paid))}
               </div>
               <div className="text-[11px] text-muted-foreground">to&apos;langan</div>
             </div>

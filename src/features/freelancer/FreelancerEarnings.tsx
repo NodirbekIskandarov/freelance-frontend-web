@@ -6,8 +6,8 @@ import { Link } from '@/i18n/Link';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
 import { useGetWalletQuery, useGetWalletTransactionsQuery } from '@/features/account/accountApi';
-import { formatDecimalSom } from '@/lib/format';
 import { TRANSACTION_TYPE_LABELS } from '@/shared/types/account';
+import { useMoney } from '@/lib/useMoney';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -21,6 +21,7 @@ function formatDate(value: string): string {
  * to'liq tarix va yechib olish `/wallet` sahifasida.
  */
 export function FreelancerEarnings() {
+  const money = useMoney();
   const { data: wallet, isLoading, error } = useGetWalletQuery();
   const { data: sales } = useGetWalletTransactionsQuery({
     page_size: 30,
@@ -45,19 +46,19 @@ export function FreelancerEarnings() {
       <section className="grid gap-4 sm:grid-cols-3">
         <StatCard
           label="Balans"
-          value={formatDecimalSom(wallet.balance)}
+          value={money.decimalSom(wallet.balance)}
           icon={Wallet}
           tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
         />
         <StatCard
           label="Yechib olish kutilmoqda"
-          value={formatDecimalSom(wallet.totals.pending_withdrawal)}
+          value={money.decimalSom(wallet.totals.pending_withdrawal)}
           icon={Clock}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
         />
         <StatCard
           label="Jami ishlangan"
-          value={formatDecimalSom(wallet.totals.earned)}
+          value={money.decimalSom(wallet.totals.earned)}
           icon={PiggyBank}
           tone="bg-violet-500/12 text-violet-600 dark:text-violet-400"
         />
@@ -100,10 +101,10 @@ export function FreelancerEarnings() {
 
                 <div className="text-right">
                   <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                    +{formatDecimalSom(entry.amount)}
+                    +{money.decimalSom(entry.amount)}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
-                    balans: {formatDecimalSom(entry.balance_after)}
+                    balans: {money.decimalSom(entry.balance_after)}
                   </div>
                 </div>
               </article>

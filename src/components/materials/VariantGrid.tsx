@@ -16,12 +16,12 @@ import {
   usePurchaseSolutionMutation,
 } from '@/features/solutions/solutionsApi';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { SOLUTION_STATUS_LABELS } from '@/shared/types/solutions';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { PublicSolution, Variant } from '@/shared/types/catalogue';
+import { useMoney } from '@/lib/useMoney';
 
 export interface VariantWithCount extends Variant {
   solutionCount: number;
@@ -100,6 +100,7 @@ export function VariantGrid({
   /** Tanlangan variant uchun yechimlar — serverdan oldindan kelgan. */
   solutionsByVariant: Record<string, PublicSolution[]>;
 }) {
+  const money = useMoney();
   const [selectedId, setSelectedId] = useState(variants[0]?.id ?? '');
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
   const [purchase, purchaseState] = usePurchaseSolutionMutation();
@@ -315,7 +316,7 @@ export function VariantGrid({
                   {Number(solution.average_rating).toFixed(1)} · {solution.sold_count} sotuv
                 </p>
                 <p className="mt-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-                  {formatDecimalSom(solution.price)}
+                  {money.decimalSom(solution.price)}
                 </p>
                 {/* Uch holat: o'zi yuklagan, sotib olgan, hali olmagan.
                     `boughtIds` — shu seansda sotib olinganlari: kutubxona

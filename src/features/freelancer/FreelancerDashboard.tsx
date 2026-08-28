@@ -8,8 +8,8 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
 import { useGetWalletQuery } from '@/features/account/accountApi';
 import { useGetMyJobsQuery, useGetMyOffersQuery } from '@/features/freelance/exchangeApi';
-import { formatDecimalSom } from '@/lib/format';
 import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
+import { useMoney } from '@/lib/useMoney';
 
 /**
  * Freelancer bosh sahifasi — backendda alohida dashboard endpoint'i
@@ -18,6 +18,7 @@ import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
  * emas, faqat sonni qaytaradi — bu eng arzon usul.
  */
 export function FreelancerDashboard() {
+  const money = useMoney();
   const active = useGetMyJobsQuery({ status: 'in_progress', page_size: 1 });
   const done = useGetMyJobsQuery({ status: 'completed', page_size: 1 });
   const pendingOffers = useGetMyOffersQuery({ status: 'pending', page_size: 1 });
@@ -62,7 +63,7 @@ export function FreelancerDashboard() {
         />
         <StatCard
           label="Balans"
-          value={formatDecimalSom(wallet.data?.balance ?? null)}
+          value={money.decimalSom(wallet.data?.balance ?? null)}
           icon={Wallet}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
         />
@@ -111,7 +112,7 @@ export function FreelancerDashboard() {
                 <TaskStatusBadge status={job.status} />
 
                 <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                  {formatDecimalSom(job.agreed_price)}
+                  {money.decimalSom(job.agreed_price)}
                 </div>
               </article>
             ))}

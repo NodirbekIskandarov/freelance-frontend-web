@@ -18,7 +18,6 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { Modal } from '@/components/ui/Modal';
 import { TextAreaField } from '@/components/ui/Field';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { ExchangeOffer, ExchangeTask } from '@/shared/types/exchange';
 import { WORK_DIRECTION_LABELS } from '@/shared/types/publicFreelance';
@@ -33,6 +32,7 @@ import {
   useGetTaskOffersQuery,
   useGetTaskQuery,
 } from './exchangeApi';
+import { useMoney } from '@/lib/useMoney';
 
 export function ExchangeBoard() {
   const { data, isLoading, error } = useGetMyTasksQuery({
@@ -195,12 +195,12 @@ function StatPill({
  * yakunlangan topshiriq ham "Taklif kutilmoqda" deb turardi. Yozuv
  * topshiriq holatidan kelib chiqadi.
  */
-function footnoteFor(task: ExchangeTask): string {
-  if (task.agreed_price !== null) return `Kelishilgan: ${formatDecimalSom(task.agreed_price)}`;
+function footnoteFor(task: ExchangeTask, money: ReturnType<typeof useMoney>): string {
+  if (task.agreed_price !== null) return `Kelishilgan: ${money.decimalSom(task.agreed_price)}`;
   if (task.status === 'open') {
     return task.offer_count > 0 ? `${task.offer_count} ta taklif` : 'Taklif kutilmoqda';
   }
-  return task.budget !== null ? `Budjet: ${formatDecimalSom(task.budget)}` : '';
+  return task.budget !== null ? `Budjet: ${money.decimalSom(task.budget)}` : '';
 }
 
 function TaskListItem({
@@ -212,6 +212,8 @@ function TaskListItem({
   active: boolean;
   onSelect: () => void;
 }) {
+  const money = useMoney();
+
   return (
     <button
       type="button"
@@ -237,13 +239,14 @@ function TaskListItem({
       </p>
 
       <p className="mt-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-        {footnoteFor(task)}
+        {footnoteFor(task, money)}
       </p>
     </button>
   );
 }
 
 function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void }) {
+  const money = useMoney();
   // Tafsilot alohida so'raladi: ro'yxat javobida fayl va komissiya yo'q.
   const { data: detail } = useGetTaskQuery(task.id);
   const { data: offers, isLoading } = useGetTaskOffersQuery(task.id, {
@@ -294,7 +297,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
           <p className="mt-2 text-xs text-muted-foreground">
             Bajaruvchi:{' '}
             <span className="font-medium text-foreground">{task.freelancer.full_name}</span>
-            {task.agreed_price && <> &middot; {formatDecimalSom(task.agreed_price)}</>}
+            {task.agreed_price && <> &middot; {money.decimalSom(task.agreed_price)}</>}
           </p>
         )}
 
@@ -395,6 +398,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
 }
 
 function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) {
+  const money = useMoney();
   const [acceptOffer, { isLoading, error }] = useAcceptOfferMutation();
 
   return (
@@ -411,7 +415,7 @@ function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) 
           </p>
         </div>
         <p className="shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-400">
-          {formatDecimalSom(offer.price)}
+          {money.decimalSom(offer.price)}
         </p>
       </div>
 

@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { cn } from '@/lib/cn';
-import { formatSom } from '@/lib/format';
 
 import {
   useGetSavedFreelancersQuery,
@@ -14,6 +13,7 @@ import {
   useUnsaveFreelancerMutation,
   useUnsaveSolutionMutation,
 } from './accountApi';
+import { useMoney } from '@/lib/useMoney';
 
 /**
  * Saqlanganlar ikki alohida ro'yxat — backendda ham shunday.
@@ -68,6 +68,7 @@ function Empty({ text }: { text: string }) {
 }
 
 function SavedSolutions() {
+  const money = useMoney();
   const { data, isLoading, error } = useGetSavedSolutionsQuery({ page_size: 50 });
   const [unsave] = useUnsaveSolutionMutation();
 
@@ -103,7 +104,7 @@ function SavedSolutions() {
           </div>
 
           <div className="text-right text-sm font-semibold whitespace-nowrap text-foreground">
-            {formatSom(Number(item.price))}
+            {money.som(Number(item.price))}
           </div>
 
           <button

@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /**
  * Bildirishnomalar — haqiqiy backend (`/api/v1/me/notifications/`).
  *
@@ -16,14 +18,27 @@ export const NOTIFICATION_CATEGORIES = [
 ] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 
-export const NOTIFICATION_CATEGORY_LABELS: Record<NotificationCategory, string> = {
-  marketplace: 'Xaridlar',
-  freelance: 'Freelance',
-  wallet: 'Hamyon',
-  moderation: 'Moderatsiya',
-  support: "Qo'llab-quvvatlash",
-  account: 'Hisob',
-};
+/**
+ * Kategoriya yorlig'i — lug'atdan.
+ *
+ * Ilgari bu yerda o'zbekcha matn turardi va rus tilida ham o'zbekcha
+ * chiqardi. Lug'at parametr sifatida beriladi.
+ */
+export function notificationCategoryLabel(
+  category: NotificationCategory,
+  messages: Messages,
+): string {
+  const labels: Record<NotificationCategory, string> = {
+    marketplace: messages.notifications.catMarketplace,
+    freelance: messages.notifications.catFreelance,
+    wallet: messages.notifications.catWallet,
+    moderation: messages.notifications.catModeration,
+    support: messages.notifications.catSupport,
+    account: messages.notifications.catAccount,
+  };
+
+  return labels[category];
+}
 
 export interface Notification {
   id: string;

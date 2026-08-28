@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { useGetMyOffersQuery, useWithdrawOfferMutation } from '@/features/freelance/exchangeApi';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { OFFER_STATUS_LABELS, OFFER_STATUSES, type OfferStatus } from '@/shared/types/exchange';
+import { useMoney } from '@/lib/useMoney';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -17,6 +17,7 @@ function formatDate(value: string): string {
 }
 
 export function FreelancerOffers() {
+  const money = useMoney();
   const [status, setStatus] = useState<OfferStatus | 'all'>('all');
   const [withdrawOffer, withdraw] = useWithdrawOfferMutation();
 
@@ -85,7 +86,7 @@ export function FreelancerOffers() {
               <OfferStatusBadge status={offer.status} />
 
               <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                {formatDecimalSom(offer.price)}
+                {money.decimalSom(offer.price)}
               </div>
 
               {/* Qaytarib olish faqat hali javob kelmagan taklifda ma'noli. */}

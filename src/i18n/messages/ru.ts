@@ -60,6 +60,7 @@ export const ru: Messages = {
   },
 
   common: {
+    currency: 'сум',
     loading: 'Загрузка…',
     save: 'Сохранить',
     saving: 'Сохранение…',
@@ -265,6 +266,27 @@ export const ru: Messages = {
     subjectMissingTail: '— оставьте заявку в своём вузе.',
     actionSubject: 'Оставить заявку',
     actionAssignment: 'Загрузить задание',
+  },
+
+  notifications: {
+    title: 'Уведомления',
+    withUnread: 'Уведомления ({count} новых)',
+    markAll: 'Прочитать все',
+    markAllLong: 'Отметить все как прочитанные',
+    unreadOnly: 'Только непрочитанные',
+    empty: 'Уведомлений нет',
+    emptyHint: 'Здесь появятся сообщения о заказах, предложениях и платежах.',
+    emptyShort: 'Уведомлений пока нет.',
+    seeAll: 'Показать все',
+    justNow: 'только что',
+    minutesAgo: '{count} мин. назад',
+    hoursAgo: '{count} ч. назад',
+    catMarketplace: 'Покупки',
+    catFreelance: 'Фриланс',
+    catWallet: 'Кошелёк',
+    catModeration: 'Модерация',
+    catSupport: 'Поддержка',
+    catAccount: 'Аккаунт',
   },
 
   materials: {

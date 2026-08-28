@@ -59,6 +59,7 @@ export const uz = {
   },
 
   common: {
+    currency: "so'm",
     loading: 'Yuklanmoqda…',
     save: 'Saqlash',
     saving: 'Saqlanmoqda…',
@@ -266,6 +267,27 @@ export const uz = {
     subjectMissingTail: '— institutingizda ariza qoldiring.',
     actionSubject: 'Ariza qoldirish',
     actionAssignment: 'Topshiriqni yuklash',
+  },
+
+  notifications: {
+    title: 'Bildirishnomalar',
+    withUnread: 'Bildirishnomalar ({count} ta yangi)',
+    markAll: "Hammasini o'qildi",
+    markAllLong: "Hammasini o'qildi deb belgilash",
+    unreadOnly: "Faqat o'qilmaganlar",
+    empty: "Bildirishnoma yo'q",
+    emptyHint: "Buyurtma, taklif yoki to'lov bo'yicha xabarlar shu yerda ko'rinadi.",
+    emptyShort: "Hali bildirishnoma yo'q.",
+    seeAll: "Barchasini ko'rish",
+    justNow: 'hozir',
+    minutesAgo: '{count} daqiqa oldin',
+    hoursAgo: '{count} soat oldin',
+    catMarketplace: 'Xaridlar',
+    catFreelance: 'Freelance',
+    catWallet: 'Hamyon',
+    catModeration: 'Moderatsiya',
+    catSupport: "Qo'llab-quvvatlash",
+    catAccount: 'Hisob',
   },
 
   materials: {

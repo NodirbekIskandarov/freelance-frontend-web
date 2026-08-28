@@ -15,7 +15,6 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
   isCreditTransaction,
@@ -32,6 +31,7 @@ import {
   useGetWalletTransactionsQuery,
   useGetWithdrawalsQuery,
 } from './accountApi';
+import { useMoney } from '@/lib/useMoney';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -47,6 +47,7 @@ function WithdrawModal({
   balance: string;
   onClose: () => void;
 }) {
+  const money = useMoney();
   const [create, { isLoading, error }] = useCreateWithdrawalMutation();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<WithdrawalMethod>('card');
@@ -81,7 +82,7 @@ function WithdrawModal({
       open={open}
       onClose={onClose}
       title="Pul yechib olish"
-      description={`Mavjud balans: ${formatDecimalSom(balance)}`}
+      description={`Mavjud balans: ${money.decimalSom(balance)}`}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
@@ -148,6 +149,7 @@ function WithdrawModal({
 }
 
 export function WalletView() {
+  const money = useMoney();
   const [modalOpen, setModalOpen] = useState(false);
 
   const { data: wallet, isLoading, error } = useGetWalletQuery();
@@ -168,7 +170,7 @@ export function WalletView() {
             <div>
               <p className="text-xs text-muted-foreground">Joriy balans</p>
               <p className="text-2xl font-bold text-foreground tabular-nums">
-                {formatDecimalSom(wallet.balance)}
+                {money.decimalSom(wallet.balance)}
               </p>
             </div>
           </div>
@@ -204,7 +206,7 @@ export function WalletView() {
                 {item.label}
               </dt>
               <dd className="mt-1 text-sm font-bold text-foreground tabular-nums">
-                {formatDecimalSom(item.value)}
+                {money.decimalSom(item.value)}
               </dd>
             </div>
           ))}
@@ -222,7 +224,7 @@ export function WalletView() {
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-foreground">
-                    {formatDecimalSom(item.amount)}
+                    {money.decimalSom(item.amount)}
                   </h3>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {WITHDRAWAL_METHOD_LABELS[item.method]} &middot; {item.destination}
@@ -308,10 +310,10 @@ export function WalletView() {
                         isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground',
                       )}
                     >
-                      {formatDecimalSom(transaction.amount)}
+                      {money.decimalSom(transaction.amount)}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Qoldiq: {formatDecimalSom(transaction.balance_after)}
+                      Qoldiq: {money.decimalSom(transaction.balance_after)}
                     </div>
                   </div>
                 </article>

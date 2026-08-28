@@ -6,12 +6,12 @@ import { useRef, useState } from 'react';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 
 import { useUploadSolutionMutation } from './solutionsApi';
+import { useMoney } from '@/lib/useMoney';
 
 /**
  * Qabul qilinadigan formatlar.
@@ -73,6 +73,7 @@ export function SolutionUploadModal({
   assignmentTitle: string;
   onClose: () => void;
 }) {
+  const money = useMoney();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [upload, { isLoading, error, reset }] = useUploadSolutionMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -279,7 +280,7 @@ export function SolutionUploadModal({
                 So&apos;mda. Bu siz so&apos;ragan narx — moderator uni ko&apos;rib chiqib yakuniy
                 summani belgilaydi.
                 {PRICE_PATTERN.test(price.trim()) && (
-                  <> Siz so&apos;radingiz: {formatDecimalSom(price.trim())}.</>
+                  <> Siz so&apos;radingiz: {money.decimalSom(price.trim())}.</>
                 )}
               </p>
             )}

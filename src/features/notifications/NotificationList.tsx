@@ -6,7 +6,7 @@ import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { cn } from '@/lib/cn';
 import {
   NOTIFICATION_CATEGORIES,
-  NOTIFICATION_CATEGORY_LABELS,
+  notificationCategoryLabel,
   type NotificationCategory,
 } from '@/shared/types/notifications';
 
@@ -16,8 +16,10 @@ import {
   useGetNotificationSummaryQuery,
   useMarkAllNotificationsReadMutation,
 } from './notificationsApi';
+import { useT } from '@/i18n/useT';
 
 export function NotificationList() {
+  const { m } = useT();
   const [category, setCategory] = useState<NotificationCategory | 'all'>('all');
   const [unreadOnly, setUnreadOnly] = useState(false);
 
@@ -56,7 +58,7 @@ export function NotificationList() {
                   : 'border border-border bg-background text-muted-foreground hover:text-foreground',
               )}
             >
-              {item === 'all' ? 'Barchasi' : NOTIFICATION_CATEGORY_LABELS[item]}
+              {item === 'all' ? m.common.all : notificationCategoryLabel(item, m)}
               {count > 0 && (
                 <span
                   className={cn(
@@ -80,7 +82,7 @@ export function NotificationList() {
             onChange={(event) => setUnreadOnly(event.target.checked)}
             className="size-4 accent-emerald-600"
           />
-          Faqat o&apos;qilmaganlar
+          {m.notifications.unreadOnly}
         </label>
 
         {unread > 0 && (
@@ -90,7 +92,7 @@ export function NotificationList() {
             onClick={() => void markAll()}
             className="text-sm font-medium text-emerald-600 hover:underline disabled:opacity-50 dark:text-emerald-400"
           >
-            Hammasini o&apos;qildi deb belgilash
+            {m.notifications.markAllLong}
           </button>
         )}
       </div>
@@ -103,10 +105,8 @@ export function NotificationList() {
         </div>
       ) : data.results.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center">
-          <p className="text-sm font-medium text-foreground">Bildirishnoma yo&apos;q</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Buyurtma, taklif yoki to&apos;lov bo&apos;yicha xabarlar shu yerda ko&apos;rinadi.
-          </p>
+          <p className="text-sm font-medium text-foreground">{m.notifications.empty}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{m.notifications.emptyHint}</p>
         </div>
       ) : (
         <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border/60 bg-background dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900/70">

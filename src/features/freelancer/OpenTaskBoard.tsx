@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { SelectField, TextAreaField, TextField } from '@/components/ui/Field';
 import { Modal } from '@/components/ui/Modal';
-import { formatDecimalSom } from '@/lib/format';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import { useGetTaskQuery, useSubmitOfferMutation } from '@/features/freelance/exchangeApi';
 import { useGetOpenTasksQuery } from '@/features/freelance/exchangeApi';
@@ -17,6 +16,7 @@ import {
   WORK_DIRECTIONS,
   type WorkDirection,
 } from '@/shared/types/publicFreelance';
+import { useMoney } from '@/lib/useMoney';
 
 const directionOptions = [
   { value: '', label: "Barcha yo'nalishlar" },
@@ -94,6 +94,7 @@ export function OpenTaskBoard() {
 }
 
 function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }) {
+  const money = useMoney();
   // Fayl faqat tafsilotda keladi — kartani ochmasdan ham ko'rsatish uchun
   // yengil so'rov yuboriladi; RTK Query uni kesh orqali bir marta oladi.
   const { data: detail } = useGetTaskQuery(task.id);
@@ -111,7 +112,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
 
         <div className="text-right">
           <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
-            {task.budget !== null ? formatDecimalSom(task.budget) : 'Kelishiladi'}
+            {task.budget !== null ? money.decimalSom(task.budget) : 'Kelishiladi'}
           </div>
           <div className="text-[11px] text-muted-foreground">{task.offer_count} ta taklif</div>
         </div>
@@ -148,6 +149,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
 }
 
 function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () => void }) {
+  const money = useMoney();
   const [submitOffer, { isLoading, error, reset }] = useSubmitOfferMutation();
   const [price, setPrice] = useState('');
   const [deadline, setDeadline] = useState('7');
@@ -193,7 +195,7 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
             placeholder="250000"
             hint={
               task?.budget !== null && task?.budget !== undefined
-                ? `Mijoz budjeti: ${formatDecimalSom(task.budget)}`
+                ? `Mijoz budjeti: ${money.decimalSom(task.budget)}`
                 : undefined
             }
           />

@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { cn } from '@/lib/cn';
-import { formatDecimalSom } from '@/lib/format';
 import { ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from '@/shared/types/account';
 
 import { useGetMyOrdersQuery } from '../account/accountApi';
+import { useMoney } from '@/lib/useMoney';
 
 const statusTones: Record<OrderStatus, string> = {
   paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
@@ -23,6 +23,7 @@ function formatDate(value: string | null): string {
 }
 
 export function StudentOrders() {
+  const money = useMoney();
   const [status, setStatus] = useState<OrderStatus | 'all'>('all');
 
   const { data, isLoading, error } = useGetMyOrdersQuery({
@@ -95,7 +96,7 @@ export function StudentOrders() {
               </span>
 
               <div className="text-sm font-semibold whitespace-nowrap text-foreground">
-                {formatDecimalSom(order.unit_price)}
+                {money.decimalSom(order.unit_price)}
               </div>
             </article>
           ))}

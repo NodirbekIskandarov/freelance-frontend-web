@@ -14,6 +14,7 @@ import {
   useMarkAllNotificationsReadMutation,
 } from './notificationsApi';
 import { useNotificationSocket } from './useNotificationSocket';
+import { useT } from '@/i18n/useT';
 
 /** Ochilgan panelda faqat oxirgilari ko'rsatiladi — qolgani sahifada. */
 const PREVIEW_QUERY = { page_size: 6 } as const;
@@ -60,6 +61,7 @@ export function NotificationBell() {
     };
   }, [open]);
 
+  const { t, m } = useT();
   const unread = summary?.unread ?? 0;
 
   return (
@@ -68,7 +70,11 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        aria-label={unread > 0 ? `Bildirishnomalar (${unread} ta yangi)` : 'Bildirishnomalar'}
+        aria-label={
+          unread > 0
+            ? t((x) => x.notifications.withUnread, { count: unread })
+            : m.notifications.title
+        }
         className="relative grid size-9 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >
         <Bell className="size-5" />
@@ -82,7 +88,7 @@ export function NotificationBell() {
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-background shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 dark:border-zinc-800">
-            <h2 className="text-sm font-bold text-foreground">Bildirishnomalar</h2>
+            <h2 className="text-sm font-bold text-foreground">{m.notifications.title}</h2>
             {unread > 0 && (
               <button
                 type="button"
@@ -90,7 +96,7 @@ export function NotificationBell() {
                 onClick={() => void markAll()}
                 className="text-xs font-medium text-emerald-600 hover:underline disabled:opacity-50 dark:text-emerald-400"
               >
-                Hammasini o&apos;qildi
+                {m.notifications.markAll}
               </button>
             )}
           </div>
@@ -104,7 +110,7 @@ export function NotificationBell() {
               </div>
             ) : !data || data.results.length === 0 ? (
               <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-                Hali bildirishnoma yo&apos;q.
+                {m.notifications.emptyShort}
               </p>
             ) : (
               <ul className={cn('divide-y divide-border dark:divide-zinc-800')}>
@@ -121,7 +127,7 @@ export function NotificationBell() {
             href="/notifications"
             className="block border-t border-border py-3 text-center text-sm font-medium text-emerald-600 hover:bg-muted dark:border-zinc-800 dark:text-emerald-400"
           >
-            Barchasini ko&apos;rish
+            {m.notifications.seeAll}
           </Link>
         </div>
       )}
