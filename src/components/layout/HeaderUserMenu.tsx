@@ -12,6 +12,7 @@ import { baseApi, tokenStore } from '@/store/api';
 import { clearCurrentUser } from '@/store/slices/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 import { useLocaleRouter } from '@/i18n/useLocaleRouter';
+import { useT } from '@/i18n/useT';
 
 function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -23,6 +24,7 @@ function initialsOf(name: string): string {
 }
 
 export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile?: boolean }) {
+  const { m } = useT();
   const dispatch = useAppDispatch();
   const router = useLocaleRouter();
   const [open, setOpen] = useState(false);
@@ -66,7 +68,7 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
           className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <LogOut className="size-4" />
-          Chiqish
+          {m.ui.logout}
         </button>
       </div>
     );
@@ -116,7 +118,7 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <LogOut className="size-4" />
-              Chiqish
+              {m.ui.logout}
             </button>
           </div>
         </>

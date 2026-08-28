@@ -7,6 +7,7 @@ import { setRequestLocale } from '@/i18n/requestLocale';
 import { absoluteUrl, breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 import { getFreelancerCities, getFreelancers } from '@/server/freelance/directory';
 import { workDirectionLabel } from '@/shared/types/publicFreelance';
+import { interpolate } from '@/i18n/interpolate';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
   const { locale: raw } = await params;
@@ -42,7 +43,7 @@ export default async function FreelancePage({ params }: PageProps<'/[locale]'>) 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Yopamiz.uz freelancerlari',
+    name: m.pages.freelancerListName,
     numberOfItems: freelancers.length,
     itemListElement: freelancers.map((freelancer, index) => ({
       '@type': 'ListItem',
@@ -75,23 +76,23 @@ export default async function FreelancePage({ params }: PageProps<'/[locale]'>) 
 
         <header className="mt-6 overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-950 via-zinc-950 to-black p-6 sm:p-8">
           <p className="text-xs font-semibold tracking-wider text-emerald-400 uppercase">
-            {freelancers.length} ta tasdiqlangan freelancer
+            {interpolate(m.pages.verifiedFreelancers, { count: freelancers.length })}
           </p>
           <h1 className="mt-2 text-2xl leading-tight font-bold text-white sm:text-3xl">
-            Ishonchli{' '}
+            {m.pages.findLead}{' '}
             <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
-              freelancer
+              {m.pages.findAccent}
             </span>{' '}
-            toping
+            {m.pages.findTail}
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-400">
-            Mutaxassis tanlang, chatda kelishing, shartnoma va to&apos;lov — hammasi bir joyda.
+            {m.pages.freelanceLead}
           </p>
 
           <dl className="mt-5 flex flex-wrap gap-2">
-            <Stat value={`${freelancers.length}`} label="Freelancer" />
-            <Stat value={averageRating.toFixed(1)} label="O'rtacha reyting" />
-            <Stat value="98%" label="Muvaffaqiyat" />
+            <Stat value={`${freelancers.length}`} label={m.pages.statFreelancer} />
+            <Stat value={averageRating.toFixed(1)} label={m.pages.averageRating} />
+            <Stat value="98%" label={m.pages.statSuccess} />
           </dl>
         </header>
 

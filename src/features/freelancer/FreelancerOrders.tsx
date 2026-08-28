@@ -63,7 +63,7 @@ export function FreelancerOrders() {
         </div>
       ) : data.results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
-          <p className="text-sm font-medium text-foreground">Hali qabul qilingan ish yo&apos;q</p>
+          <p className="text-sm font-medium text-foreground">{m.ui.noAcceptedJobs}</p>
           <p className="mt-1 text-sm text-muted-foreground">{m.freelancerCabinet.noJobs}</p>
         </div>
       ) : (
@@ -106,7 +106,7 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
           <div className="text-sm font-semibold whitespace-nowrap text-foreground">
             {money.decimalSom(detail?.freelancer_earning ?? job.agreed_price)}
           </div>
-          <div className="text-[11px] text-muted-foreground">qo&apos;lga tegadi</div>
+          <div className="text-[11px] text-muted-foreground">{m.ui.youReceive}</div>
         </div>
       </div>
 
@@ -179,7 +179,9 @@ function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: (
     >
       <form id="deliver-form" onSubmit={submit} className="space-y-4">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-foreground">Tayyor ish fayli</span>
+          <span className="mb-2 block text-sm font-medium text-foreground">
+            {m.ui.deliveredFile}
+          </span>
           <input
             type="file"
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}

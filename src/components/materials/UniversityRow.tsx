@@ -1,9 +1,12 @@
+'use client';
+
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Link } from '@/i18n/Link';
 
 import { cn } from '@/lib/cn';
 import { gradientFor, initialsOf, SubjectIcon } from '@/lib/catalogueVisuals';
 import type { Subject, University } from '@/shared/types/catalogue';
+import { useT } from '@/i18n/useT';
 
 /** Qatorda ko'rinadigan fan soni — qolgani institut sahifasida. */
 const VISIBLE_SUBJECTS = 4;
@@ -53,6 +56,7 @@ export function SubjectMiniCard({
   className?: string;
   index?: number;
 }) {
+  const { m } = useT();
   const hasAssignments = subject.assignmentCount > 0;
 
   return (
@@ -103,7 +107,7 @@ export function SubjectMiniCard({
           {subject.direction_name ? ` · ${subject.direction_name}` : ''}
         </p>
         <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 sm:text-xs dark:text-emerald-400">
-          Ko&apos;rish
+          {m.ui.view}
           <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
         </span>
       </div>
@@ -126,6 +130,7 @@ export function UniversityRow({
   subjects: SubjectWithCount[];
   slug: string;
 }) {
+  const { m } = useT();
   const visible = subjects.slice(0, VISIBLE_SUBJECTS);
   const hasMore = subjects.length > VISIBLE_SUBJECTS;
   const href = `/materials/${slug}`;
@@ -182,7 +187,7 @@ export function UniversityRow({
             href={href}
             className="mt-4 flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-emerald-500/30 bg-background text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-500/10 dark:text-emerald-300"
           >
-            Barcha fanlar
+            {m.ui.allSubjects}
             <ArrowRight className="size-3.5 transition-transform duration-300 group-hover/row:translate-x-0.5" />
           </Link>
         </div>
@@ -190,7 +195,7 @@ export function UniversityRow({
         <div className="flex min-w-0 flex-1 items-stretch gap-2.5 p-4 sm:gap-3 sm:p-5">
           {visible.length === 0 ? (
             <p className="flex flex-1 items-center justify-center py-10 text-sm text-muted-foreground">
-              Hozircha fanlar mavjud emas.
+              {m.ui.noSubjectsYet}
             </p>
           ) : (
             <>

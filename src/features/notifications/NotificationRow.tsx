@@ -118,7 +118,7 @@ export function NotificationRow({
           {/* O'qilmaganlik belgisi — matn emas, nuqta: qator tor. */}
           {!notification.is_read && (
             <span
-              aria-label="O'qilmagan"
+              aria-label={m.ui.unread}
               className="mt-1.5 size-2 shrink-0 rounded-full bg-emerald-500"
             />
           )}
@@ -167,7 +167,7 @@ export function NotificationRow({
 
       <button
         type="button"
-        aria-label="O'chirish"
+        aria-label={m.ui.remove}
         disabled={removeState.isLoading}
         onClick={() => void remove({ id: notification.id, query })}
         className="absolute top-2 right-2 grid size-7 place-items-center rounded-lg text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-muted hover:text-destructive focus-visible:opacity-100 disabled:opacity-50"

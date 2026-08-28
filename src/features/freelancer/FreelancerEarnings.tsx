@@ -78,7 +78,7 @@ export function FreelancerEarnings() {
       </p>
 
       <section className="mt-8">
-        <h2 className="text-lg font-bold text-foreground">Bajarilgan ishlar to&apos;lovi</h2>
+        <h2 className="text-lg font-bold text-foreground">{m.ui.completedJobsPayment}</h2>
 
         {!sales || sales.results.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">

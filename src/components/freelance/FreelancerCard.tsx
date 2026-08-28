@@ -171,7 +171,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
         {isBusy ? (
           <span
             className="inline-flex h-8 flex-1 items-center justify-center rounded-lg bg-muted text-xs font-medium text-muted-foreground"
-            title="Ish topshirilguncha band"
+            title={m.ui.busyUntilDelivered}
           >
             Hozir band
           </span>
@@ -181,7 +181,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
             className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 text-xs font-semibold text-white transition-colors hover:bg-emerald-500"
           >
             <MessageCircle className="size-3.5" />
-            Yozish
+            {m.ui.write}
           </Link>
         )}
       </div>

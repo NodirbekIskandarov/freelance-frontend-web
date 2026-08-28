@@ -127,7 +127,7 @@ function LinkModal({
       footer={
         <>
           <Button variant="outline" onClick={close}>
-            Bekor qilish
+            {m.common.cancel}
           </Button>
           {sent ? (
             <Button

@@ -73,7 +73,7 @@ export function FreelancerDashboard() {
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-bold text-foreground">So&apos;nggi ishlar</h2>
+          <h2 className="text-lg font-bold text-foreground">{m.ui.recentJobs}</h2>
           <Link
             href="/freelancer/orders"
             className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
@@ -84,7 +84,7 @@ export function FreelancerDashboard() {
 
         {!recent.data || recent.data.results.length === 0 ? (
           <div className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center">
-            <p className="text-sm font-medium text-foreground">Hali ish yo&apos;q</p>
+            <p className="text-sm font-medium text-foreground">{m.ui.noJobsYet}</p>
             <p className="mt-1 text-sm text-muted-foreground">
               <Link
                 href="/freelancer/board"

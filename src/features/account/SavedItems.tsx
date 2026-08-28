@@ -60,9 +60,11 @@ function Skeletons() {
 }
 
 function Empty({ text }: { text: string }) {
+  const { m } = useT();
+
   return (
     <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
-      <p className="text-sm font-medium text-foreground">Saqlanganlar bo&apos;sh</p>
+      <p className="text-sm font-medium text-foreground">{m.ui.savedEmpty}</p>
       <p className="mt-1 text-sm text-muted-foreground">{text}</p>
     </div>
   );

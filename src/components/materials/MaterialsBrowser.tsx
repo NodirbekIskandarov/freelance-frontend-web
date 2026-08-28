@@ -234,10 +234,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
           <div className="flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-16 text-center">
             <SearchX className="size-8 text-muted-foreground" />
             <p className="mt-3 text-sm font-medium text-foreground">Hech narsa topilmadi</p>
-            <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              Filtrni o&apos;zgartirib ko&apos;ring yoki kerakli fan bo&apos;lmasa institut
-              sahifasidan ariza qoldiring.
-            </p>
+            <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.filters.noResults}</p>
           </div>
         ) : (
           visible.map((group) => (

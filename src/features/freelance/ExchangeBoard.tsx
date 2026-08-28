@@ -68,7 +68,7 @@ export function ExchangeBoard() {
             </span>
             <div>
               <h1 className="text-sm font-semibold text-foreground sm:text-[15px]">
-                Topshiriqni birjaga joylang
+                {m.ui.postTask}
               </h1>
               <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{m.exchange.lead}</p>
             </div>
@@ -97,7 +97,7 @@ export function ExchangeBoard() {
       <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Mening topshiriqlarim</h2>
+            <h2 className="text-sm font-semibold text-foreground">{m.ui.myTasks}</h2>
             <p className="text-[11px] text-muted-foreground lg:hidden">{m.exchange.clickTask}</p>
           </div>
           <span className="rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
@@ -135,7 +135,7 @@ export function ExchangeBoard() {
               ) : (
                 <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10 text-center">
                   <Search className="size-8 text-muted-foreground" />
-                  <p className="mt-3 text-sm font-medium text-foreground">Topshiriqni tanlang</p>
+                  <p className="mt-3 text-sm font-medium text-foreground">{m.ui.pickTask}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{m.exchange.pickFromList}</p>
                 </div>
               )}
@@ -336,7 +336,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
           <div className="mt-3">
             <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>
               <Star className="size-3.5" />
-              Bajaruvchini baholash
+              {m.ui.rateFreelancer}
             </Button>
           </div>
         )}

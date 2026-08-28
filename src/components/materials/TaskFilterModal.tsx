@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
+import { useT } from '@/i18n/useT';
 
 /** Topshiriqda yechim bor-yo'qligi — yon ro'yxatdagi rangli nuqta bilan bir xil mantiq. */
 export type TaskAvailability = 'has_solution' | 'demand' | 'missing';
@@ -56,12 +57,14 @@ export function TaskFilterModal({
   onClose: () => void;
   onReset: () => void;
 }) {
+  const { m } = useT();
+
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="Filtrlar"
-      description="Topshiriqlar ro'yxatini toraytiring."
+      title={m.ui.filters}
+      description={m.ui.filtersDesc}
       className="w-[min(24rem,calc(100vw-2rem))]"
       footer={
         <>

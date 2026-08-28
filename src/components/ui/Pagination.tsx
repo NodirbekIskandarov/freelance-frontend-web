@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
+import { useT } from '@/i18n/useT';
 
 /**
  * Ko'rinadigan raqamlar soni (uchi-uchigacha).
@@ -55,6 +56,7 @@ export function Pagination({
   onChange: (page: number) => void;
   className?: string;
 }) {
+  const { m } = useT();
   // Bitta sahifa bo'lsa boshqaruv keraksiz — hech qayerga o'tib bo'lmaydi.
   if (totalPages <= 1) return null;
 
@@ -62,14 +64,14 @@ export function Pagination({
 
   return (
     <nav
-      aria-label="Sahifalar"
+      aria-label={m.ui.pages}
       className={cn('flex flex-wrap items-center justify-center gap-1.5', className)}
     >
       <button
         type="button"
         onClick={() => onChange(page - 1)}
         disabled={page <= 1}
-        aria-label="Oldingi sahifa"
+        aria-label={m.ui.prevPage}
         className={cn(itemBase, 'border-border/70 text-muted-foreground hover:bg-muted')}
       >
         <ChevronLeft className="size-4" />
@@ -109,7 +111,7 @@ export function Pagination({
         type="button"
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages}
-        aria-label="Keyingi sahifa"
+        aria-label={m.ui.nextPage}
         className={cn(itemBase, 'border-border/70 text-muted-foreground hover:bg-muted')}
       >
         <ChevronRight className="size-4" />

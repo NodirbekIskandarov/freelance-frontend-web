@@ -231,7 +231,7 @@ export function SubjectTasks({
             <div className="relative min-w-0 flex-1 lg:w-[240px] lg:flex-none">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <label className="sr-only" htmlFor="task-search">
-                Topshiriq qidirish
+                {m.ui.searchTasks}
               </label>
               <input
                 id="task-search"
@@ -244,7 +244,7 @@ export function SubjectTasks({
                 <button
                   type="button"
                   onClick={() => setQuery('')}
-                  aria-label="Qidiruvni tozalash"
+                  aria-label={m.ui.clearSearch}
                   className="absolute top-1/2 right-2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <X className="size-3" />
@@ -255,7 +255,7 @@ export function SubjectTasks({
             <button
               type="button"
               onClick={() => setFilterOpen(true)}
-              aria-label="Filtrlar"
+              aria-label={m.ui.filters}
               className={cn(
                 'relative inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/80 px-2.5 text-xs font-medium transition-colors hover:bg-muted sm:px-3',
                 filtersActive && 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300',

@@ -1,14 +1,22 @@
 import { SavedItems } from '@/features/account/SavedItems';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { getMessages } from '@/i18n/messages';
 
-export const metadata = { title: 'Saqlanganlar' };
+export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const m = await getMessages(isLocale(raw) ? raw : DEFAULT_LOCALE);
 
-export default function SavedPage() {
+  return { title: m.cabinet.saved };
+}
+
+export default async function SavedPage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const m = await getMessages(isLocale(raw) ? raw : DEFAULT_LOCALE);
+
   return (
     <>
-      <h2 className="text-lg font-bold text-foreground">Saqlanganlar</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Keyinroq qaytib kelish uchun belgilab qo&apos;ygan material va mutaxassislaringiz.
-      </p>
+      <h2 className="text-lg font-bold text-foreground">{m.cabinet.saved}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{m.pages.savedLead}</p>
 
       <div className="mt-5">
         <SavedItems />

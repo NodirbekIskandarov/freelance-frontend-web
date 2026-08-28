@@ -57,7 +57,7 @@ export function ReviewTaskModal({
     <Modal
       open={task !== null}
       onClose={close}
-      title="Bajaruvchini baholash"
+      title={m.ui.rateFreelancer}
       description={task?.freelancer?.full_name ?? task?.title}
       footer={
         <>
@@ -105,7 +105,7 @@ export function ReviewTaskModal({
           maxLength={1000}
           value={comment}
           onChange={(event) => setComment(event.target.value)}
-          placeholder="Ish sifati, muddatga rioya, muloqot..."
+          placeholder={m.ui.ratePlaceholder}
           hint={m.exchange.reviewHint}
         />
 

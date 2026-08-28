@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useEffect, useRef, type ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
+import { useT } from '@/i18n/useT';
 
 /**
  * Native `<dialog>` ustiga qurilgan.
@@ -29,6 +30,7 @@ export function Modal({
   footer?: ReactNode;
   className?: string;
 }) {
+  const { m } = useT();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Yopish"
+            aria-label={m.ui.close}
             className="-mt-1 -mr-1 grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="size-4" />

@@ -2,19 +2,21 @@ import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { ApplyWizard } from '@/features/freelance/apply/ApplyWizard';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { getMessages } from '@/i18n/messages';
 
-export const metadata = buildMetadata({
-  title: "Freelancer bo'lish — ariza yuborish",
-  description:
-    "Yopamiz.uz'da freelancer bo'ling: talabalarga akademik ishlarda yordam bering va daromad qiling. Ariza 1–3 ish kunida ko'rib chiqiladi.",
-  path: '/freelance/apply',
-});
+export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const m = (await getMessages(locale)).pages;
 
-const crumbs = [
-  { name: 'Bosh sahifa', path: '/' },
-  { name: 'Freelancerlar', path: '/freelance' },
-  { name: "Freelancer bo'lish", path: '/freelance/apply' },
-];
+  return buildMetadata({
+    title: m.applySeoTitle,
+    description: m.applySeoDescription,
+    path: '/freelance/apply',
+    locale,
+  });
+}
 
 /*
  * Sahifa ochiq va indekslanadi: tanishtiruv qismi Server Component'da
@@ -22,7 +24,17 @@ const crumbs = [
  * ariza esa kirishni talab qiladi va uni `ApplyWizard` o'zi hal qiladi —
  * butun sahifani qo'riqchi ostiga olish SEO'ni yo'q qilardi.
  */
-export default function FreelanceApplyPage() {
+export default async function FreelanceApplyPage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const messages = await getMessages(isLocale(raw) ? raw : DEFAULT_LOCALE);
+  const m = messages.pages;
+
+  const crumbs = [
+    { name: messages.materials.breadcrumbHome, path: '/' },
+    { name: messages.nav.freelancers, path: '/freelance' },
+    { name: m.applyCrumb, path: '/freelance/apply' },
+  ];
+
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
@@ -32,13 +44,9 @@ export default function FreelanceApplyPage() {
 
         <header className="mt-6 max-w-2xl">
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Freelancer bo&apos;lish uchun ariza yuborish
+            {m.applyTitle}
           </h1>
-          <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-            Ma&apos;lumotlaringizni to&apos;ldiring. Arizangiz admin tomonidan tekshiriladi va 1–3
-            ish kuni ichida javob beriladi. Tasdiqlangach birjadagi ochiq ishlarga taklif
-            yuborishingiz mumkin bo&apos;ladi.
-          </p>
+          <p className="mt-3 text-base leading-relaxed text-muted-foreground">{m.applyPageLead}</p>
         </header>
 
         <div className="mt-8">

@@ -221,7 +221,7 @@ export function FreelancerDirectory({
 
               <label className="flex min-w-[160px] flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 sm:flex-none">
                 <SlidersHorizontal className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span className="sr-only">Yo&apos;nalish</span>
+                <span className="sr-only">{m.freelancerCabinet.direction}</span>
                 <select
                   value={filters.direction}
                   onChange={(event) => updateFilters({ direction: event.target.value })}
@@ -307,7 +307,7 @@ export function FreelancerDirectory({
           <p className="mt-3 font-semibold text-foreground">Hech narsa topilmadi</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.exchange.noFreelancers}</p>
           <Button variant="outline" size="sm" onClick={clearAll} className="mt-4">
-            Hammasini tozalash
+            {m.ui.clearAll}
           </Button>
         </div>
       )}

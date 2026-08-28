@@ -1,7 +1,10 @@
+'use client';
+
 import { Star } from 'lucide-react';
 
 import { cn } from '@/lib/cn';
 import type { ExchangeReview } from '@/shared/types/exchange';
+import { useT } from '@/i18n/useT';
 
 /** Beshta yulduz — to'lganlari sariq, qolgani kulrang. */
 function Stars({ rating, className }: { rating: number; className?: string }) {
@@ -34,10 +37,11 @@ function formatDate(value: string): string {
  * Interaktivlik yo'q: yozish va tahrirlash kabinetda.
  */
 export function FreelancerReviews({ reviews }: { reviews: ExchangeReview[] }) {
+  const { m } = useT();
   if (reviews.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-border px-6 py-12 text-center text-sm text-muted-foreground">
-        Hali sharh yo&apos;q. Birinchi bo&apos;lib ish topshiring va baho qoldiring.
+        {m.ui.noReviews}
       </p>
     );
   }

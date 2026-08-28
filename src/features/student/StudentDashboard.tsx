@@ -92,7 +92,7 @@ export function StudentDashboard() {
 
       <section className="mt-8">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-bold text-foreground">So&apos;nggi buyurtmalar</h2>
+          <h2 className="text-lg font-bold text-foreground">{m.ui.recentOrders}</h2>
           <Link
             href="/student/orders"
             className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"

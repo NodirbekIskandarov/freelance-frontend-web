@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 import { useLazyGetLibraryItemQuery } from './libraryApi';
+import { useT } from '@/i18n/useT';
 
 /**
  * Sotib olingan yechim uchun yuklab olish tugmasi — katalogning o'zida.
@@ -25,6 +26,7 @@ export function OwnedSolutionButton({
   solutionId: string;
   className?: string;
 }) {
+  const { m } = useT();
   const [fetchItem, { isFetching }] = useLazyGetLibraryItemQuery();
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +59,7 @@ export function OwnedSolutionButton({
         ) : (
           <>
             <Download className="size-3.5" />
-            Yuklab olish
+            {m.ui.download}
           </>
         )}
       </Button>
