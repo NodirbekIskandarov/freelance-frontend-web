@@ -59,8 +59,16 @@ export class CatalogueError extends Error {
  * bo'lmaydi, faqat build'ni cho'zadi.
  */
 const REQUEST_TIMEOUT_MS = 15_000;
-const MAX_ATTEMPTS = 3;
-const RETRY_BASE_DELAY_MS = 400;
+/*
+ * Besh urinish, sekundlarga cho'ziladigan kutish bilan.
+ *
+ * Uch urinish (400ms → 1.6s) qisqa uzilishga yetardi, lekin build
+ * paytidagi YUKLAMAGA emas: ikki til qo'shilgach so'rovlar soni ikki
+ * barobar oshdi va backend qaytargan uzoq davom etuvchi 502 to'lqinini
+ * bu oyna qoplay olmasdi.
+ */
+const MAX_ATTEMPTS = 5;
+const RETRY_BASE_DELAY_MS = 800;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
