@@ -47,7 +47,7 @@ export function FreelancerOffers() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : offerStatusLabel(item, m)}
+            {item === 'all' ? m.common.all : offerStatusLabel(item, m)}
           </button>
         ))}
       </div>
@@ -67,9 +67,7 @@ export function FreelancerOffers() {
       ) : data.results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
           <p className="text-sm font-medium text-foreground">Taklif topilmadi</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ochiq topshiriqlar bo&apos;limidan topshiriq tanlab, birinchi taklifingizni yuboring.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{m.freelancerCabinet.noOffers}</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -99,7 +97,7 @@ export function FreelancerOffers() {
                   disabled={withdraw.isLoading}
                   onClick={() => void withdrawOffer({ id: offer.id, taskId: offer.task })}
                 >
-                  Qaytarib olish
+                  {m.freelancerCabinet.withdrawOffer}
                 </Button>
               )}
             </article>

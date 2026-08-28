@@ -8,6 +8,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { useGetWalletQuery, useGetWalletTransactionsQuery } from '@/features/account/accountApi';
 import { TRANSACTION_TYPE_LABELS } from '@/shared/types/account';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -21,6 +22,7 @@ function formatDate(value: string): string {
  * to'liq tarix va yechib olish `/wallet` sahifasida.
  */
 export function FreelancerEarnings() {
+  const { m } = useT();
   const money = useMoney();
   const { data: wallet, isLoading, error } = useGetWalletQuery();
   const { data: sales } = useGetWalletTransactionsQuery({
@@ -51,13 +53,13 @@ export function FreelancerEarnings() {
           tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
         />
         <StatCard
-          label="Yechib olish kutilmoqda"
+          label={m.freelancerCabinet.pendingWithdrawal}
           value={money.decimalSom(wallet.totals.pending_withdrawal)}
           icon={Clock}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
         />
         <StatCard
-          label="Jami ishlangan"
+          label={m.freelancerCabinet.earnedTotal}
           value={money.decimalSom(wallet.totals.earned)}
           icon={PiggyBank}
           tone="bg-violet-500/12 text-violet-600 dark:text-violet-400"
@@ -65,8 +67,7 @@ export function FreelancerEarnings() {
       </section>
 
       <p className="mt-4 rounded-xl border border-border bg-muted/40 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-        Yuqoridagi summalar platforma komissiyasi ayrilgandan keyingi, ya&apos;ni qo&apos;lingizga
-        tegadigan miqdor. Pulni yechib olish{' '}
+        {m.freelancerCabinet.commissionNote}{' '}
         <Link
           href="/wallet"
           className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
@@ -81,7 +82,7 @@ export function FreelancerEarnings() {
 
         {!sales || sales.results.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Hali daromad yo&apos;q. Yakunlangan ish uchun to&apos;lov shu yerda ko&apos;rinadi.
+            {m.freelancerCabinet.noEarnings}
           </p>
         ) : (
           <div className="mt-4 grid gap-3">

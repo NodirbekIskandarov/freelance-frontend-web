@@ -46,19 +46,19 @@ export function FreelancerDashboard() {
     <>
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Faol ishlar"
+          label={m.freelancerCabinet.activeJobs}
           value={String(active.data?.count ?? 0)}
           icon={Briefcase}
           tone="bg-blue-500/12 text-blue-600 dark:text-blue-400"
         />
         <StatCard
-          label="Yakunlangan"
+          label={m.freelancerCabinet.doneJobs}
           value={String(done.data?.count ?? 0)}
           icon={CircleCheck}
           tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
         />
         <StatCard
-          label="Javob kutayotgan takliflar"
+          label={m.freelancerCabinet.pendingOffers}
           value={String(pendingOffers.data?.count ?? 0)}
           icon={Send}
           tone="bg-violet-500/12 text-violet-600 dark:text-violet-400"
@@ -78,7 +78,7 @@ export function FreelancerDashboard() {
             href="/freelancer/orders"
             className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
           >
-            Barchasi
+            {m.common.all}
           </Link>
         </div>
 
@@ -90,7 +90,7 @@ export function FreelancerDashboard() {
                 href="/freelancer/board"
                 className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
               >
-                Ochiq topshiriqlar
+                {m.freelancerCabinet.openTasks}
               </Link>{' '}
               bo&apos;limidan tanlab, birinchi taklifingizni yuboring.
             </p>

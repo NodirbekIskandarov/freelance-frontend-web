@@ -51,13 +51,13 @@ export function OpenTaskBoard() {
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Topshiriq nomi bo'yicha qidirish"
+            placeholder={m.freelancerCabinet.searchTasks}
             className="h-11 w-full rounded-lg border border-border bg-background pr-3.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-emerald-500/60"
           />
         </label>
 
         <SelectField
-          label="Yo'nalish"
+          label={m.freelancerCabinet.direction}
           className="sm:w-56"
           options={directionOptions}
           value={direction}
@@ -75,9 +75,7 @@ export function OpenTaskBoard() {
         <div className="mt-4 flex flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-16 text-center">
           <Inbox className="size-8 text-muted-foreground" />
           <p className="mt-3 text-sm font-medium text-foreground">Ochiq topshiriq topilmadi</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Filtrni o&apos;zgartirib ko&apos;ring — yangi topshiriqlar muntazam qo&apos;shiladi.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{m.freelancerCabinet.noTasks}</p>
         </div>
       ) : (
         <div className="mt-4 grid gap-3">
@@ -112,7 +110,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
 
         <div className="text-right">
           <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
-            {task.budget !== null ? money.decimalSom(task.budget) : 'Kelishiladi'}
+            {task.budget !== null ? money.decimalSom(task.budget) : m.freelance.negotiable}
           </div>
           <div className="text-[11px] text-muted-foreground">{task.offer_count} ta taklif</div>
         </div>
@@ -141,7 +139,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
 
         <Button variant="emerald" size="sm" onClick={onOffer}>
           <Send className="size-3.5" />
-          Taklif yuborish
+          {m.freelancerCabinet.sendOffer}
         </Button>
       </div>
     </article>
@@ -188,11 +186,16 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
   }
 
   return (
-    <Modal open={task !== null} onClose={close} title="Taklif yuborish" description={task?.title}>
+    <Modal
+      open={task !== null}
+      onClose={close}
+      title={m.freelancerCabinet.sendOffer}
+      description={task?.title}
+    >
       <form id="offer-form" onSubmit={submit} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
-            label="Narx (so'm)"
+            label={m.freelancerCabinet.offerPrice}
             type="number"
             required
             min={1000}
@@ -207,7 +210,7 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
             }
           />
           <SelectField
-            label="Muddat"
+            label={m.exchange.deadline}
             required
             options={deadlineOptions}
             value={deadline}
@@ -222,7 +225,7 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
           maxLength={1000}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
-          placeholder="Nima uchun aynan siz? Tajriba, o'xshash ishlar, ish tartibi..."
+          placeholder={m.freelancerCabinet.offerMessagePlaceholder}
           hint={`${message.length}/1000`}
         />
 
@@ -235,7 +238,7 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
 
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="outline" onClick={close}>
-          Bekor qilish
+          {m.common.cancel}
         </Button>
         <Button
           type="submit"
@@ -243,7 +246,7 @@ function OfferModal({ task, onClose }: { task: ExchangeTask | null; onClose: () 
           variant="emerald"
           disabled={isLoading || !price.trim() || !message.trim()}
         >
-          {isLoading ? 'Yuborilmoqda...' : 'Yuborish'}
+          {isLoading ? m.freelancerCabinet.sending : m.freelancerCabinet.send}
         </Button>
       </div>
     </Modal>

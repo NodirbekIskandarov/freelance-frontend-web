@@ -50,7 +50,7 @@ export function FreelancerOrders() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : taskStatusLabel(item, m)}
+            {item === 'all' ? m.common.all : taskStatusLabel(item, m)}
           </button>
         ))}
       </div>
@@ -64,9 +64,7 @@ export function FreelancerOrders() {
       ) : data.results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
           <p className="text-sm font-medium text-foreground">Hali qabul qilingan ish yo&apos;q</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ochiq topshiriqlarga taklif yuboring — qabul qilingan ishlar shu yerda ko&apos;rinadi.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{m.freelancerCabinet.noJobs}</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -132,7 +130,9 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
         {(job.status === 'in_progress' || job.status === 'delivered') && (
           <Button variant="emerald" size="sm" onClick={onDeliver}>
             <Upload className="size-3.5" />
-            {job.status === 'delivered' ? 'Qayta topshirish' : 'Ishni topshirish'}
+            {job.status === 'delivered'
+              ? m.freelancerCabinet.deliverAgain
+              : m.freelancerCabinet.deliver}
           </Button>
         )}
       </div>
@@ -141,6 +141,7 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
 }
 
 function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: () => void }) {
+  const { m } = useT();
   const [deliver, { isLoading, error, reset }] = useDeliverTaskMutation();
   const [note, setNote] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -170,7 +171,12 @@ function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: (
   }
 
   return (
-    <Modal open={task !== null} onClose={close} title="Ishni topshirish" description={task?.title}>
+    <Modal
+      open={task !== null}
+      onClose={close}
+      title={m.freelancerCabinet.deliver}
+      description={task?.title}
+    >
       <form id="deliver-form" onSubmit={submit} className="space-y-4">
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-foreground">Tayyor ish fayli</span>
@@ -187,7 +193,7 @@ function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: (
           maxLength={1000}
           value={note}
           onChange={(event) => setNote(event.target.value)}
-          placeholder="Nima qilindi, qanday ishlatiladi, e'tibor beriladigan joylar..."
+          placeholder={m.freelancerCabinet.deliverNotePlaceholder}
         />
 
         {error && (
@@ -199,7 +205,7 @@ function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: (
 
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="outline" onClick={close}>
-          Bekor qilish
+          {m.common.cancel}
         </Button>
         <Button
           type="submit"
@@ -207,7 +213,7 @@ function DeliverModal({ task, onClose }: { task: ExchangeTask | null; onClose: (
           variant="emerald"
           disabled={isLoading || (!file && !note.trim())}
         >
-          {isLoading ? 'Yuborilmoqda...' : 'Topshirish'}
+          {isLoading ? m.freelancerCabinet.delivering : m.freelancerCabinet.deliverSubmit}
         </Button>
       </div>
     </Modal>
