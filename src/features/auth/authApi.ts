@@ -4,6 +4,7 @@ import {
   type AuthResponse,
   type ChangePasswordRequest,
   type ForgotPasswordConfirmRequest,
+  type ForgotPasswordRequest,
   type LoginRequest,
   type PhoneCodeRequest,
   type PhoneCodeSentResponse,
@@ -123,7 +124,14 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: '/auth/change-password/', method: 'POST', body }),
     }),
 
-    forgotPassword: build.mutation<void, PhoneCodeRequest>({
+    /**
+     * Tiklash kodini so'rash.
+     *
+     * Javob hisob bor-yo'qligini OSHKOR QILMAYDI — ikkala holatda ham
+     * bir xil matn keladi. `demo_code` esa faqat yetkazish o'chiq
+     * bo'lganda (SMS provayderi yo'q, konsol pochta) qaytadi.
+     */
+    forgotPassword: build.mutation<PhoneCodeSentResponse, ForgotPasswordRequest>({
       query: (body) => ({ url: '/auth/forgot-password/', method: 'POST', body }),
     }),
 

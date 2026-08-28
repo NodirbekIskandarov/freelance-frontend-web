@@ -1,4 +1,5 @@
 import { AccountProfile } from '@/features/account/AccountProfile';
+import { ChangePassword } from '@/features/account/ChangePassword';
 import { LoginMethods } from '@/features/account/LoginMethods';
 
 export const metadata = { title: 'Profil' };
@@ -11,6 +12,7 @@ export default function FreelancerProfilePage() {
         <AccountProfile />
         {/* Hisob bitta — kirish usullari ikkala kabinetda ham bir xil. */}
         <LoginMethods />
+        <ChangePassword />
       </div>
     </>
   );

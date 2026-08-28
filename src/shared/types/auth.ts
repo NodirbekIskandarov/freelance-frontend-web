@@ -150,8 +150,18 @@ export interface PhoneVerifyRequest {
   code: string;
 }
 
+/**
+ * Tiklash so'raladigan hisob — telefon yoki tasdiqlangan email.
+ *
+ * Bitta maydon, chunki backend «@» belgisiga qarab qaysi biri ekanini
+ * o'zi hal qiladi va kodni tegishli kanal orqali yuboradi.
+ */
+export interface ForgotPasswordRequest {
+  identifier: string;
+}
+
 export interface ForgotPasswordConfirmRequest {
-  phone: string;
+  identifier: string;
   code: string;
   new_password: string;
 }

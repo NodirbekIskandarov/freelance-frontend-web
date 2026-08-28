@@ -105,7 +105,17 @@ export function LoginForm() {
         )}
 
         <div>
-          <AuthFieldLabel htmlFor="login-password">Parol</AuthFieldLabel>
+          <div className="flex items-baseline justify-between gap-3">
+            <AuthFieldLabel htmlFor="login-password">Parol</AuthFieldLabel>
+            {/* Havola aynan shu yerda: parol esdan chiqqani maydonga
+                yozayotganda ma'lum bo'ladi, kartaning pastida emas. */}
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            >
+              Parolni unutdingizmi?
+            </Link>
+          </div>
           <AuthInput
             id="login-password"
             type="password"

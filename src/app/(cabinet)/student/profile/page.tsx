@@ -1,4 +1,5 @@
 import { AccountProfile } from '@/features/account/AccountProfile';
+import { ChangePassword } from '@/features/account/ChangePassword';
 import { LoginMethods } from '@/features/account/LoginMethods';
 
 export const metadata = { title: 'Profil' };
@@ -12,6 +13,7 @@ export default function StudentProfilePage() {
         {/* Kirish usullari profilning bir qismi: qaysi yo'l bilan kirish
             mumkinligi hisob ma'lumotining o'zi. */}
         <LoginMethods />
+        <ChangePassword />
       </div>
     </>
   );
