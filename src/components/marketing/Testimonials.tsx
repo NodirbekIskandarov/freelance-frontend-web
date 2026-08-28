@@ -4,14 +4,15 @@ import { BadgeCheck, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { useState } from 'react';
 
 import { Container } from '@/components/ui/Container';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 const testimonials = [
   {
-    quote:
-      "Juda zo'r platforma! Konspekt yozdirdim, vaqtida sifatli bajarib berishdi. Tavsiya qilaman!",
+    quote: (m: Messages) => m.home.review1,
     name: 'Jasurbek J.',
-    role: 'TATU talabasi',
+    role: (m: Messages) => m.home.review1Role,
     initials: 'JJ',
     color: 'from-emerald-400 to-emerald-600',
     border: 'from-emerald-200/80 via-emerald-100/40 to-teal-200/70',
@@ -20,10 +21,9 @@ const testimonials = [
     badge: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
   },
   {
-    quote:
-      "Tayyor topshiriqni tez topdim va to'lovdan keyin darhol yuklab oldim. Juda qulay va tez!",
+    quote: (m: Messages) => m.home.review2,
     name: 'Madina K.',
-    role: 'SamDU talabasi',
+    role: (m: Messages) => m.home.review2Role,
     initials: 'MK',
     color: 'from-violet-400 to-violet-600',
     border: 'from-violet-200/80 via-violet-100/40 to-fuchsia-200/70',
@@ -32,9 +32,9 @@ const testimonials = [
     badge: 'border-violet-500/25 bg-violet-500/10 text-violet-700 dark:text-violet-300',
   },
   {
-    quote: "Freelancer topish oson bo'ldi. Ish vaqtida yetkazildi, sifat yaxshi edi. Rahmat!",
+    quote: (m: Messages) => m.home.review3,
     name: 'Sardor A.',
-    role: 'TDTU talabasi',
+    role: (m: Messages) => m.home.review3Role,
     initials: 'SA',
     color: 'from-blue-400 to-blue-600',
     border: 'from-blue-200/80 via-blue-100/40 to-sky-200/70',
@@ -51,6 +51,8 @@ function TestimonialCard({
   item: (typeof testimonials)[number];
   className?: string;
 }) {
+  const { m } = useT();
+
   return (
     <article className={cn('group relative h-full', className)}>
       <div
@@ -73,12 +75,12 @@ function TestimonialCard({
             )}
           >
             <BadgeCheck className="size-3.5 shrink-0" />
-            Tasdiqlangan fikr
+            {m.home.verifiedReview}
           </span>
         </div>
 
         <p className="relative mt-5 flex-1 text-[15px] leading-relaxed text-foreground/85 sm:text-base">
-          &ldquo;{item.quote}&rdquo;
+          &ldquo;{item.quote(m)}&rdquo;
         </p>
 
         <div className="relative mt-6 flex items-center gap-3 border-t border-border/60 pt-5">
@@ -95,7 +97,7 @@ function TestimonialCard({
               <div className="truncate text-sm font-bold text-foreground">{item.name}</div>
               <span className={cn('inline-block size-1.5 rounded-full', item.dot)} />
             </div>
-            <div className="mt-0.5 text-xs font-medium text-muted-foreground">{item.role}</div>
+            <div className="mt-0.5 text-xs font-medium text-muted-foreground">{item.role(m)}</div>
           </div>
         </div>
       </div>
@@ -114,22 +116,23 @@ function TestimonialsAnimatedBackground() {
 }
 
 export function Testimonials() {
+  const { t, m } = useT();
   const [active, setActive] = useState(0);
 
   return (
     <section
       className="relative overflow-hidden border-y border-border/40 bg-zinc-100 py-14 sm:py-16 dark:border-white/5 dark:bg-zinc-950"
-      aria-label="Talabalar fikri"
+      aria-label={m.home.testimonialsTitle}
     >
       <TestimonialsAnimatedBackground />
 
       <Container className="relative z-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-[1.75rem]">
-            Talabalar fikri
+            {m.home.testimonialsTitle}
           </h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-            Bizning platformamizdan foydalangan talabalar tajribasi
+            {m.home.testimonialsLead}
           </p>
         </div>
 
@@ -147,7 +150,7 @@ export function Testimonials() {
           <button
             type="button"
             onClick={() => setActive((i) => (i === 0 ? testimonials.length - 1 : i - 1))}
-            aria-label="Oldingi fikr"
+            aria-label={m.home.prevReview}
             className="absolute top-1/2 left-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground shadow-md transition-all hover:border-emerald-500/30 hover:text-emerald-600"
           >
             <ChevronLeft className="size-5" />
@@ -156,7 +159,7 @@ export function Testimonials() {
           <button
             type="button"
             onClick={() => setActive((i) => (i === testimonials.length - 1 ? 0 : i + 1))}
-            aria-label="Keyingi fikr"
+            aria-label={m.home.nextReview}
             className="absolute top-1/2 right-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground shadow-md transition-all hover:border-emerald-500/30 hover:text-emerald-600"
           >
             <ChevronRight className="size-5" />
@@ -167,7 +170,7 @@ export function Testimonials() {
               <button
                 key={item.name}
                 type="button"
-                aria-label={`${index + 1}-fikr`}
+                aria-label={t((x) => x.home.reviewNumber, { index: index + 1 })}
                 onClick={() => setActive(index)}
                 className={cn(
                   'h-2 rounded-full transition-all duration-300',

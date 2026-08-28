@@ -1,6 +1,9 @@
+'use client';
+
 import { ChevronDown } from 'lucide-react';
 
 import type { FaqItem } from '@/content/faq';
+import { useT } from '@/i18n/useT';
 
 /**
  * Native `<details>` — bir necha sabab bilan ataylab shunday:
@@ -26,11 +29,11 @@ export function FaqList({ items }: { items: readonly FaqItem[] }) {
 }
 
 export function FAQ({ items }: { items: readonly FaqItem[] }) {
+  const { m } = useT();
+
   return (
     <div id="faq">
-      <h2 className="text-lg font-bold tracking-tight text-foreground">
-        Ko&apos;p beriladigan savollar
-      </h2>
+      <h2 className="text-lg font-bold tracking-tight text-foreground">{m.home.faqTitle}</h2>
       <div className="mt-5">
         <FaqList items={items} />
       </div>

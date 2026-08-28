@@ -14,6 +14,8 @@ import { useEffect, type ComponentType } from 'react';
 
 import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { useT } from '@/i18n/useT';
+import type { Messages } from '@/i18n/messages/uz';
 import { cn } from '@/lib/cn';
 import { fadeUpSafe, scaleInSafe, staggerContainer } from '@/lib/motion';
 
@@ -28,29 +30,29 @@ import { HeroUniversitiesBar } from './HeroUniversitiesBar';
  */
 const floatingCards = [
   {
-    title: 'Topshiriqlar',
-    desc: '50 000+ tayyor variant',
+    title: (m: Messages) => m.home.cardAssignments,
+    desc: (m: Messages) => m.home.cardAssignmentsDesc,
     icon: ClipboardList,
     accent: 'bg-emerald-500/20 text-emerald-300',
     className: 'left-0 top-[6%] md:left-[4%]',
   },
   {
-    title: 'Konspekt',
-    desc: 'Yozdirish xizmati',
+    title: (m: Messages) => m.home.cardNotes,
+    desc: (m: Messages) => m.home.cardNotesDesc,
     icon: BookOpen,
     accent: 'bg-violet-500/20 text-violet-300',
     className: 'right-0 top-[6%] md:right-[4%]',
   },
   {
-    title: 'Chizmachilik',
-    desc: 'AutoCAD, Arxitektura',
+    title: (m: Messages) => m.home.cardDrawing,
+    desc: (m: Messages) => m.home.cardDrawingDesc,
     icon: FileText,
     accent: 'bg-teal-500/20 text-teal-300',
     className: 'bottom-[6%] left-0 md:left-[4%]',
   },
   {
-    title: 'Diplom ishlari',
-    desc: "Barcha yo'nalishlar",
+    title: (m: Messages) => m.home.cardDiploma,
+    desc: (m: Messages) => m.home.cardDiplomaDesc,
     icon: GraduationCap,
     accent: 'bg-orange-500/20 text-orange-300',
     className: 'right-0 bottom-[6%] md:right-[4%]',
@@ -101,6 +103,7 @@ export function Hero() {
 }
 
 function HeroContent() {
+  const { m } = useT();
   const controls = useAnimation();
   useResumeMotionOnVisible(controls);
 
@@ -115,9 +118,9 @@ function HeroContent() {
         className="text-[2rem] leading-[1.1] font-bold tracking-tight sm:text-[2.65rem] lg:text-[3.5rem] lg:leading-[1.06] xl:text-[3.85rem]"
         variants={fadeUpSafe}
       >
-        Topshiriqlaringizni biz{' '}
+        {m.home.heroTitle}{' '}
         <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
-          yopamiz!
+          {m.home.heroTitleAccent}
         </span>
       </motion.h1>
 
@@ -125,8 +128,7 @@ function HeroContent() {
         className="mx-auto mt-6 max-w-[480px] text-base leading-relaxed text-zinc-400 sm:text-lg sm:leading-8 lg:mx-0"
         variants={fadeUpSafe}
       >
-        Universitet topshiriqlari, konspekt, chizmachilik, spravka va diplom ishlari uchun ishonchli
-        platforma.
+        {m.home.heroLead}
       </motion.p>
 
       <motion.div
@@ -135,7 +137,7 @@ function HeroContent() {
       >
         <ButtonLink href="/materials" variant="emerald" size="lg" className="rounded-xl">
           <Search className="size-[18px]" />
-          Topshiriq qidirish
+          {m.home.heroSearch}
         </ButtonLink>
         <ButtonLink
           href="/freelance"
@@ -144,7 +146,7 @@ function HeroContent() {
           className="rounded-xl border-white/15 bg-white/5 text-white backdrop-blur hover:bg-white/10"
         >
           <UserPlus className="size-[18px]" />
-          Freelancer topish
+          {m.home.heroFindFreelancer}
         </ButtonLink>
       </motion.div>
     </motion.div>
@@ -152,6 +154,7 @@ function HeroContent() {
 }
 
 function HeroVisual() {
+  const { m } = useT();
   const controls = useAnimation();
   useResumeMotionOnVisible(controls);
 
@@ -167,7 +170,13 @@ function HeroVisual() {
         <HeroCenterBadge />
 
         {floatingCards.map((card, index) => (
-          <FloatingCard key={card.title} {...card} index={index} />
+          <FloatingCard
+            key={index}
+            {...card}
+            title={card.title(m)}
+            desc={card.desc(m)}
+            index={index}
+          />
         ))}
       </div>
     </motion.div>

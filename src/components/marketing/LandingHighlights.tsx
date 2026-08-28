@@ -1,7 +1,11 @@
+'use client';
+
 import { BookOpen, ClipboardList, Landmark, Layers, ArrowRight, CircleCheck } from 'lucide-react';
 import { Link } from '@/i18n/Link';
 
 import { Container } from '@/components/ui/Container';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { toSlug, toSlugId } from '@/lib/slug';
 import type { LandingHighlights as Highlights } from '@/server/landing/highlights';
 
@@ -11,11 +15,11 @@ function formatCount(value: number): string {
 }
 
 const STAT_ITEMS = [
-  { key: 'universities', label: 'Institut', icon: Landmark },
-  { key: 'subjects', label: 'Fan', icon: BookOpen },
-  { key: 'assignments', label: 'Topshiriq', icon: ClipboardList },
-  { key: 'variants', label: 'Variant', icon: Layers },
-  { key: 'solutions', label: 'Tayyor yechim', icon: CircleCheck },
+  { key: 'universities', label: (m: Messages) => m.home.statInstitutes, icon: Landmark },
+  { key: 'subjects', label: (m: Messages) => m.home.statSubjects, icon: BookOpen },
+  { key: 'assignments', label: (m: Messages) => m.home.statAssignments, icon: ClipboardList },
+  { key: 'variants', label: (m: Messages) => m.home.statVariants, icon: Layers },
+  { key: 'solutions', label: (m: Messages) => m.home.statSolutions, icon: CircleCheck },
 ] as const;
 
 /**
@@ -25,6 +29,7 @@ const STAT_ITEMS = [
  * to'la jadval saytni tirik emas, tashlab ketilgandek ko'rsatadi.
  */
 export function LandingHighlights({ highlights }: { highlights: Highlights }) {
+  const { t, m } = useT();
   const { stats, universities, subjects } = highlights;
 
   if (stats.universities === 0 && stats.subjects === 0) return null;
@@ -33,11 +38,10 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
     <section className="border-t border-border/60 bg-muted/30 py-14 sm:py-16">
       <Container>
         <h2 className="text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Katalogda hozir
+          {m.home.catalogueNow}
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground">
-          Barcha raqamlar jonli — institutlar, fanlar va tayyor yechimlar soni real vaqtda
-          yangilanadi.
+          {m.home.catalogueLead}
         </p>
 
         <dl className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -50,7 +54,7 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
               <dd className="mt-2 text-xl font-bold text-foreground tabular-nums">
                 {formatCount(stats[item.key])}
               </dd>
-              <dt className="mt-0.5 text-xs text-muted-foreground">{item.label}</dt>
+              <dt className="mt-0.5 text-xs text-muted-foreground">{item.label(m)}</dt>
             </div>
           ))}
         </dl>
@@ -58,12 +62,12 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
         {universities.length > 0 && (
           <div className="mt-10">
             <div className="flex items-center justify-between gap-4">
-              <h3 className="text-lg font-bold text-foreground">Mashhur institutlar</h3>
+              <h3 className="text-lg font-bold text-foreground">{m.home.popularInstitutes}</h3>
               <Link
                 href="/materials"
                 className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
               >
-                Barchasi
+                {m.home.all}
                 <ArrowRight className="size-3.5" />
               </Link>
             </div>
@@ -83,8 +87,10 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
                       {university.city ? ` · ${university.city}` : ''}
                     </span>
                     <span className="mt-3 text-xs text-emerald-700 dark:text-emerald-400">
-                      {formatCount(university.subject_count)} fan ·{' '}
-                      {formatCount(university.solution_count)} yechim
+                      {t((x) => x.home.subjectsAndSolutions, {
+                        subjects: formatCount(university.subject_count),
+                        solutions: formatCount(university.solution_count),
+                      })}
                     </span>
                   </Link>
                 </li>
@@ -95,7 +101,7 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
 
         {subjects.length > 0 && (
           <div className="mt-10">
-            <h3 className="text-lg font-bold text-foreground">Ko&apos;p sotilgan fanlar</h3>
+            <h3 className="text-lg font-bold text-foreground">{m.home.subjectsSoldMost}</h3>
 
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {subjects.map((subject) => (
@@ -109,11 +115,15 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
                     <span className="text-sm font-bold text-foreground">{subject.name}</span>
                     <span className="mt-0.5 text-xs text-muted-foreground">
                       {subject.university_short_name || subject.university_name}
-                      {subject.course ? ` · ${subject.course}-kurs` : ''}
+                      {subject.course
+                        ? ` · ${t((x) => x.materials.course, { course: subject.course })}`
+                        : ''}
                     </span>
                     <span className="mt-3 text-xs text-emerald-700 dark:text-emerald-400">
-                      {formatCount(subject.solution_count)} yechim ·{' '}
-                      {formatCount(subject.sale_count)} sotuv
+                      {t((x) => x.home.solutionsAndSales, {
+                        solutions: formatCount(subject.solution_count),
+                        sales: formatCount(subject.sale_count),
+                      })}
                     </span>
                   </Link>
                 </li>

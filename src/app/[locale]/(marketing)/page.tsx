@@ -8,8 +8,10 @@ import { ServicesOverview } from '@/components/marketing/ServicesOverview';
 import { Testimonials } from '@/components/marketing/Testimonials';
 import { WhyChooseUs } from '@/components/marketing/WhyChooseUs';
 import { siteConfig } from '@/config/site';
-import { faqJsonLd, LANDING_FAQ } from '@/content/faq';
-import { JsonLd } from '@/lib/seo';
+import { faqJsonLd, landingFaq } from '@/content/faq';
+import { DEFAULT_LOCALE, isLocale, LOCALES, LOCALE_TAGS } from '@/i18n/config';
+import { setRequestLocale } from '@/i18n/requestLocale';
+import { absoluteUrl, JsonLd } from '@/lib/seo';
 import { getLandingHighlights } from '@/server/landing/highlights';
 
 /**
@@ -17,18 +19,33 @@ import { getLandingHighlights } from '@/server/landing/highlights';
  * emas — `absolute` bilan beriladi. Aks holda "Yopamiz.uz — ... | Yopamiz.uz"
  * kabi ismning o'zi takrorlanib chiqadi.
  */
-export const metadata: Metadata = {
-  title: { absolute: siteConfig.title },
-  description: siteConfig.description,
-  alternates: { canonical: '/' },
-};
+export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
 
-export default async function LandingPage() {
+  return {
+    title: { absolute: siteConfig.title },
+    description: siteConfig.description,
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        ...Object.fromEntries(LOCALES.map((item) => [LOCALE_TAGS[item], absoluteUrl(`/${item}`)])),
+        'x-default': absoluteUrl(`/${DEFAULT_LOCALE}`),
+      },
+    },
+  };
+}
+
+export default async function LandingPage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  setRequestLocale(locale);
+
   const highlights = await getLandingHighlights();
 
   return (
     <>
-      <JsonLd data={faqJsonLd(LANDING_FAQ)} />
+      <JsonLd data={faqJsonLd(landingFaq(locale))} />
       <Hero />
       <LandingHighlights highlights={highlights} />
       <ServicesOverview />

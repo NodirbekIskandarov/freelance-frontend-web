@@ -1,3 +1,5 @@
+import type { Locale } from '@/i18n/config';
+
 export interface FaqItem {
   q: string;
   a: string;
@@ -16,7 +18,7 @@ export interface FaqGroup {
  * ikkalasi ham, `FAQPage` JSON-LD ham bir xil matnni ishlatadi va
  * ular bir-biridan uzoqlashib qololmaydi.
  */
-export const FAQ_GROUPS: FaqGroup[] = [
+const FAQ_GROUPS_UZ: FaqGroup[] = [
   {
     title: 'Boshlash',
     items: [
@@ -74,10 +76,88 @@ export const FAQ_GROUPS: FaqGroup[] = [
   },
 ];
 
-/** Bosh sahifada qisqartirilgan ro'yxat — birinchi guruh. */
-export const LANDING_FAQ = FAQ_GROUPS[0]!.items;
+const FAQ_GROUPS_RU: FaqGroup[] = [
+  {
+    title: 'Начало работы',
+    items: [
+      {
+        q: 'Как разместить задание?',
+        a: 'Зарегистрируйтесь на сайте, укажите данные задания и свои требования, затем выберите фрилансера или найдите готовый материал.',
+      },
+      {
+        q: 'Как проходит оплата?',
+        a: 'Пока доступна ручная оплата картой. После оплаты вы загружаете скриншот чека, и услуга открывается сразу после подтверждения администратором.',
+      },
+      {
+        q: 'А если задание не будет выполнено?',
+        a: 'Если работа не сдана в срок или качество не соответствует требованиям, служба поддержки рассмотрит обращение и предложит решение.',
+      },
+      {
+        q: 'Какие гарантии вы даёте?',
+        a: 'Все работы проверяются ИИ и экспертами. Платежи защищены: при проблеме возможен возврат средств или повторное выполнение.',
+      },
+    ],
+  },
+  {
+    title: 'Готовые материалы',
+    items: [
+      {
+        q: 'Чем готовый материал отличается от услуги фрилансера?',
+        a: 'Готовый материал — уже выполненная и проверенная работа, её можно скачать сразу. Услуга фрилансера выполняется с нуля по вашим требованиям и занимает больше времени.',
+      },
+      {
+        q: 'Сколько времени доступен купленный материал?',
+        a: 'Купленный материал хранится в разделе «Загрузки» вашего кабинета бессрочно — скачать его повторно можно в любой момент.',
+      },
+      {
+        q: 'Моего университета нет в списке, что делать?',
+        a: 'Каталог постоянно пополняется. Если вашего вуза ещё нет, разместите задание на бирже — фрилансеры выполнят его напрямую.',
+      },
+    ],
+  },
+  {
+    title: 'Фрилансерам',
+    items: [
+      {
+        q: 'Что нужно, чтобы стать фрилансером?',
+        a: 'Заполните заявку с личными данными, номером документа и специальностью. Заявку проверяет администратор в течение 1–3 рабочих дней.',
+      },
+      {
+        q: 'Какую комиссию берёт платформа?',
+        a: 'Комиссия составляет 10% и удерживается из суммы договора. Точная сумма к выплате показана в разделе «Доход» вашего кабинета.',
+      },
+      {
+        q: 'Когда поступит оплата?',
+        a: 'После оплаты студентом сумма хранится на платформе. Как только работа сдана и принята студентом, деньги переводятся на ваш баланс.',
+      },
+    ],
+  },
+];
 
-export const ALL_FAQ_ITEMS = FAQ_GROUPS.flatMap((group) => group.items);
+/**
+ * Til bo'yicha savol-javob.
+ *
+ * Matn TARJIMA LUG'ATIDA emas, shu yerda: bu uzun mazmun va uni
+ * interfeys yorliqlari bilan bir joyda saqlash lug'atni o'qib
+ * bo'lmaydigan qilib qo'yardi. Tuzilma esa bir xil.
+ */
+const FAQ_BY_LOCALE: Record<Locale, FaqGroup[]> = {
+  uz: FAQ_GROUPS_UZ,
+  ru: FAQ_GROUPS_RU,
+};
+
+export function faqGroups(locale: Locale): FaqGroup[] {
+  return FAQ_BY_LOCALE[locale] ?? FAQ_GROUPS_UZ;
+}
+
+/** Bosh sahifada qisqartirilgan ro'yxat — birinchi guruh. */
+export function landingFaq(locale: Locale): FaqItem[] {
+  return faqGroups(locale)[0]!.items;
+}
+
+export function allFaqItems(locale: Locale): FaqItem[] {
+  return faqGroups(locale).flatMap((group) => group.items);
+}
 
 /** Google "Rich Results" (savol-javob akkordeoni qidiruv natijasida) uchun. */
 export function faqJsonLd(items: FaqItem[]) {

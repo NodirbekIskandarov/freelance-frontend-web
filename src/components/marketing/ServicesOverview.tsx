@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ArrowRight,
   BookOpen,
@@ -10,12 +12,14 @@ import { Link } from '@/i18n/Link';
 import type { ComponentType } from 'react';
 
 import { Container } from '@/components/ui/Container';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 const services = [
   {
-    title: 'Tayyor topshiriqlar',
-    desc: "Fanlar bo'yicha tayyor topshiriqlar bazasi",
+    title: (m: Messages) => m.home.service1,
+    desc: (m: Messages) => m.home.service1Desc,
     icon: ClipboardList,
     count: '50K+',
     href: '/materials',
@@ -28,8 +32,8 @@ const services = [
     },
   },
   {
-    title: 'Konspekt',
-    desc: 'Konspekt yozdirish xizmati',
+    title: (m: Messages) => m.home.service2,
+    desc: (m: Messages) => m.home.service2Desc,
     icon: BookOpen,
     count: '5K+',
     href: '/#xizmatlar',
@@ -42,8 +46,8 @@ const services = [
     },
   },
   {
-    title: 'Chizmachilik',
-    desc: 'Chizma ishlari (AutoCAD va h.k.)',
+    title: (m: Messages) => m.home.service3,
+    desc: (m: Messages) => m.home.service3Desc,
     icon: PenTool,
     count: '3K+',
     href: '/#xizmatlar',
@@ -56,8 +60,8 @@ const services = [
     },
   },
   {
-    title: 'Spravka',
-    desc: 'Talaba va shifokorlar uchun spravkalar',
+    title: (m: Messages) => m.home.service4,
+    desc: (m: Messages) => m.home.service4Desc,
     icon: FileText,
     count: '2K+',
     href: '/#xizmatlar',
@@ -70,8 +74,8 @@ const services = [
     },
   },
   {
-    title: 'Diplom ishlari',
-    desc: 'Diplom va malakaviy ishlar bajarish',
+    title: (m: Messages) => m.home.service5,
+    desc: (m: Messages) => m.home.service5Desc,
     icon: GraduationCap,
     count: '1K+',
     href: '/#xizmatlar',
@@ -84,8 +88,8 @@ const services = [
     },
   },
 ] satisfies {
-  title: string;
-  desc: string;
+  title: (messages: Messages) => string;
+  desc: (messages: Messages) => string;
   icon: ComponentType<{ className?: string }>;
   count: string;
   href: string;
@@ -93,17 +97,19 @@ const services = [
 }[];
 
 export function ServicesOverview() {
+  const { m } = useT();
+
   return (
     <section id="xizmatlar" className="pt-14 pb-16 sm:pt-16 sm:pb-20">
       <Container>
         <h2 className="text-center text-2xl font-bold tracking-tight text-foreground sm:text-[1.75rem]">
-          Xizmatlarimiz
+          {m.home.servicesTitle}
         </h2>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-3 xl:gap-4">
-          {services.map((service) => (
+          {services.map((service, index) => (
             <div
-              key={service.title}
+              key={index}
               className={cn(
                 'group relative flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-br p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.1)] sm:p-5 dark:shadow-[0_8px_24px_rgba(0,0,0,0.45)]',
                 service.theme.card,
@@ -134,10 +140,10 @@ export function ServicesOverview() {
               </div>
 
               <h3 className="relative mt-4 text-[15px] leading-snug font-bold text-foreground">
-                {service.title}
+                {service.title(m)}
               </h3>
               <p className="relative mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                {service.desc}
+                {service.desc(m)}
               </p>
 
               <Link
@@ -147,7 +153,7 @@ export function ServicesOverview() {
                   service.theme.link,
                 )}
               >
-                Batafsil
+                {m.common.more}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>

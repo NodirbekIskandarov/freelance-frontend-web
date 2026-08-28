@@ -1,42 +1,48 @@
 import { FaqList } from '@/components/marketing/FAQ';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
-import { ALL_FAQ_ITEMS, FAQ_GROUPS, faqJsonLd } from '@/content/faq';
+import { allFaqItems, faqGroups, faqJsonLd } from '@/content/faq';
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
+import { getMessages } from '@/i18n/messages';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
 
-export const metadata = buildMetadata({
-  title: 'Savol-javob — tez-tez beriladigan savollar',
-  description:
-    "Yopamiz.uz haqida savollar: topshiriq joylash, to'lov, kafolat, freelancer bo'lish va komissiya. Barcha javoblar bir sahifada.",
-  path: '/faq',
-});
+export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const seo = (await getMessages(locale)).seo.faq;
 
-const crumbs = [
-  { name: 'Bosh sahifa', path: '/' },
-  { name: 'Savol-javob', path: '/faq' },
-];
+  return buildMetadata({ title: seo.title, description: seo.description, path: '/faq', locale });
+}
 
-export default function FaqPage() {
+export default async function FaqPage({ params }: PageProps<'/[locale]'>) {
+  const { locale: raw } = await params;
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const m = await getMessages(locale);
+
+  const crumbs = [
+    { name: m.materials.breadcrumbHome, path: '/' },
+    { name: m.home.faqPageTitle, path: '/faq' },
+  ];
+
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
-      <JsonLd data={faqJsonLd(ALL_FAQ_ITEMS)} />
+      <JsonLd data={faqJsonLd(allFaqItems(locale))} />
 
       <Container className="py-8 sm:py-12">
         <Breadcrumbs items={crumbs} />
 
         <header className="mt-6 max-w-2xl">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Savol-javob
+            {m.home.faqPageTitle}
           </h1>
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-            Eng ko&apos;p beriladigan savollarga javoblar. Kerakli javobni topmasangiz,
-            qo&apos;llab-quvvatlash jamoasiga murojaat qiling.
+            {m.home.faqPageLead}
           </p>
         </header>
 
         <div className="mt-10 max-w-3xl space-y-10">
-          {FAQ_GROUPS.map((group) => (
+          {faqGroups(locale).map((group) => (
             <section key={group.title}>
               <h2 className="text-lg font-bold tracking-tight text-foreground">{group.title}</h2>
               <div className="mt-3">

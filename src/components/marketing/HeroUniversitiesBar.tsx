@@ -1,6 +1,9 @@
+'use client';
+
 import { ChevronRight } from 'lucide-react';
 import { Link } from '@/i18n/Link';
 
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 const universities = [
@@ -15,6 +18,7 @@ const universities = [
 ] as const;
 
 export function HeroUniversitiesBar({ variant = 'default' }: { variant?: 'default' | 'hero' }) {
+  const { m } = useT();
   const isHero = variant === 'hero';
 
   return (
@@ -33,13 +37,13 @@ export function HeroUniversitiesBar({ variant = 'default' }: { variant?: 'defaul
             isHero ? 'text-white' : 'text-foreground',
           )}
         >
-          O&apos;zbekistondagi asosiy universitetlar
+          {m.home.topUniversities}
         </h2>
         <Link
           href="/materials"
           className="inline-flex items-center gap-0.5 text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300"
         >
-          Barchasini ko&apos;rish
+          {m.home.seeAll}
           <ChevronRight className="size-4" />
         </Link>
       </div>
