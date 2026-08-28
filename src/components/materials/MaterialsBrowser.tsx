@@ -15,6 +15,7 @@ import {
 } from './MaterialsFilters';
 import { UniversityRow, type SubjectWithCount } from './UniversityRow';
 import type { University } from '@/shared/types/catalogue';
+import { useT } from '@/i18n/useT';
 
 export interface CatalogueGroup {
   university: University;
@@ -86,6 +87,7 @@ function compareGroups(a: CatalogueGroup, b: CatalogueGroup, sort: MaterialsFilt
  * o'sib ketsa bu yerni server-side qidiruvga ko'chirish kerak bo'ladi.
  */
 export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
+  const { m } = useT();
   const [filters, setFilters] = useState<MaterialsFilterState>(DEFAULT_MATERIALS_FILTERS);
   const [page, setPage] = useState(1);
 
@@ -180,7 +182,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
   }
 
   const chips = useMemo(
-    () => [{ value: 'all', label: 'Barchasi' }, ...directionOptions],
+    () => [{ value: 'all', label: m.common.all }, ...directionOptions],
     [directionOptions],
   );
 

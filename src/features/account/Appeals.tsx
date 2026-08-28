@@ -9,14 +9,15 @@ import { TextAreaField, TextField } from '@/components/ui/Field';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
-  APPEAL_STATUS_LABELS,
-  APPEAL_TOPIC_LABELS,
+  appealStatusLabel,
+  appealTopicLabel,
   APPEAL_TOPICS,
   type AppealStatus,
   type AppealTopic,
 } from '@/shared/types/account';
 
 import { useCreateAppealMutation, useGetAppealsQuery } from './accountApi';
+import { useT } from '@/i18n/useT';
 
 const statusTones: Record<AppealStatus, string> = {
   open: 'bg-sky-500/12 text-sky-700 dark:text-sky-400',
@@ -30,6 +31,7 @@ function formatDate(value: string): string {
 }
 
 export function Appeals() {
+  const { m } = useT();
   const { data, isLoading, error } = useGetAppealsQuery({ page_size: 30 });
   const [createAppeal, { isLoading: isSending, error: createError }] = useCreateAppealMutation();
 
@@ -56,12 +58,14 @@ export function Appeals() {
       <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
         <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
           <MessageSquarePlus className="size-4 text-emerald-600 dark:text-emerald-400" />
-          Yangi murojaat
+          {m.appeals.newAppeal}
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-foreground">Mavzu turi</span>
+            <span className="mb-2 block text-sm font-medium text-foreground">
+              {m.appeals.topicKind}
+            </span>
             <select
               value={topic}
               onChange={(event) => setTopic(event.target.value as AppealTopic)}
@@ -69,27 +73,27 @@ export function Appeals() {
             >
               {APPEAL_TOPICS.map((item) => (
                 <option key={item} value={item}>
-                  {APPEAL_TOPIC_LABELS[item]}
+                  {appealTopicLabel(item, m)}
                 </option>
               ))}
             </select>
           </label>
 
           <TextField
-            label="Sarlavha"
+            label={m.appeals.subject}
             required
             maxLength={120}
-            placeholder="Masalan: To'lov tasdiqlanmadi"
+            placeholder={m.appeals.subjectPlaceholder}
             value={subject}
             onChange={(event) => setSubject(event.target.value)}
           />
 
           <TextAreaField
-            label="Xabar"
+            label={m.appeals.message}
             required
             rows={4}
             maxLength={2000}
-            placeholder="Muammoni batafsil yozing — buyurtma raqami bo'lsa uni ham qo'shing."
+            placeholder={m.appeals.messagePlaceholder}
             value={message}
             onChange={(event) => setMessage(event.target.value)}
           />
@@ -105,13 +109,13 @@ export function Appeals() {
             variant="emerald"
             disabled={isSending || !subject.trim() || !message.trim()}
           >
-            {isSending ? 'Yuborilmoqda...' : 'Yuborish'}
+            {isSending ? m.appeals.sending : m.appeals.send}
           </Button>
         </form>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-bold text-foreground">Murojaatlarim</h2>
+        <h2 className="text-lg font-bold text-foreground">{m.appeals.mine}</h2>
 
         {error ? (
           <div className="mt-4">
@@ -125,7 +129,7 @@ export function Appeals() {
           </div>
         ) : data.results.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Hali murojaat yo&apos;q.
+            {m.appeals.empty}
           </p>
         ) : (
           <div className="mt-4 grid gap-3">
@@ -138,7 +142,7 @@ export function Appeals() {
                   <div className="min-w-0">
                     <h3 className="text-sm font-bold text-foreground">{appeal.subject}</h3>
                     <p className="mt-0.5 text-xs text-muted-foreground">
-                      {APPEAL_TOPIC_LABELS[appeal.topic] ?? appeal.topic}
+                      {appealTopicLabel(appeal.topic, m) ?? appeal.topic}
                     </p>
                     <p className="mt-0.5 font-mono text-xs text-muted-foreground/80">
                       {appeal.reference} &middot; {formatDate(appeal.created_at)}
@@ -150,7 +154,7 @@ export function Appeals() {
                       statusTones[appeal.status],
                     )}
                   >
-                    {APPEAL_STATUS_LABELS[appeal.status]}
+                    {appealStatusLabel(appeal.status, m)}
                   </span>
                 </div>
 

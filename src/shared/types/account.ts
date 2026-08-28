@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 /**
  * Foydalanuvchi kabineti — haqiqiy backend (`/api/v1/me/...`).
  *
@@ -188,23 +190,32 @@ export const APPEAL_TOPICS = [
 ] as const;
 export type AppealTopic = (typeof APPEAL_TOPICS)[number];
 
-export const APPEAL_TOPIC_LABELS: Record<AppealTopic, string> = {
-  payment: "To'lov",
-  solution: 'Yechim',
-  account: 'Hisob',
-  freelance: 'Freelance',
-  suggestion: 'Taklif',
-  other: 'Boshqa',
-};
+/** Yorliqlar lug'atdan — bu fayl matn saqlagani uchun rus tilida o'zbekcha chiqarardi. */
+export function appealTopicLabel(topic: AppealTopic, messages: Messages): string {
+  const labels: Record<AppealTopic, string> = {
+    payment: messages.appeals.topicPayment,
+    solution: messages.appeals.topicSolution,
+    account: messages.appeals.topicAccount,
+    freelance: messages.appeals.topicFreelance,
+    suggestion: messages.appeals.topicSuggestion,
+    other: messages.appeals.topicOther,
+  };
+
+  return labels[topic];
+}
 
 export const APPEAL_STATUSES = ['open', 'in_review', 'resolved'] as const;
 export type AppealStatus = (typeof APPEAL_STATUSES)[number];
 
-export const APPEAL_STATUS_LABELS: Record<AppealStatus, string> = {
-  open: 'Yangi',
-  in_review: "Ko'rib chiqilmoqda",
-  resolved: 'Hal qilindi',
-};
+export function appealStatusLabel(status: AppealStatus, messages: Messages): string {
+  const labels: Record<AppealStatus, string> = {
+    open: messages.appeals.statusOpen,
+    in_review: messages.appeals.statusInReview,
+    resolved: messages.appeals.statusResolved,
+  };
+
+  return labels[status];
+}
 
 export interface Appeal {
   id: string;

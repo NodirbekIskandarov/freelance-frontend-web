@@ -475,6 +475,51 @@ export const uz = {
     requestCount: "{count} ta so'rov",
   },
 
+  appeals: {
+    newAppeal: 'Yangi murojaat',
+    topicKind: 'Mavzu turi',
+    subject: 'Sarlavha',
+    subjectPlaceholder: "Masalan: To'lov tasdiqlanmadi",
+    message: 'Xabar',
+    messagePlaceholder: "Muammoni batafsil yozing — buyurtma raqami bo'lsa uni ham qo'shing.",
+    sending: 'Yuborilmoqda...',
+    send: 'Yuborish',
+    mine: 'Murojaatlarim',
+    empty: "Hali murojaat yo'q.",
+    topicPayment: "To'lov",
+    topicSolution: 'Yechim',
+    topicAccount: 'Hisob',
+    topicFreelance: 'Freelance',
+    topicSuggestion: 'Taklif',
+    topicOther: 'Boshqa',
+    statusOpen: 'Yangi',
+    statusInReview: "Ko'rib chiqilmoqda",
+    statusResolved: 'Hal qilindi',
+  },
+
+  saved: {
+    solutions: 'Yechimlar',
+    freelancers: 'Freelancerlar',
+    emptySolutions: "Katalogda yoqqan yechimni saqlab qo'ying — u shu yerda to'planadi.",
+    emptyFreelancers: "Yoqqan mutaxassisni saqlab qo'ying — keyin tez topasiz.",
+    remove: '{name} — saqlanganlardan olib tashlash',
+    completedJobs: '{count} ta ish',
+  },
+
+  filters: {
+    title: 'Qidiruv filtrlari',
+    lead: "Institut, fan va kurs bo'yicha natijalarni aniqroq qiling.",
+    pickInstitute: 'Institutni tanlang',
+    subjectSearch: 'Fan nomini qidiring...',
+    sortName: 'Nomi bo‘yicha',
+    sortMaterial: "Materiali ko'p",
+    sortSolutions: "Yechimi ko'p",
+    sortAssignments: "Topshirig'i ko'p",
+    sortSubjects: "Fani ko'p",
+    noResults:
+      "Filtrni o'zgartirib ko'ring yoki kerakli fan bo'lmasa institut sahifasidan ariza qoldiring.",
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',

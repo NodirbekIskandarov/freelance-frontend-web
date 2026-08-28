@@ -14,6 +14,7 @@ import {
   useUnsaveSolutionMutation,
 } from './accountApi';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 /**
  * Saqlanganlar ikki alohida ro'yxat — backendda ham shunday.
@@ -69,13 +70,14 @@ function Empty({ text }: { text: string }) {
 
 function SavedSolutions() {
   const money = useMoney();
+  const { t, m } = useT();
   const { data, isLoading, error } = useGetSavedSolutionsQuery({ page_size: 50 });
   const [unsave] = useUnsaveSolutionMutation();
 
   if (error) return <ErrorNotice error={error} />;
   if (isLoading || !data) return <Skeletons />;
   if (data.results.length === 0) {
-    return <Empty text="Katalogda yoqqan yechimni saqlab qo'ying — u shu yerda to'planadi." />;
+    return <Empty text={m.saved.emptySolutions} />;
   }
 
   return (
@@ -110,7 +112,7 @@ function SavedSolutions() {
           <button
             type="button"
             onClick={() => void unsave(item.solution)}
-            aria-label={`${item.solution_title} — saqlanganlardan olib tashlash`}
+            aria-label={t((x) => x.saved.remove, { name: item.solution_title })}
             className="grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
           >
             <BookmarkX className="size-4" />
@@ -122,13 +124,14 @@ function SavedSolutions() {
 }
 
 function SavedFreelancers() {
+  const { t, m } = useT();
   const { data, isLoading, error } = useGetSavedFreelancersQuery({ page_size: 50 });
   const [unsave] = useUnsaveFreelancerMutation();
 
   if (error) return <ErrorNotice error={error} />;
   if (isLoading || !data) return <Skeletons />;
   if (data.results.length === 0) {
-    return <Empty text="Yoqqan mutaxassisni saqlab qo'ying — keyin tez topasiz." />;
+    return <Empty text={m.saved.emptyFreelancers} />;
   }
 
   return (
@@ -149,14 +152,15 @@ function SavedFreelancers() {
               </Link>
             </h3>
             <p className="mt-0.5 truncate text-xs text-muted-foreground">
-              {item.freelancer.city || '—'} &middot; {item.freelancer.completed_jobs} ta ish
+              {item.freelancer.city || m.common.none} &middot;{' '}
+              {t((x) => x.saved.completedJobs, { count: item.freelancer.completed_jobs })}
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => void unsave(item.freelancer.id)}
-            aria-label={`${item.freelancer.full_name} — saqlanganlardan olib tashlash`}
+            aria-label={t((x) => x.saved.remove, { name: item.freelancer.full_name })}
             className="grid size-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
           >
             <BookmarkX className="size-4" />
@@ -168,16 +172,17 @@ function SavedFreelancers() {
 }
 
 export function SavedItems() {
+  const { m } = useT();
   const [tab, setTab] = useState<Tab>('solutions');
 
   return (
     <>
       <div className="mb-4 flex gap-2">
         <TabButton active={tab === 'solutions'} onClick={() => setTab('solutions')}>
-          Yechimlar
+          {m.saved.solutions}
         </TabButton>
         <TabButton active={tab === 'freelancers'} onClick={() => setTab('freelancers')}>
-          Freelancerlar
+          {m.saved.freelancers}
         </TabButton>
       </div>
 

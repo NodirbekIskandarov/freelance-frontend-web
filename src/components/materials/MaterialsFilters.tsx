@@ -4,6 +4,8 @@ import { Building2, RotateCcw, Search } from 'lucide-react';
 
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/cn';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 
 /**
  * Institutlar qanday tartibda chiqadi.
@@ -13,11 +15,11 @@ import { cn } from '@/lib/cn';
  * nima aytmaydi; u qidirayotgan narsa — qayerda material bor.
  */
 export const SORT_OPTIONS = [
-  { value: 'material', label: "Materiali ko'p" },
-  { value: 'solutions', label: "Yechimi ko'p" },
-  { value: 'assignments', label: "Topshirig'i ko'p" },
-  { value: 'subjects', label: "Fani ko'p" },
-  { value: 'name', label: 'Nomi bo‘yicha' },
+  { value: 'material', label: (m: Messages) => m.filters.sortMaterial },
+  { value: 'solutions', label: (m: Messages) => m.filters.sortSolutions },
+  { value: 'assignments', label: (m: Messages) => m.filters.sortAssignments },
+  { value: 'subjects', label: (m: Messages) => m.filters.sortSubjects },
+  { value: 'name', label: (m: Messages) => m.filters.sortName },
 ] as const;
 
 export type MaterialsSort = (typeof SORT_OPTIONS)[number]['value'];
@@ -62,6 +64,7 @@ export function MaterialsFilters({
   onChange: (patch: Partial<MaterialsFilterState>) => void;
   onReset: () => void;
 }) {
+  const { m } = useT();
   const isDirty =
     filters.universityId !== 'all' ||
     filters.search !== '' ||
@@ -78,11 +81,9 @@ export function MaterialsFilters({
           </span>
           <div className="min-w-0">
             <p className="text-xs font-semibold tracking-[0.14em] text-emerald-700 uppercase dark:text-emerald-400">
-              Qidiruv filtrlari
+              {m.filters.title}
             </p>
-            <p className="text-sm text-muted-foreground">
-              Institut, fan va kurs bo&apos;yicha natijalarni aniqroq qiling.
-            </p>
+            <p className="text-sm text-muted-foreground">{m.filters.lead}</p>
           </div>
         </div>
 
@@ -110,7 +111,7 @@ export function MaterialsFilters({
           triggerClassName={field}
           searchable
           searchPlaceholder="Institut nomi..."
-          options={[{ value: 'all', label: 'Institutni tanlang' }, ...universities]}
+          options={[{ value: 'all', label: m.filters.pickInstitute }, ...universities]}
         />
 
         <div className="relative">
@@ -121,7 +122,7 @@ export function MaterialsFilters({
           <input
             id="materials-search"
             type="search"
-            placeholder="Fan nomini qidiring..."
+            placeholder={m.filters.subjectSearch}
             value={filters.search}
             onChange={(event) => onChange({ search: event.target.value })}
             className={cn(field, 'pl-10')}
@@ -133,19 +134,19 @@ export function MaterialsFilters({
           value={filters.course}
           onChange={(course) => onChange({ course })}
           triggerClassName={field}
-          options={[{ value: 'all', label: 'Barcha kurslar' }, ...courses]}
+          options={[{ value: 'all', label: m.materials.allCourses }, ...courses]}
         />
 
         {/* Yo'nalish backendda ixtiyoriy — bo'sh bo'lsa tanlagich chizilmaydi. */}
         {directions.length > 0 && (
           <Select
-            aria-label="Yo'nalish"
+            aria-label={m.materials.direction}
             value={filters.direction}
             onChange={(direction) => onChange({ direction })}
             triggerClassName={field}
             searchable={directions.length > 8}
-            searchPlaceholder="Yo'nalish nomi..."
-            options={[{ value: 'all', label: "Barcha yo'nalishlar" }, ...directions]}
+            searchPlaceholder={m.materials.directionPlaceholder}
+            options={[{ value: 'all', label: m.materials.allDirections }, ...directions]}
           />
         )}
 
@@ -156,7 +157,7 @@ export function MaterialsFilters({
           value={filters.sort}
           onChange={(sort) => onChange({ sort: sort as MaterialsSort })}
           triggerClassName={field}
-          options={SORT_OPTIONS.map((option) => ({ ...option }))}
+          options={SORT_OPTIONS.map((option) => ({ value: option.value, label: option.label(m) }))}
         />
       </div>
     </section>
