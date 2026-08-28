@@ -75,7 +75,7 @@ export function FreelancerDirectory({
   freelancers: PublicFreelancer[];
   cities: CityOption[];
 }) {
-  const { m } = useT();
+  const { t, m } = useT();
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<FreelanceFilterState>(DEFAULT_FREELANCE_FILTERS);
   const [sortId, setSortId] = useState<FreelanceSortId>('rating');
@@ -132,8 +132,8 @@ export function FreelancerDirectory({
             setQuery(event.target.value);
             setVisibleCount(INITIAL_VISIBLE);
           }}
-          placeholder="Mutaxassis yoki kalit so'z..."
-          aria-label="Freelancer qidirish"
+          placeholder={m.exchange.searchPlaceholder}
+          aria-label={m.exchange.searchFreelancer}
           className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
         />
       </form>
@@ -210,7 +210,7 @@ export function FreelancerDirectory({
                   onChange={(event) => updateFilters({ city: event.target.value })}
                   className="min-w-0 flex-1 bg-transparent text-xs font-medium text-foreground outline-none"
                 >
-                  <option value="all">Barcha shaharlar</option>
+                  <option value="all">{m.exchange.allCities}</option>
                   {cities.map((option) => (
                     <option key={option.city} value={option.city}>
                       {option.city} ({option.count})
@@ -227,7 +227,7 @@ export function FreelancerDirectory({
                   onChange={(event) => updateFilters({ direction: event.target.value })}
                   className="min-w-0 flex-1 bg-transparent text-xs font-medium text-foreground outline-none"
                 >
-                  <option value="all">Barcha yo&apos;nalishlar</option>
+                  <option value="all">{m.freelance.allDirections}</option>
                   {WORK_DIRECTIONS.map((direction) => (
                     <option key={direction} value={direction}>
                       {workDirectionLabel(direction, m)}
@@ -244,7 +244,7 @@ export function FreelancerDirectory({
                   })
                 }
                 icon={<CircleCheck className="size-3.5" />}
-                label="Faqat bo'sh"
+                label={m.exchange.onlyAvailable}
               />
             </div>
           </div>
@@ -267,7 +267,7 @@ export function FreelancerDirectory({
               )}
               {filters.availability !== 'all' && (
                 <ActiveChip
-                  label="Faqat bo'sh"
+                  label={m.exchange.onlyAvailable}
                   onClear={() => updateFilters({ availability: 'all' })}
                 />
               )}
@@ -293,7 +293,7 @@ export function FreelancerDirectory({
                 onClick={() => setVisibleCount((count) => count + LOAD_STEP)}
                 className="rounded-full px-5"
               >
-                Yana {Math.min(LOAD_STEP, remaining)} ta ko&apos;rsatish
+                {t((x) => x.exchange.showMore, { count: Math.min(LOAD_STEP, remaining) })}
                 <ChevronDown className="size-4" />
               </Button>
             </div>
@@ -305,9 +305,7 @@ export function FreelancerDirectory({
             <SearchX className="size-6" />
           </span>
           <p className="mt-3 font-semibold text-foreground">Hech narsa topilmadi</p>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Filter yoki qidiruvni o&apos;zgartiring — mos freelancer topilmadi.
-          </p>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.exchange.noFreelancers}</p>
           <Button variant="outline" size="sm" onClick={clearAll} className="mt-4">
             Hammasini tozalash
           </Button>

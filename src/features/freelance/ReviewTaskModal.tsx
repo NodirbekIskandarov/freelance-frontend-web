@@ -11,6 +11,7 @@ import { getApiErrorMessage } from '@/shared/api/errors';
 import type { ExchangeTask } from '@/shared/types/exchange';
 
 import { useReviewTaskMutation } from './exchangeApi';
+import { useT } from '@/i18n/useT';
 
 const RATINGS = [1, 2, 3, 4, 5] as const;
 
@@ -21,6 +22,7 @@ export function ReviewTaskModal({
   task: ExchangeTask | null;
   onClose: () => void;
 }) {
+  const { m } = useT();
   const [reviewTask, { isLoading, error, reset }] = useReviewTaskMutation();
   const [rating, setRating] = useState(5);
   const [hovered, setHovered] = useState(0);
@@ -60,10 +62,10 @@ export function ReviewTaskModal({
       footer={
         <>
           <Button variant="outline" onClick={close}>
-            Bekor qilish
+            {m.common.cancel}
           </Button>
           <Button variant="emerald" disabled={isLoading} onClick={() => void submit()}>
-            {isLoading ? 'Yuborilmoqda...' : 'Yuborish'}
+            {isLoading ? m.exchange.sending : m.exchange.send}
           </Button>
         </>
       }
@@ -98,13 +100,13 @@ export function ReviewTaskModal({
         </div>
 
         <TextAreaField
-          label="Izoh"
+          label={m.exchange.reviewNote}
           rows={4}
           maxLength={1000}
           value={comment}
           onChange={(event) => setComment(event.target.value)}
           placeholder="Ish sifati, muddatga rioya, muloqot..."
-          hint="Ixtiyoriy — lekin boshqa mijozlarga juda foydali."
+          hint={m.exchange.reviewHint}
         />
 
         {error && (

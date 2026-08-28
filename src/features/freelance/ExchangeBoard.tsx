@@ -34,8 +34,11 @@ import {
 } from './exchangeApi';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
+import { interpolate } from '@/i18n/interpolate';
+import type { Messages } from '@/i18n/messages/uz';
 
 export function ExchangeBoard() {
+  const { m } = useT();
   const { data, isLoading, error } = useGetMyTasksQuery({
     page_size: 50,
     ordering: '-created_at',
@@ -67,9 +70,7 @@ export function ExchangeBoard() {
               <h1 className="text-sm font-semibold text-foreground sm:text-[15px]">
                 Topshiriqni birjaga joylang
               </h1>
-              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
-                Fayl, muddat va tavsif — freelancerlar taklif yuboradi.
-              </p>
+              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{m.exchange.lead}</p>
             </div>
           </div>
 
@@ -82,12 +83,12 @@ export function ExchangeBoard() {
             <StatPill
               icon={<Sparkles className="size-3.5" />}
               value={totalOffers}
-              label="Taklif"
+              label={m.exchange.offer}
               accent
             />
             <Button variant="emerald" onClick={() => setDialogOpen(true)}>
               <Plus className="size-4" />
-              Topshiriq yaratish
+              {m.exchange.createTask}
             </Button>
           </div>
         </div>
@@ -97,9 +98,7 @@ export function ExchangeBoard() {
         <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
           <div>
             <h2 className="text-sm font-semibold text-foreground">Mening topshiriqlarim</h2>
-            <p className="text-[11px] text-muted-foreground lg:hidden">
-              Topshiriqni bosing — batafsil ochiladi
-            </p>
+            <p className="text-[11px] text-muted-foreground lg:hidden">{m.exchange.clickTask}</p>
           </div>
           <span className="rounded-full border border-border bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
             {data?.count ?? 0} ta
@@ -137,9 +136,7 @@ export function ExchangeBoard() {
                 <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10 text-center">
                   <Search className="size-8 text-muted-foreground" />
                   <p className="mt-3 text-sm font-medium text-foreground">Topshiriqni tanlang</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Chapdagi ro&apos;yxatdan birini bosing.
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{m.exchange.pickFromList}</p>
                 </div>
               )}
             </div>
@@ -148,12 +145,10 @@ export function ExchangeBoard() {
           <div className="flex min-h-[280px] flex-col items-center justify-center px-5 py-12 text-center">
             <Inbox className="size-8 text-muted-foreground" />
             <p className="mt-3 text-sm font-medium text-foreground">Hali topshiriq yo&apos;q</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Birinchi topshiriqni joylang va takliflarni kuting.
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{m.exchange.firstTaskHint}</p>
             <Button variant="emerald" onClick={() => setDialogOpen(true)} className="mt-4">
               <Plus className="size-4" />
-              Topshiriq yaratish
+              {m.exchange.createTask}
             </Button>
           </div>
         )}
@@ -196,12 +191,24 @@ function StatPill({
  * yakunlangan topshiriq ham "Taklif kutilmoqda" deb turardi. Yozuv
  * topshiriq holatidan kelib chiqadi.
  */
-function footnoteFor(task: ExchangeTask, money: ReturnType<typeof useMoney>): string {
-  if (task.agreed_price !== null) return `Kelishilgan: ${money.decimalSom(task.agreed_price)}`;
-  if (task.status === 'open') {
-    return task.offer_count > 0 ? `${task.offer_count} ta taklif` : 'Taklif kutilmoqda';
+function footnoteFor(
+  task: ExchangeTask,
+  money: ReturnType<typeof useMoney>,
+  messages: Messages,
+): string {
+  if (task.agreed_price !== null) {
+    return interpolate(messages.exchange.agreedPrice, {
+      price: money.decimalSom(task.agreed_price),
+    });
   }
-  return task.budget !== null ? `Budjet: ${money.decimalSom(task.budget)}` : '';
+  if (task.status === 'open') {
+    return task.offer_count > 0
+      ? interpolate(messages.exchange.offerCount, { count: task.offer_count })
+      : messages.exchange.waitingOffers;
+  }
+  return task.budget !== null
+    ? interpolate(messages.exchange.budget, { price: money.decimalSom(task.budget) })
+    : '';
 }
 
 function TaskListItem({
@@ -241,14 +248,14 @@ function TaskListItem({
       </p>
 
       <p className="mt-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-        {footnoteFor(task, money)}
+        {footnoteFor(task, money, m)}
       </p>
     </button>
   );
 }
 
 function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void }) {
-  const { m } = useT();
+  const { t, m } = useT();
   const money = useMoney();
   // Tafsilot alohida so'raladi: ro'yxat javobida fayl va komissiya yo'q.
   const { data: detail } = useGetTaskQuery(task.id);
@@ -266,7 +273,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
       <header className="border-b border-border px-4 py-3.5">
         <Button variant="ghost" size="sm" onClick={onBack} className="mb-2 -ml-2 lg:hidden">
           <ArrowLeft className="size-4" />
-          Topshiriqlar
+          {m.exchange.tasks}
         </Button>
 
         <div className="flex items-start justify-between gap-3">
@@ -315,7 +322,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
                 disabled={complete.isLoading}
                 onClick={() => void completeTask(task.id)}
               >
-                {complete.isLoading ? 'Yakunlanmoqda...' : 'Qabul qilib yakunlash'}
+                {complete.isLoading ? m.exchange.completing : m.exchange.acceptAndComplete}
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={() => setCancelOpen(true)}>
@@ -344,7 +351,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
       {detail?.delivery_note && (
         <div className="border-b border-border bg-violet-500/5 px-4 py-3">
           <p className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-            Topshirish izohi
+            {m.exchange.deliveryNote}
           </p>
           <p className="mt-1 text-xs leading-relaxed text-foreground">{detail.delivery_note}</p>
           {detail.delivery_file && (
@@ -355,7 +362,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
               className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
             >
               <Download className="size-3.5" />
-              Tayyor ishni yuklab olish
+              {m.exchange.downloadDelivery}
             </a>
           )}
         </div>
@@ -372,7 +379,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
           ) : offers && offers.results.length > 0 ? (
             <>
               <p className="mb-2.5 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-                Takliflar ({offers.count})
+                {t((x) => x.exchange.offersWithCount, { count: offers.count })}
               </p>
               <ul className="space-y-3">
                 {offers.results.map((offer) => (
@@ -386,9 +393,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10 text-center">
               <Inbox className="size-8 text-muted-foreground" />
               <p className="mt-3 text-sm font-medium text-foreground">Hali taklif yo&apos;q</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Freelancerlar tez orada javob beradi.
-              </p>
+              <p className="mt-1 text-xs text-muted-foreground">{m.exchange.freelancersSoon}</p>
             </div>
           )}
         </div>
@@ -401,6 +406,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
 }
 
 function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) {
+  const { m } = useT();
   const money = useMoney();
   const [acceptOffer, { isLoading, error }] = useAcceptOfferMutation();
 
@@ -435,7 +441,7 @@ function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) 
             disabled={isLoading}
             onClick={() => void acceptOffer({ id: offer.id, taskId })}
           >
-            {isLoading ? 'Qabul qilinmoqda...' : 'Qabul qilish'}
+            {isLoading ? m.exchange.accepting : m.exchange.accept}
           </Button>
         ) : (
           <OfferStatusBadge status={offer.status} />
@@ -460,6 +466,7 @@ function CancelTaskModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const { m } = useT();
   const [cancelTask, { isLoading, error, reset }] = useCancelTaskMutation();
   const [reason, setReason] = useState('');
 
@@ -485,12 +492,12 @@ function CancelTaskModal({
     <Modal
       open={open}
       onClose={close}
-      title="Topshiriqni bekor qilish"
-      description="Kafolatga olingan summa hamyoningizga qaytariladi."
+      title={m.exchange.cancelTitle}
+      description={m.exchange.cancelDesc}
       footer={
         <>
           <Button variant="outline" onClick={close}>
-            Yopish
+            {m.common.close}
           </Button>
           <Button
             variant="outline"
@@ -498,7 +505,7 @@ function CancelTaskModal({
             disabled={isLoading}
             onClick={() => void submit()}
           >
-            {isLoading ? 'Bekor qilinmoqda...' : 'Bekor qilish'}
+            {isLoading ? m.exchange.cancelling : m.common.cancel}
           </Button>
         </>
       }
@@ -509,7 +516,7 @@ function CancelTaskModal({
         maxLength={500}
         value={reason}
         onChange={(event) => setReason(event.target.value)}
-        placeholder="Nima uchun bekor qilyapsiz?"
+        placeholder={m.exchange.cancelReasonPlaceholder}
       />
       {error && (
         <p role="alert" className="mt-3 text-sm text-destructive">

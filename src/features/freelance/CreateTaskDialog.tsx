@@ -71,8 +71,8 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
     <Modal
       open={open}
       onClose={close}
-      title="Topshiriq yaratish"
-      description="Fayl, muddat va tavsif — freelancerlar taklif yuboradi."
+      title={m.exchange.createTitle}
+      description={m.exchange.createDesc}
       className="w-[min(38rem,calc(100vw-2rem))]"
     >
       <form id="create-task-form" onSubmit={handleSubmit} className="space-y-4">
@@ -81,20 +81,20 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
           required
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          placeholder="Masalan: Kurs ishi — ma'lumotlar bazasi loyihasi"
+          placeholder={m.exchange.titlePlaceholder}
           maxLength={200}
         />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <SelectField
-            label="Yo'nalish"
+            label={m.freelancerCabinet.direction}
             required
             options={directionOptions}
             value={direction}
             onChange={(event) => setDirection(event.target.value as WorkDirection)}
           />
           <SelectField
-            label="Muddat"
+            label={m.exchange.deadline}
             required
             options={deadlineOptions}
             value={deadline}
@@ -103,14 +103,14 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
         </div>
 
         <TextField
-          label="Budjet (so'm)"
+          label={m.exchange.budgetLabel}
           type="number"
           min={0}
           step={1000}
           value={budget}
           onChange={(event) => setBudget(event.target.value)}
           placeholder="300000"
-          hint="Bo'sh qoldirsangiz, narx takliflar orqali kelishiladi."
+          hint={m.exchange.budgetHint}
         />
 
         <TextAreaField
@@ -119,7 +119,7 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
           maxLength={2000}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="Talablar, hajm, format va boshqa tafsilotlar..."
+          placeholder={m.exchange.descriptionPlaceholder}
           hint={`${description.length}/2000`}
         />
 
@@ -141,7 +141,7 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
 
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="outline" onClick={close}>
-          Bekor qilish
+          {m.common.cancel}
         </Button>
         <Button
           type="submit"
@@ -149,7 +149,7 @@ export function CreateTaskDialog({ open, onClose }: { open: boolean; onClose: ()
           variant="emerald"
           disabled={isLoading || !title.trim()}
         >
-          {isLoading ? 'Yuborilmoqda...' : 'Joylashtirish'}
+          {isLoading ? m.exchange.publishing : m.exchange.publish}
         </Button>
       </div>
     </Modal>
