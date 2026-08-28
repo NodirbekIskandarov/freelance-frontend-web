@@ -520,6 +520,34 @@ export const uz = {
       "Filtrni o'zgartirib ko'ring yoki kerakli fan bo'lmasa institut sahifasidan ariza qoldiring.",
   },
 
+  student: {
+    orders: 'Buyurtmalar',
+    paid: "To'langan",
+    library: 'Kutubxona',
+    spentTotal: 'Jami sarflangan',
+    uploadedSolutions: 'Yuklangan yechimlar',
+    sales: 'Sotuvlar',
+    earned: 'Ishlangan',
+    noOrders: "Hali buyurtma yo'q. Katalogdan yechim tanlang.",
+    firstOrderHint: 'Katalogdan yechim tanlang va birinchi buyurtmangizni bering.',
+    statusPending: 'Kutilmoqda',
+    statusPaid: "To'langan",
+    statusFailed: 'Amalga oshmadi',
+    statusRefunded: 'Qaytarilgan',
+  },
+
+  library: {
+    count: '{count} ta yechim',
+    sort: 'Saralash',
+    sortNewest: 'Avval yangilari',
+    sortOldest: 'Avval eskilari',
+    sortTitle: 'Nomi (A–Z)',
+    download: 'Yuklab olish',
+    downloadFailed: 'Yuklab olishda xato',
+    empty: 'Katalogdan yechim sotib oling — u shu yerda doimiy saqlanadi.',
+    purchasedAt: 'Sotib olingan: {date}',
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',

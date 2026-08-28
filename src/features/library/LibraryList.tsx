@@ -9,6 +9,7 @@ import { LIBRARY_ORDERING_OPTIONS, type LibraryItem } from '@/shared/types/libra
 
 import { useGetLibraryQuery, useLazyGetLibraryItemQuery } from './libraryApi';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 function formatDate(value: string): string {
   const date = new Date(value);
@@ -21,6 +22,7 @@ function formatDate(value: string): string {
  * olinadi, keyin havola ochiladi.
  */
 function DownloadButton({ item }: { item: LibraryItem }) {
+  const { m } = useT();
   const [fetchItem, { isFetching }] = useLazyGetLibraryItemQuery();
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +37,7 @@ function DownloadButton({ item }: { item: LibraryItem }) {
       }
       window.open(detail.solution.file, '_blank', 'noopener');
     } catch {
-      setError('Yuklab olishda xato');
+      setError(m.library.downloadFailed);
     }
   }
 
@@ -52,7 +54,7 @@ function DownloadButton({ item }: { item: LibraryItem }) {
         ) : (
           <Download className="size-3.5" />
         )}
-        Yuklab olish
+        {m.library.download}
       </Button>
       {error && <span className="text-[11px] text-destructive">{error}</span>}
     </span>
@@ -61,6 +63,7 @@ function DownloadButton({ item }: { item: LibraryItem }) {
 
 export function LibraryList() {
   const money = useMoney();
+  const { t, m } = useT();
   const [ordering, setOrdering] = useState<string>('-purchased_at');
   const { data, isLoading, error } = useGetLibraryQuery({ ordering, page_size: 50 });
 
@@ -80,9 +83,7 @@ export function LibraryList() {
     return (
       <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
         <p className="text-sm font-medium text-foreground">Kutubxona bo&apos;sh</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Katalogdan yechim sotib oling — u shu yerda doimiy saqlanadi.
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{m.library.empty}</p>
       </div>
     );
   }
@@ -90,10 +91,12 @@ export function LibraryList() {
   return (
     <>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{data.count} ta yechim</p>
+        <p className="text-sm text-muted-foreground">
+          {t((x) => x.library.count, { count: data.count })}
+        </p>
 
         <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5">
-          <span className="sr-only">Saralash</span>
+          <span className="sr-only">{m.library.sort}</span>
           <select
             value={ordering}
             onChange={(event) => setOrdering(event.target.value)}
@@ -101,7 +104,7 @@ export function LibraryList() {
           >
             {LIBRARY_ORDERING_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {option.label(m)}
               </option>
             ))}
           </select>
@@ -118,7 +121,9 @@ export function LibraryList() {
               <h2 className="text-sm font-bold text-foreground">{item.title}</h2>
               <p className="mt-1 text-xs text-muted-foreground">{item.variant_label}</p>
               <p className="mt-1 flex items-center gap-3 text-xs text-muted-foreground/80">
-                <span>Sotib olingan: {formatDate(item.purchased_at)}</span>
+                <span>
+                  {t((x) => x.library.purchasedAt, { date: formatDate(item.purchased_at) })}
+                </span>
                 {Number(item.average_rating) > 0 && (
                   <span className="inline-flex items-center gap-1">
                     <Star className="size-3 fill-amber-400 text-amber-400" />

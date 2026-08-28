@@ -10,12 +10,16 @@ import type { Messages } from '@/i18n/messages/uz';
 export const ORDER_STATUSES = ['pending', 'paid', 'failed', 'refunded'] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: 'Kutilmoqda',
-  paid: "To'langan",
-  failed: 'Amalga oshmadi',
-  refunded: 'Qaytarilgan',
-};
+export function orderStatusLabel(status: OrderStatus, messages: Messages): string {
+  const labels: Record<OrderStatus, string> = {
+    pending: messages.student.statusPending,
+    paid: messages.student.statusPaid,
+    failed: messages.student.statusFailed,
+    refunded: messages.student.statusRefunded,
+  };
+
+  return labels[status];
+}
 
 export interface MyOrder {
   id: string;

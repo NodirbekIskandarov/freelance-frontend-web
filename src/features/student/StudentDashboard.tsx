@@ -5,10 +5,11 @@ import { Link } from '@/i18n/Link';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
-import { ORDER_STATUS_LABELS } from '@/shared/types/account';
+import { orderStatusLabel } from '@/shared/types/account';
 
 import { useGetMyDashboardQuery } from '../account/accountApi';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 const statusTones: Record<string, string> = {
   paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
@@ -19,6 +20,7 @@ const statusTones: Record<string, string> = {
 
 export function StudentDashboard() {
   const money = useMoney();
+  const { m } = useT();
   const { data, isLoading, error } = useGetMyDashboardQuery();
 
   if (error) return <ErrorNotice error={error} />;
@@ -39,25 +41,25 @@ export function StudentDashboard() {
     <>
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Buyurtmalar"
+          label={m.student.orders}
           value={String(buying.orders)}
           icon={ShoppingBag}
           tone="bg-blue-500/12 text-blue-600 dark:text-blue-400"
         />
         <StatCard
-          label="To'langan"
+          label={m.student.paid}
           value={String(buying.paid)}
           icon={CircleCheck}
           tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
         />
         <StatCard
-          label="Kutubxona"
+          label={m.student.library}
           value={String(buying.library_items)}
           icon={Download}
           tone="bg-violet-500/12 text-violet-600 dark:text-violet-400"
         />
         <StatCard
-          label="Jami sarflangan"
+          label={m.student.spentTotal}
           value={money.decimalSom(buying.spent_total)}
           icon={Wallet}
           tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
@@ -68,19 +70,19 @@ export function StudentDashboard() {
       {data.selling.total > 0 && (
         <section className="mt-4 grid gap-4 sm:grid-cols-3">
           <StatCard
-            label="Yuklangan yechimlar"
+            label={m.student.uploadedSolutions}
             value={String(data.selling.total)}
             icon={BookMarked}
             tone="bg-cyan-500/12 text-cyan-600 dark:text-cyan-400"
           />
           <StatCard
-            label="Sotuvlar"
+            label={m.student.sales}
             value={String(data.selling.sales)}
             icon={ShoppingBag}
             tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
           />
           <StatCard
-            label="Ishlangan"
+            label={m.student.earned}
             value={money.decimalSom(data.selling.earned_total)}
             icon={Wallet}
             tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
@@ -95,13 +97,13 @@ export function StudentDashboard() {
             href="/student/orders"
             className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
           >
-            Barchasi
+            {m.common.all}
           </Link>
         </div>
 
         {data.recent_orders.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            Hali buyurtma yo&apos;q. Katalogdan yechim tanlang.
+            {m.student.noOrders}
           </p>
         ) : (
           <div className="mt-4 grid gap-3">
@@ -121,7 +123,7 @@ export function StudentDashboard() {
                 <span
                   className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${statusTones[order.status] ?? 'bg-muted text-muted-foreground'}`}
                 >
-                  {ORDER_STATUS_LABELS[order.status]}
+                  {orderStatusLabel(order.status, m)}
                 </span>
 
                 <div className="text-sm font-semibold whitespace-nowrap text-foreground">

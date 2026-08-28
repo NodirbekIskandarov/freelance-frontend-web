@@ -4,10 +4,11 @@ import { useState } from 'react';
 
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { cn } from '@/lib/cn';
-import { ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from '@/shared/types/account';
+import { orderStatusLabel, ORDER_STATUSES, type OrderStatus } from '@/shared/types/account';
 
 import { useGetMyOrdersQuery } from '../account/accountApi';
 import { useMoney } from '@/lib/useMoney';
+import { useT } from '@/i18n/useT';
 
 const statusTones: Record<OrderStatus, string> = {
   paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
@@ -26,6 +27,7 @@ export function StudentOrders() {
   const money = useMoney();
   const [status, setStatus] = useState<OrderStatus | 'all'>('all');
 
+  const { m } = useT();
   const { data, isLoading, error } = useGetMyOrdersQuery({
     page_size: 50,
     ordering: '-created_at',
@@ -50,7 +52,7 @@ export function StudentOrders() {
                 : 'border border-border bg-background text-muted-foreground hover:text-foreground',
             )}
           >
-            {item === 'all' ? 'Barchasi' : ORDER_STATUS_LABELS[item]}
+            {item === 'all' ? m.common.all : orderStatusLabel(item, m)}
           </button>
         ))}
       </div>
@@ -64,9 +66,7 @@ export function StudentOrders() {
       ) : data.results.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
           <p className="text-sm font-medium text-foreground">Buyurtma topilmadi</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Katalogdan yechim tanlang va birinchi buyurtmangizni bering.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{m.student.firstOrderHint}</p>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -92,7 +92,7 @@ export function StudentOrders() {
                   statusTones[order.status],
                 )}
               >
-                {ORDER_STATUS_LABELS[order.status]}
+                {orderStatusLabel(order.status, m)}
               </span>
 
               <div className="text-sm font-semibold whitespace-nowrap text-foreground">

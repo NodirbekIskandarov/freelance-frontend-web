@@ -518,6 +518,34 @@ export const ru: Messages = {
     noResults: 'Измените фильтр, а если нужного предмета нет — оставьте заявку на странице вуза.',
   },
 
+  student: {
+    orders: 'Заказы',
+    paid: 'Оплачено',
+    library: 'Библиотека',
+    spentTotal: 'Всего потрачено',
+    uploadedSolutions: 'Загруженные решения',
+    sales: 'Продажи',
+    earned: 'Заработано',
+    noOrders: 'Заказов пока нет. Выберите решение в каталоге.',
+    firstOrderHint: 'Выберите решение в каталоге и сделайте первый заказ.',
+    statusPending: 'Ожидает',
+    statusPaid: 'Оплачен',
+    statusFailed: 'Не прошёл',
+    statusRefunded: 'Возвращён',
+  },
+
+  library: {
+    count: '{count} решений',
+    sort: 'Сортировка',
+    sortNewest: 'Сначала новые',
+    sortOldest: 'Сначала старые',
+    sortTitle: 'По названию (А–Я)',
+    download: 'Скачать',
+    downloadFailed: 'Ошибка при скачивании',
+    empty: 'Купите решение в каталоге — оно будет храниться здесь постоянно.',
+    purchasedAt: 'Куплено: {date}',
+  },
+
   materials: {
     slideNumber: 'Слайд {index}',
     subjectName: 'Название предмета',

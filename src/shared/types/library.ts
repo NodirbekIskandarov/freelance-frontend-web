@@ -1,3 +1,5 @@
+import type { Messages } from '@/i18n/messages/uz';
+
 import type { PublicUploader } from './catalogue';
 
 /**
@@ -57,7 +59,7 @@ export interface LibraryItemDetail {
 }
 
 export const LIBRARY_ORDERING_OPTIONS = [
-  { value: '-purchased_at', label: 'Avval yangilari' },
-  { value: 'purchased_at', label: 'Avval eskilari' },
-  { value: 'title', label: 'Nomi (A–Z)' },
+  { value: '-purchased_at', label: (m: Messages) => m.library.sortNewest },
+  { value: 'purchased_at', label: (m: Messages) => m.library.sortOldest },
+  { value: 'title', label: (m: Messages) => m.library.sortTitle },
 ] as const;
