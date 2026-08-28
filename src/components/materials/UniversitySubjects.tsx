@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Pagination } from '@/components/ui/Pagination';
 import { Select } from '@/components/ui/Select';
 import { SubjectRequestModal } from '@/features/requests/SubjectRequestModal';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import type { University } from '@/shared/types/catalogue';
 
@@ -33,6 +34,7 @@ export function UniversitySubjects({
   slug: string;
   subjects: SubjectWithCount[];
 }) {
+  const { t, m } = useT();
   const [search, setSearch] = useState('');
   const [course, setCourse] = useState('all');
   const [semester, setSemester] = useState('all');
@@ -125,12 +127,12 @@ export function UniversitySubjects({
           <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <label className="sr-only" htmlFor="subject-search">
-              Fan nomi
+              {m.materials.subjectName}
             </label>
             <input
               id="subject-search"
               type="search"
-              placeholder="Fan nomini qidiring..."
+              placeholder={m.materials.subjectSearch}
               value={search}
               onChange={(event) => applyFilter(() => setSearch(event.target.value))}
               className={cn(field, 'pl-10')}
@@ -139,13 +141,16 @@ export function UniversitySubjects({
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
             <Select
-              aria-label="Kurs"
+              aria-label={m.materials.courseLabel}
               value={course}
               onChange={(value) => applyFilter(() => setCourse(value))}
               triggerClassName="h-10"
               options={[
-                { value: 'all', label: 'Barcha kurslar' },
-                ...courseOptions.map((item) => ({ value: String(item), label: `${item}-kurs` })),
+                { value: 'all', label: m.materials.allCourses },
+                ...courseOptions.map((item) => ({
+                  value: String(item),
+                  label: t((x) => x.materials.course, { course: item }),
+                })),
               ]}
             />
 
@@ -154,15 +159,15 @@ export function UniversitySubjects({
                 o'zgartirmaydigan bo'sh ro'yxat qolardi. */}
             {semesterOptions.length > 0 ? (
               <Select
-                aria-label="Semestr"
+                aria-label={m.materials.semester}
                 value={semester}
                 onChange={(value) => applyFilter(() => setSemester(value))}
                 triggerClassName="h-10"
                 options={[
-                  { value: 'all', label: 'Barcha semestrlar' },
+                  { value: 'all', label: m.materials.allSemesters },
                   ...semesterOptions.map((item) => ({
                     value: String(item),
-                    label: `${item}-semestr`,
+                    label: t((x) => x.materials.semesterValue, { value: item }),
                   })),
                 ]}
               />
@@ -170,15 +175,15 @@ export function UniversitySubjects({
 
             {directionOptions.length > 0 ? (
               <Select
-                aria-label="Yo'nalish"
+                aria-label={m.materials.direction}
                 value={direction}
                 onChange={(value) => applyFilter(() => setDirection(value))}
                 triggerClassName="h-10"
                 /* Uzun ro'yxatda aylantirib topishdan ko'ra yozib topish tezroq. */
                 searchable={directionOptions.length > 8}
-                searchPlaceholder="Yo'nalish nomi..."
+                searchPlaceholder={m.materials.directionPlaceholder}
                 options={[
-                  { value: 'all', label: "Barcha yo'nalishlar" },
+                  { value: 'all', label: m.materials.allDirections },
                   ...directionOptions.map((item) => ({ value: item, label: item })),
                 ]}
               />
@@ -195,13 +200,13 @@ export function UniversitySubjects({
               className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:shrink-0"
             >
               <RotateCcw className="size-4" />
-              Tozalash
+              {m.materials.clear}
             </button>
           ) : null}
         </div>
 
         <p className="mt-4 border-t border-border/50 pt-3 text-xs leading-relaxed text-muted-foreground">
-          Ro&apos;yxatdan fan toping yoki yuqoridagi banner orqali ariza qoldiring.
+          {m.materials.findOrRequest}
         </p>
       </section>
 
@@ -209,11 +214,11 @@ export function UniversitySubjects({
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-16 text-center">
             <SearchX className="size-8 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium text-foreground">Fan topilmadi</p>
+            <p className="mt-3 text-sm font-medium text-foreground">
+              {m.materials.subjectNotFound}
+            </p>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              {subjects.length === 0
-                ? "Bu institutda hozircha fan yo'q — birinchi bo'lib ariza qoldiring."
-                : "Filtrni o'zgartirib ko'ring yoki ariza qoldiring."}
+              {subjects.length === 0 ? m.materials.noSubjectsYet : m.materials.changeFilter}
             </p>
           </div>
         ) : (
@@ -233,8 +238,11 @@ export function UniversitySubjects({
               <div className="mt-6 flex flex-col items-center gap-3">
                 <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
                 <p className="text-xs text-muted-foreground tabular-nums">
-                  {filtered.length} ta fandan {(currentPage - 1) * PAGE_SIZE + 1}–
-                  {Math.min(currentPage * PAGE_SIZE, filtered.length)} ko&apos;rsatilmoqda
+                  {t((x) => x.materials.showingRange, {
+                    total: filtered.length,
+                    from: (currentPage - 1) * PAGE_SIZE + 1,
+                    to: Math.min(currentPage * PAGE_SIZE, filtered.length),
+                  })}
                 </p>
               </div>
             ) : null}

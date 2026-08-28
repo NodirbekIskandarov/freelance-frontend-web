@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { createAppBaseQuery, createLocalStorageTokenStore } from '@/shared/api';
 
 import { env } from '@/lib/env';
+import { DEFAULT_LOCALE, localeFromPathname, localizeHref, stripLocale } from '@/i18n/config';
 
 export const tokenStore = createLocalStorageTokenStore('web.auth');
 
@@ -48,12 +49,16 @@ export const baseApi = createApi({
     onAuthFailure: () => {
       if (typeof window === 'undefined') return;
 
-      const onProtectedPage = PROTECTED_PREFIXES.some((prefix) =>
-        window.location.pathname.startsWith(prefix),
-      );
+      /* Manzilda til bo'lagi bor (`/uz/wallet`) — solishtirishdan
+         oldin uni olib tashlaymiz, aks holda hech bir naqsh to'g'ri
+         kelmasdi va himoyalangan sahifa ochiq deb hisoblanardi. */
+      const locale = localeFromPathname(window.location.pathname) ?? DEFAULT_LOCALE;
+      const path = stripLocale(window.location.pathname);
+
+      const onProtectedPage = PROTECTED_PREFIXES.some((prefix) => path.startsWith(prefix));
 
       if (onProtectedPage) {
-        window.location.href = '/login';
+        window.location.href = localizeHref('/login', locale);
       }
     },
   }),

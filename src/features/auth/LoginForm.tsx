@@ -2,7 +2,6 @@
 
 import { KeyRound, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/Link';
-import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { useT } from '@/i18n/useT';
@@ -24,9 +23,10 @@ import { cabinetPathFor } from './cabinetPath';
 import { GoogleLoginButton } from './GoogleLoginButton';
 import { isCompletePhone, toApiPhone } from './phone';
 import { PhoneField } from './PhoneField';
+import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 
 export function LoginForm() {
-  const router = useRouter();
+  const router = useLocaleRouter();
   const { m } = useT();
   const [login, { isLoading, error }] = useLoginMutation();
 

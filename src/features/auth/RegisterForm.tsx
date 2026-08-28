@@ -2,7 +2,6 @@
 
 import { ArrowLeft, Loader2, ShieldCheck, UserRound } from 'lucide-react';
 import { Link } from '@/i18n/Link';
-import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
 import { useUpdateProfileMutation } from '@/features/profile/profileApi';
@@ -33,6 +32,7 @@ import { PasswordRequirements } from './PasswordRequirements';
 import { validatePassword } from './passwordPolicy';
 import { isCompletePhone, toApiPhone } from './phone';
 import { PhoneField } from './PhoneField';
+import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 
 const CODE_LENGTH = 6;
 
@@ -53,7 +53,7 @@ function isExistingAccount(user: AppUser): boolean {
  * kirgan foydalanuvchi nomidan bajariladi.
  */
 export function RegisterForm() {
-  const router = useRouter();
+  const router = useLocaleRouter();
   const { t, m } = useT();
 
   const [sendCode, { isLoading: isSending }] = useSendPhoneCodeMutation();

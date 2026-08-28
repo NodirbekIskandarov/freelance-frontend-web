@@ -21,13 +21,17 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 import { Container } from '@/components/ui/Container';
+import { stripLocale } from '@/i18n/config';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { isFreelancer } from '@/shared/types/auth';
 import { selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
 
 interface CabinetNavItem {
-  label: string;
+  /** Yorliq TARJIMADAN: ro'yxat modul yuklanganda bir marta tuziladi. */
+  label: (messages: Messages) => string;
   href: string;
   icon: LucideIcon;
 }
@@ -43,33 +47,36 @@ interface CabinetNavItem {
  */
 /** Ikkala rolda ham bir xil bo'lgan, rolga bog'liq bo'lmagan bo'limlar. */
 const SHARED_NAV: CabinetNavItem[] = [
-  { label: 'Bildirishnomalar', href: '/notifications', icon: Bell },
-  { label: 'Arizalarim', href: '/requests', icon: FilePlus2 },
-  { label: 'Saqlanganlar', href: '/saved', icon: Bookmark },
-  { label: 'Hamyon', href: '/wallet', icon: Wallet },
-  { label: 'Murojaatlar', href: '/appeals', icon: LifeBuoy },
+  { label: (m) => m.cabinet.notifications, href: '/notifications', icon: Bell },
+  { label: (m) => m.cabinet.myRequests, href: '/requests', icon: FilePlus2 },
+  { label: (m) => m.cabinet.saved, href: '/saved', icon: Bookmark },
+  { label: (m) => m.cabinet.wallet, href: '/wallet', icon: Wallet },
+  { label: (m) => m.cabinet.appeals, href: '/appeals', icon: LifeBuoy },
 ];
 
-const NAV: Record<CabinetVariant, { title: string; items: CabinetNavItem[] }> = {
+const NAV: Record<
+  CabinetVariant,
+  { title: (messages: Messages) => string; items: CabinetNavItem[] }
+> = {
   student: {
-    title: 'Talaba kabineti',
+    title: (m) => m.cabinet.studentTitle,
     items: [
-      { label: 'Bosh sahifa', href: '/student/dashboard', icon: LayoutDashboard },
-      { label: 'Buyurtmalar', href: '/student/orders', icon: ShoppingBag },
-      { label: 'Yuklamalar', href: '/student/downloads', icon: Download },
-      { label: 'Profil', href: '/student/profile', icon: UserRound },
+      { label: (m) => m.cabinet.home, href: '/student/dashboard', icon: LayoutDashboard },
+      { label: (m) => m.cabinet.orders, href: '/student/orders', icon: ShoppingBag },
+      { label: (m) => m.cabinet.downloads, href: '/student/downloads', icon: Download },
+      { label: (m) => m.cabinet.profile, href: '/student/profile', icon: UserRound },
       ...SHARED_NAV,
     ],
   },
   freelancer: {
-    title: 'Freelancer kabineti',
+    title: (m) => m.cabinet.freelancerTitle,
     items: [
-      { label: 'Bosh sahifa', href: '/freelancer/dashboard', icon: LayoutDashboard },
-      { label: 'Ochiq topshiriqlar', href: '/freelancer/board', icon: ClipboardList },
-      { label: 'Takliflarim', href: '/freelancer/offers', icon: Send },
-      { label: 'Ishlarim', href: '/freelancer/orders', icon: Briefcase },
-      { label: 'Daromad', href: '/freelancer/earnings', icon: Coins },
-      { label: 'Profil', href: '/freelancer/profile', icon: UserRound },
+      { label: (m) => m.cabinet.home, href: '/freelancer/dashboard', icon: LayoutDashboard },
+      { label: (m) => m.cabinet.openTasks, href: '/freelancer/board', icon: ClipboardList },
+      { label: (m) => m.cabinet.myOffers, href: '/freelancer/offers', icon: Send },
+      { label: (m) => m.cabinet.myWork, href: '/freelancer/orders', icon: Briefcase },
+      { label: (m) => m.cabinet.earnings, href: '/freelancer/earnings', icon: Coins },
+      { label: (m) => m.cabinet.profile, href: '/freelancer/profile', icon: UserRound },
       ...SHARED_NAV,
     ],
   },
@@ -88,14 +95,21 @@ export type CabinetVariant = 'student' | 'freelancer';
  */
 export function CabinetShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { m } = useT();
   const user = useAppSelector(selectCurrentUser);
 
   const variant: CabinetVariant = user && isFreelancer(user) ? 'freelancer' : 'student';
   const { title, items } = NAV[variant];
+  const heading = title(m);
+
+  /* Manzilda til bo'lagi bor (`/uz/wallet`), menyudagi yo'l esa tilsiz —
+     solishtirishdan oldin bo'lakni olib tashlaymiz, aks holda hech bir
+     bo'lim faol bo'lib ko'rinmasdi. */
+  const path = stripLocale(pathname);
 
   return (
     <Container className="py-8 sm:py-10">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-foreground">{heading}</h1>
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:gap-8">
         {/*
@@ -103,10 +117,10 @@ export function CabinetShell({ children }: { children: ReactNode }) {
           va ichidagi `overflow-x-auto` hech narsani kesmaydi — tor
           ekranda butun sahifa yon tomonga suriladi.
         */}
-        <nav aria-label={title} className="min-w-0 lg:w-56 lg:shrink-0">
+        <nav aria-label={heading} className="min-w-0 lg:w-56 lg:shrink-0">
           <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible [&::-webkit-scrollbar]:hidden">
             {items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const isActive = path === item.href || path.startsWith(`${item.href}/`);
 
               return (
                 <li key={item.href}>
@@ -121,7 +135,7 @@ export function CabinetShell({ children }: { children: ReactNode }) {
                     )}
                   >
                     <item.icon className="size-4 shrink-0" />
-                    {item.label}
+                    {item.label(m)}
                   </Link>
                 </li>
               );

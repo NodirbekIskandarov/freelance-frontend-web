@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
 import { getApiErrorMessage } from '@/shared/api';
@@ -8,6 +7,7 @@ import { getApiErrorMessage } from '@/shared/api';
 import { GoogleCredentialButton } from './GoogleCredentialButton';
 import { useLoginWithGoogleMutation } from './authApi';
 import { cabinetPathFor } from './cabinetPath';
+import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 
 /**
  * Google bilan kirish.
@@ -17,7 +17,7 @@ import { cabinetPathFor } from './cabinetPath';
  * tugmadan foydalanadi va tokenni boshqa endpointga yuboradi.
  */
 export function GoogleLoginButton() {
-  const router = useRouter();
+  const router = useLocaleRouter();
   const [loginWithGoogle, { error }] = useLoginWithGoogleMutation();
 
   const handle = useCallback(

@@ -2,7 +2,6 @@
 
 import { LayoutDashboard, LogOut } from 'lucide-react';
 import { Link } from '@/i18n/Link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { clearSession, useLogoutMutation } from '@/features/auth/authApi';
@@ -12,6 +11,7 @@ import { displayName, type AppUser } from '@/shared/types/auth';
 import { baseApi, tokenStore } from '@/store/api';
 import { clearCurrentUser } from '@/store/slices/authSlice';
 import { useAppDispatch } from '@/store/hooks';
+import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 
 function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -24,7 +24,7 @@ function initialsOf(name: string): string {
 
 export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile?: boolean }) {
   const dispatch = useAppDispatch();
-  const router = useRouter();
+  const router = useLocaleRouter();
   const [open, setOpen] = useState(false);
   const [logout] = useLogoutMutation();
 

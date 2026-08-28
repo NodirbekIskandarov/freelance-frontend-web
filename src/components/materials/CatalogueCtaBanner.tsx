@@ -16,33 +16,37 @@ import Image from 'next/image';
 import { Link } from '@/i18n/Link';
 import type { ReactNode } from 'react';
 
+import { interpolate } from '@/i18n/interpolate';
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 interface Feature {
   icon: LucideIcon;
   iconClass: string;
-  title: string;
-  subtitle: string;
+  /* Matn TARJIMADAN: ro'yxatlar modul yuklanganda tuziladi. */
+  title: (messages: Messages) => string;
+  subtitle: (messages: Messages) => string;
 }
 
 const UNIVERSITY_FEATURES: Feature[] = [
   {
     icon: Building2,
     iconClass: 'text-emerald-400',
-    title: "O'z institutingizga kiring",
-    subtitle: "Tayyor materiallar bo'limidan",
+    title: (m) => m.cta.uniFeature1,
+    subtitle: (m) => m.cta.uniFeature1Sub,
   },
   {
     icon: ClipboardList,
     iconClass: 'text-violet-400',
-    title: 'Ariza qoldiring',
-    subtitle: 'Fan nomi va kurs',
+    title: (m) => m.cta.uniFeature2,
+    subtitle: (m) => m.cta.uniFeature2Sub,
   },
   {
     icon: Gift,
     iconClass: 'text-amber-400',
-    title: 'Bonus oling',
-    subtitle: 'Tasdiqlangan ariza uchun',
+    title: (m) => m.cta.uniFeature3,
+    subtitle: (m) => m.cta.uniFeature3Sub,
   },
 ];
 
@@ -50,20 +54,20 @@ const SUBJECT_FEATURES: Feature[] = [
   {
     icon: ShieldCheck,
     iconClass: 'text-emerald-400',
-    title: 'Biz yordam beramiz',
-    subtitle: 'Yechim topishga harakat qilamiz',
+    title: (m) => m.cta.subjFeature1,
+    subtitle: (m) => m.cta.subjFeature1Sub,
   },
   {
     icon: Clock,
     iconClass: 'text-violet-400',
-    title: "Tezkor ko'rib chiqiladi",
-    subtitle: "Moderatsiyadan o'tgach",
+    title: (m) => m.cta.subjFeature2,
+    subtitle: (m) => m.cta.subjFeature2Sub,
   },
   {
     icon: CircleCheck,
     iconClass: 'text-sky-400',
-    title: 'Bonus olish mumkin',
-    subtitle: 'Tasdiqlangan ish uchun',
+    title: (m) => m.cta.subjFeature3,
+    subtitle: (m) => m.cta.subjFeature3Sub,
   },
 ];
 
@@ -94,28 +98,24 @@ export function CatalogueCtaBanner({
   universityHref?: string;
   onAction: () => void;
 }) {
+  const { m } = useT();
   const isUniversity = mode === 'subject-request';
 
   const features = isUniversity ? UNIVERSITY_FEATURES : SUBJECT_FEATURES;
   const PrimaryIcon = isUniversity ? ClipboardList : Upload;
 
   const subtitle: ReactNode = isUniversity ? (
-    <>
-      <strong className="font-medium text-zinc-300">{universityShortName}</strong> institutida ariza
-      qoldiring — fan nomi va kursni kiriting. Keyin topshiriqlarni yuklang, biz sizga yordam
-      beramiz.
-    </>
+    interpolate(m.cta.subtitleSubject, { university: universityShortName })
   ) : (
     <>
-      Topshiriqlarni yuklang — biz sizga yordam beramiz. Tasdiqlangach ro&apos;yxatga
-      qo&apos;shiladi, bonus ham olishingiz mumkin.
+      {m.cta.subtitleAssignment}
       {universityHref && (
         <>
           {' '}
           <Link href={universityHref} className="font-medium text-emerald-400 hover:underline">
-            Fan ro&apos;yxatda yo&apos;q?
+            {m.cta.subjectMissingLink}
           </Link>{' '}
-          — institutingizda ariza qoldiring.
+          {m.cta.subjectMissingTail}
         </>
       )}
     </>
@@ -171,15 +171,15 @@ export function CatalogueCtaBanner({
         <div className="flex min-w-0 flex-1 flex-col justify-center py-1 lg:py-2 lg:pl-1">
           <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
             <HelpCircle className="size-3.5" />
-            {isUniversity
-              ? 'Kerakli fanni topa olmadingizmi?'
-              : 'Kerakli topshiriqni topa olmadingizmi?'}
+            {isUniversity ? m.cta.badgeSubject : m.cta.badgeAssignment}
           </span>
 
           <h2 className="mt-3 text-base leading-snug font-bold text-white sm:text-lg lg:text-xl">
-            Siz qidirayotgan{' '}
-            <span className="text-emerald-400">{isUniversity ? 'fanni' : 'topshiriqni'}</span> topa
-            olmadingizmi?
+            {m.cta.headingLead}{' '}
+            <span className="text-emerald-400">
+              {isUniversity ? m.cta.headingSubject : m.cta.headingAssignment}
+            </span>{' '}
+            {m.cta.headingTail}
           </h2>
 
           <p className="mt-2 max-w-xl text-xs leading-relaxed text-zinc-400 sm:text-sm">
@@ -187,15 +187,17 @@ export function CatalogueCtaBanner({
           </p>
 
           <ul className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-2">
-            {features.map((feature) => (
-              <li key={feature.title} className="flex gap-2.5 sm:flex-col sm:gap-2 lg:flex-row">
+            {features.map((feature, index) => (
+              <li key={index} className="flex gap-2.5 sm:flex-col sm:gap-2 lg:flex-row">
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5">
                   <feature.icon className={cn('size-4', feature.iconClass)} strokeWidth={2} />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xs leading-tight font-semibold text-white">{feature.title}</p>
+                  <p className="text-xs leading-tight font-semibold text-white">
+                    {feature.title(m)}
+                  </p>
                   <p className="mt-0.5 text-[11px] leading-snug text-zinc-500">
-                    {feature.subtitle}
+                    {feature.subtitle(m)}
                   </p>
                 </div>
               </li>
@@ -213,7 +215,7 @@ export function CatalogueCtaBanner({
               <PrimaryIcon className="size-4" strokeWidth={2.25} />
             </span>
             <span className="text-left text-sm font-semibold">
-              {isUniversity ? 'Ariza qoldirish' : 'Topshiriqni yuklash'}
+              {isUniversity ? m.cta.actionSubject : m.cta.actionAssignment}
             </span>
             <ChevronRight className="size-4 shrink-0 opacity-70 transition-transform group-hover:translate-x-0.5" />
           </button>

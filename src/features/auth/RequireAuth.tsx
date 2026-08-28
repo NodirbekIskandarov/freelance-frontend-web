@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 
 import { selectAuthHydrated, selectIsAuthenticated } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
+import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 
 /**
  * Kirishni talab qiladigan sahifalarni o'raydi.
@@ -18,7 +18,7 @@ import { useAppSelector } from '@/store/hooks';
  * ulgurmasidan kirgan foydalanuvchi ham login sahifasiga uchib ketardi.
  */
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const router = useRouter();
+  const router = useLocaleRouter();
   const hydrated = useAppSelector(selectAuthHydrated);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 

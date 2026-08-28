@@ -18,6 +18,8 @@ import Image from 'next/image';
 import { Link } from '@/i18n/Link';
 import { useEffect, useState } from 'react';
 
+import type { Messages } from '@/i18n/messages/uz';
+import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 
 type SlideId = 'upload' | 'earn';
@@ -26,17 +28,19 @@ const ROTATE_MS = 6000;
 
 interface Feature {
   icon: LucideIcon;
-  label: string;
-  description: string;
+  /* Matn TARJIMADAN: konfiguratsiya modul yuklanganda tuziladi va
+     o'sha paytda qaysi til tanlanganini bilib bo'lmaydi. */
+  label: (messages: Messages) => string;
+  description: (messages: Messages) => string;
 }
 
 interface SlideConfig {
-  badge: string;
+  badge: (messages: Messages) => string;
   badgeIcon: LucideIcon;
-  titleLead: string;
-  titleAccent: string;
-  subtitle: string;
-  cta: string;
+  titleLead: (messages: Messages) => string;
+  titleAccent: (messages: Messages) => string;
+  subtitle: (messages: Messages) => string;
+  cta: (messages: Messages) => string;
   ctaIcon: LucideIcon;
   ctaHref: string;
   image: string;
@@ -52,12 +56,12 @@ interface SlideConfig {
 
 const SLIDES: Record<SlideId, SlideConfig> = {
   upload: {
-    badge: 'Kerakli topshiriqni topa olmadingizmi?',
+    badge: (m) => m.promo.uploadBadge,
     badgeIcon: HelpCircle,
-    titleLead: 'Aniq izlayotgan topshiriqni',
-    titleAccent: 'topa olmadingizmi?',
-    subtitle: 'Uni bizga yuklang va biz unga yechim beramiz.',
-    cta: 'Topshiriqni yuklash',
+    titleLead: (m) => m.promo.uploadTitleLead,
+    titleAccent: (m) => m.promo.uploadTitleAccent,
+    subtitle: (m) => m.promo.uploadSubtitle,
+    cta: (m) => m.promo.uploadCta,
     ctaIcon: CloudUpload,
     ctaHref: '/requests',
     image: '/materials/promo/upload-character.png',
@@ -65,18 +69,18 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     features: [
       {
         icon: Shield,
-        label: 'Xavfsiz va ishonchli',
-        description: "Ma'lumotlaringiz maxfiy va himoyalangan.",
+        label: (m) => m.promo.uploadFeature1,
+        description: (m) => m.promo.uploadFeature1Desc,
       },
       {
         icon: Clock,
-        label: 'Tezkor yechim',
-        description: 'Mutaxassislarimiz tez orada yordam beradi.',
+        label: (m) => m.promo.uploadFeature2,
+        description: (m) => m.promo.uploadFeature2Desc,
       },
       {
         icon: CheckCircle2,
-        label: 'Sifatli natija',
-        description: "Topshirig'ingizga mukammal yechim topamiz.",
+        label: (m) => m.promo.uploadFeature3,
+        description: (m) => m.promo.uploadFeature3Desc,
       },
     ],
     shell:
@@ -88,12 +92,12 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     dotActive: 'bg-emerald-600',
   },
   earn: {
-    badge: 'Online daromad qilishni xohlaysizmi?',
+    badge: (m) => m.promo.earnBadge,
     badgeIcon: Star,
-    titleLead: 'Javobsiz topshiriqlarni bajaring va',
-    titleAccent: 'daromad qiling!',
-    subtitle: "Bilimingizni baham ko'ring va uni daromad manbaiga aylantiring.",
-    cta: 'Daromad qilishni boshlash',
+    titleLead: (m) => m.promo.earnTitleLead,
+    titleAccent: (m) => m.promo.earnTitleAccent,
+    subtitle: (m) => m.promo.earnSubtitle,
+    cta: (m) => m.promo.earnCta,
     ctaIcon: ArrowUpRight,
     ctaHref: '/freelance/apply',
     image: '/materials/promo/earn-character.png',
@@ -101,18 +105,18 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     features: [
       {
         icon: Users,
-        label: "Ko'proq bajaring",
-        description: 'Javobsiz topshiriqlarni toping va yeching.',
+        label: (m) => m.promo.earnFeature1,
+        description: (m) => m.promo.earnFeature1Desc,
       },
       {
         icon: DollarSign,
-        label: 'Daromad qiling',
-        description: 'Yechimlaringiz uchun adolatli daromad oling.',
+        label: (m) => m.promo.earnFeature2,
+        description: (m) => m.promo.earnFeature2Desc,
       },
       {
         icon: TrendingUp,
-        label: "O'sishda davom eting",
-        description: 'Reyting va tajribangizni oshirib boring.',
+        label: (m) => m.promo.earnFeature3,
+        description: (m) => m.promo.earnFeature3Desc,
       },
     ],
     shell:
@@ -145,6 +149,7 @@ function OrbitRings({ orbit, still }: { orbit: string; still: boolean }) {
 }
 
 function Slide({ id, still }: { id: SlideId; still: boolean }) {
+  const { m } = useT();
   const config = SLIDES[id];
   const BadgeIcon = config.badgeIcon;
   const CtaIcon = config.ctaIcon;
@@ -159,15 +164,15 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
           )}
         >
           <BadgeIcon className="size-3.5" />
-          {config.badge}
+          {config.badge(m)}
         </span>
 
         <h2 className="mt-4 text-2xl leading-tight font-bold tracking-tight text-foreground sm:text-3xl">
-          {config.titleLead} <span className={config.accent}>{config.titleAccent}</span>
+          {config.titleLead(m)} <span className={config.accent}>{config.titleAccent(m)}</span>
         </h2>
 
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {config.subtitle}
+          {config.subtitle(m)}
         </p>
 
         <Link
@@ -178,7 +183,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
           )}
         >
           <CtaIcon className="size-4" />
-          {config.cta}
+          {config.cta(m)}
         </Link>
       </div>
 
@@ -196,17 +201,17 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
       </div>
 
       <ul className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-        {config.features.map((feature) => (
-          <li key={feature.label} className="flex items-start gap-3">
+        {config.features.map((feature, index) => (
+          <li key={index} className="flex items-start gap-3">
             <span
               className={cn('grid size-10 shrink-0 place-items-center rounded-xl', config.badgeBg)}
             >
               <feature.icon className={cn('size-5', config.accent)} />
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">{feature.label}</p>
+              <p className="text-sm font-semibold text-foreground">{feature.label(m)}</p>
               <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                {feature.description}
+                {feature.description(m)}
               </p>
             </div>
           </li>
@@ -224,6 +229,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
  * o'z-o'zidan ketib qolmasin.
  */
 export function MaterialsPromo() {
+  const { t } = useT();
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -263,7 +269,7 @@ export function MaterialsPromo() {
           <button
             key={id}
             type="button"
-            aria-label={`${position + 1}-slayd`}
+            aria-label={t((x) => x.materials.slideNumber, { index: position + 1 })}
             aria-current={position === index}
             onClick={() => {
               setIndex(position);
