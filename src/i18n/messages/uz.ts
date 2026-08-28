@@ -899,7 +899,6 @@ export const uz = {
 
   nav: {
     home: 'Bosh sahifa',
-    notes: 'Konspekt',
     materials: 'Tayyor materiallar',
     freelancers: 'Freelancerlar',
     help: 'Yordam',

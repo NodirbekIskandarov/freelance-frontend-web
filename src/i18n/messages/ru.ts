@@ -898,7 +898,6 @@ export const ru: Messages = {
 
   nav: {
     home: 'Главная',
-    notes: 'Конспекты',
     materials: 'Готовые материалы',
     freelancers: 'Фрилансеры',
     help: 'Помощь',

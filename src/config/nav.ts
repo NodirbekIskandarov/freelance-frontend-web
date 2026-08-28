@@ -18,7 +18,6 @@ export interface PublicNavItem {
  */
 export const PUBLIC_NAV_ITEMS: PublicNavItem[] = [
   { label: (m) => m.nav.home, href: '/' },
-  { label: (m) => m.nav.notes, href: '/#xizmatlar', comingSoon: true },
   { label: (m) => m.nav.materials, href: '/materials' },
   { label: (m) => m.nav.freelancers, href: '/freelance' },
   { label: (m) => m.nav.help, href: '/faq' },
