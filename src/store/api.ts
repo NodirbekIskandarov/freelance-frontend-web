@@ -81,6 +81,7 @@ export const baseApi = createApi({
     'Notification',
     'MyRequest',
     'Comment',
+    'Dispute',
     'LoginMethod',
   ],
   endpoints: () => ({}),

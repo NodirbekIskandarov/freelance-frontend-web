@@ -15,6 +15,10 @@ import type { PublicUploader } from './catalogue';
 export interface LibraryItem {
   id: string;
   solution_id: string;
+  /** Shikoyat XARIDGA yoziladi — bir yechimni ikki marta olgan bo'lish mumkin. */
+  order_id: string;
+  /** Bo'sh — shikoyat yo'q. Bo'lsa tugma o'rniga holat ko'rsatiladi. */
+  dispute_status: string;
   title: string;
   variant_label: string;
   /** Sotib olingan paytdagi narx — hozirgi narx o'zgargan bo'lishi mumkin. */

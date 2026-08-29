@@ -31,6 +31,7 @@ import {
   useGetWalletTransactionsQuery,
   useGetWithdrawalsQuery,
 } from './accountApi';
+import { HeldEarnings } from '@/features/disputes/HeldEarnings';
 import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
 import { useDates } from '@/lib/useDates';
@@ -215,6 +216,13 @@ export function WalletView() {
           ))}
         </dl>
       </section>
+
+      {/* «Hold» — sotilgan, lekin hali balansga tushmagan pul. Balansning
+          ostida turadi: savol aynan shu ikki raqamni solishtirganda
+          tug'iladi. */}
+      <div className="mt-6">
+        <HeldEarnings />
+      </div>
 
       {withdrawals && withdrawals.results.length > 0 && (
         <section className="mt-8">

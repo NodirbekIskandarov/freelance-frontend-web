@@ -348,6 +348,107 @@ export const uz = {
     uploadsClosed: 'Bu variantga yechim qabul qilish yopilgan.',
   },
 
+  dispute: {
+    title: "Xarid bo'yicha shikoyat",
+    intro:
+      "Xariddan keyin {hours} soat ichida yuboriladi. Shikoyat kelgan zahoti muallifning pul ulushi «hold»da muzlatiladi — moderator qarori chiqmaguncha yechib olinmaydi.",
+    timeLeft: 'Qolgan vaqt',
+    windowClosed: 'Shikoyat muddati tugagan',
+    reasonSection: 'Sabab',
+    reasons: {
+      not_matching: {
+        title: 'Topshiriq shartiga mos emas',
+        hint: 'Boshqa variant, kam hajm, shart bajarilmagan',
+      },
+      broken_file: {
+        title: 'Fayl ochilmaydi / buzilgan',
+        hint: "Format noto'g'ri yoki fayl shikastlangan",
+      },
+      differs: {
+        title: 'Ko‘rsatilgandan farq qiladi',
+        hint: 'Preview va sotib olingan fayl boshqa',
+      },
+      stolen: {
+        title: 'Mening ishim o‘g‘irlangan',
+        hint: 'Muallif boshqa odamning ishini sotgan',
+      },
+      duplicate: {
+        title: 'Dublikat — bu allaqachon bor',
+        hint: 'Bazadagi boshqa yechim bilan bir xil',
+      },
+    },
+    reasonRequired: 'Sababni tanlang',
+    commentSection: 'Izoh',
+    commentPlaceholder:
+      "Nima to'g'ri kelmadi? Aniq yozing: qaysi bet, qaysi topshiriq sharti bajarilmagan…",
+    commentRequired: 'Izohni yozing — moderator faqat shunga qarab qaror qiladi',
+    evidenceSection: 'Dalil (ixtiyoriy)',
+    evidenceHint: 'PNG, JPG, PDF · {max} MB gacha · {count} tagacha fayl',
+    evidenceDrop: 'Skrinshot yoki faylni tashlang',
+    removeFile: 'Faylni olib tashlash',
+    warning:
+      "Asossiz shikoyat rad etiladi. Ketma-ket {count} ta asossiz shikoyat — {days} kun shikoyat huquqi cheklanadi.",
+    submit: 'Shikoyatni yuborish',
+    submitting: 'Yuborilmoqda…',
+    sentTitle: 'Shikoyat yuborildi',
+    sentText:
+      "Muallifga xabar bordi. Javob kelishi yoki muddat tugashi bilan moderator qaror qabul qiladi — natijani xabarnomada ko'rasiz.",
+    nextTitle: 'Keyin nima bo‘ladi',
+    steps: {
+      hold: {
+        title: 'Pul muzlatiladi',
+        text: "Muallif ulushi hold'da qoladi, yechim sotuvda vaqtincha to'xtatiladi.",
+      },
+      author: {
+        title: 'Muallifga {hours} soat',
+        text: 'Javob berish yoki tuzatilgan fayl yuborish imkoni beriladi.',
+      },
+      moderator: {
+        title: 'Moderator qarori',
+        text: "Ikki tomon dalilini ko'rib: pulni qaytarish, qismini qaytarish, almashtirish yoki rad etish.",
+      },
+      result: {
+        title: 'Natija',
+        text: 'Pul balansingizga qaytadi yoki tuzatilgan fayl kutubxonangizga tushadi. Xabar keladi.',
+      },
+    },
+    statsTitle: 'Statistika',
+    statRate: 'xaridlarda shikoyat ulushi',
+    statHours: 'o‘rtacha qaror vaqti',
+    statFavour: 'xaridor foydasiga hal bo‘ladi',
+    action: 'Shikoyat',
+    statuses: {
+      pending: 'Muallif javobi kutilmoqda',
+      answered: 'Muallif javob berdi',
+      resolved: 'Hal qilindi',
+      rejected: 'Rad etildi',
+    },
+    myTitle: 'Shikoyatlarim',
+    myEmpty: 'Shikoyat yuborilmagan.',
+    refunded: 'Qaytarilgan: {amount}',
+  },
+
+  hold: {
+    cardLabel: 'Hold',
+    cardHint: '{count} ta sotuv kutmoqda',
+    title: 'Hold — muzlatilgan pul',
+    intro:
+      "Har bir sotuvdan keyin {hours} soatlik shikoyat oynasi. Oyna yopilgach summa avtomatik balansga o'tadi.",
+    empty: "Muzlatilgan pul yo'q — barcha sotuvlaringiz balansga o'tgan.",
+    columnSale: 'Sotuv',
+    columnOpens: 'Qachon ochiladi',
+    columnStatus: 'Holat',
+    columnAmount: 'Summa',
+    waiting: 'Kutilmoqda',
+    stopped: 'to‘xtatilgan',
+    disputed: 'Shikoyat',
+    note:
+      "Shikoyat bo'lgan summa qaror chiqmaguncha muzlab turadi. Shikoyat xaridor foydasiga hal bo'lsa — hold'dan yechiladi, aks holda muddati bilan o'tadi.",
+    total: 'Jami hold',
+    opensIn: '{days} kun',
+    opensToday: 'bugun',
+  },
+
   purchase: {
     title: 'Yechimni sotib olish',
     paymentSection: "TO'LOV — ICHKI BALANS",

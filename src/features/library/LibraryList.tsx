@@ -1,16 +1,19 @@
 'use client';
 
-import { Download, Loader2, Star } from 'lucide-react';
+import { Download, Loader2, ShieldAlert, Star } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { LIBRARY_ORDERING_OPTIONS, type LibraryItem } from '@/shared/types/library';
+import { DISPUTE_WINDOW_HOURS, DisputeModal } from '@/features/disputes/DisputeModal';
+import { disputeStatusLabel, type DisputeStatus } from '@/shared/types/disputes';
 
 import { useGetLibraryQuery, useLazyGetLibraryItemQuery } from './libraryApi';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
 import { useDates } from '@/lib/useDates';
+import { useNow } from '@/lib/useNow';
 
 /**
  * Fayl havolasi ro'yxatda kelmaydi — u faqat tafsilot so'rovida
@@ -62,6 +65,8 @@ export function LibraryList() {
   const money = useMoney();
   const { t, m } = useT();
   const [ordering, setOrdering] = useState<string>('-purchased_at');
+  const [disputeTarget, setDisputeTarget] = useState<LibraryItem | null>(null);
+  const now = useNow();
   const { data, isLoading, error } = useGetLibraryQuery({ ordering, page_size: 50 });
 
   if (error) return <ErrorNotice error={error} />;
@@ -137,10 +142,51 @@ export function LibraryList() {
               <div className="text-[11px] text-muted-foreground">to&apos;langan</div>
             </div>
 
-            <DownloadButton item={item} />
+            <span className="flex flex-col items-end gap-1.5">
+              <DownloadButton item={item} />
+
+              {/* Shikoyat FAQAT oyna ochiq bo'lganda va hali yozilmaganda.
+                  Muddati o'tgan xaridda tugmani ko'rsatish — bosib, «muddat
+                  o'tdi» xatosini olish demak edi. */}
+              {item.dispute_status ? (
+                <span className="text-[11px] text-muted-foreground">
+                  {disputeStatusLabel(item.dispute_status as DisputeStatus, m)}
+                </span>
+              ) : (
+                windowOpen(item.purchased_at, now) && (
+                  <button
+                    type="button"
+                    onClick={() => setDisputeTarget(item)}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-destructive"
+                  >
+                    <ShieldAlert className="size-3" />
+                    {m.dispute.action}
+                  </button>
+                )
+              )}
+            </span>
           </article>
         ))}
       </div>
+
+      {disputeTarget && (
+        <DisputeModal
+          open
+          orderId={disputeTarget.order_id}
+          solutionTitle={disputeTarget.title}
+          variantLabel={disputeTarget.variant_label}
+          purchasedAt={disputeTarget.purchased_at}
+          price={disputeTarget.price_paid}
+          onClose={() => setDisputeTarget(null)}
+        />
+      )}
     </>
   );
+}
+
+/** Xariddan keyingi shikoyat oynasi hali ochiqmi. */
+function windowOpen(purchasedAt: string, now: number): boolean {
+  if (!purchasedAt) return false;
+  const closesAt = new Date(purchasedAt).getTime() + DISPUTE_WINDOW_HOURS * 3_600_000;
+  return closesAt > now;
 }
