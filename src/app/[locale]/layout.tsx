@@ -72,10 +72,10 @@ export const viewport: Viewport = {
  * darhol ishlaydi — eski ilovadagi bilan bir xil: soat bo'yicha avtomatik
  * (20:00–08:00 qorong'i) yoki foydalanuvchi tanlovi (localStorage).
  *
- * `__applyTheme` tashqariga chiqariladi: til almashganda React `<html>`
- * atributlarini server qiymatiga qaytaradi va `dark` klassi o'chib
- * ketadi, bu skript esa qayta ishga tushmaydi (`window` o'sha-o'sha).
- * Uni qayta chaqirish `ThemeSync` ning ishi.
+ * Bu skript FAQAT birinchi chizish uchun. Mantiqning o'zi
+ * `@/lib/theme` da va til almashganda ham, 404 da ham o'sha ishlaydi:
+ * skript modul yuklanguncha ishlashi kerak, ya'ni import qila olmaydi —
+ * shu sababli takrorlanadi.
  */
 const themeInitScript = `(function(){
   var KEY="theme-mode",root=document.documentElement;
@@ -88,9 +88,6 @@ const themeInitScript = `(function(){
   function current(){return localStorage.getItem(KEY)||"auto"}
   apply(current());
   setInterval(function(){if(current()==="auto")apply("auto")},60000);
-  window.__setThemeMode=function(next){localStorage.setItem(KEY,next);apply(next)};
-  window.__getThemeMode=current;
-  window.__applyTheme=function(){apply(current())};
 })();`;
 
 const organizationJsonLd = {
@@ -134,6 +131,13 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col font-sans">
+        {/*
+          Bu skript SSR javobida bajariladi va birinchi kadrdayoq temani
+          qo'yadi. React uni MIJOZDA chizganda esa ishlamaydi (404 shunday
+          chiziladi) — o'sha holat uchun `ThemeSync` moduldan chaqiradi.
+          `next/script` + `beforeInteractive` ham sinaldi: u ogohlantirishni
+          yo'qotmadi, faqat bog'liqlik qo'shdi.
+        */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <JsonLd data={organizationJsonLd} />
         <ThemeSync />

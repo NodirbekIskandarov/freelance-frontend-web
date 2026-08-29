@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { useEffect, useLayoutEffect } from 'react';
 
+import { applyTheme } from '@/lib/theme';
+
 /**
  * Til almashgandan keyin tema klassini qaytadan qo'yadi.
  *
@@ -14,7 +16,12 @@ import { useEffect, useLayoutEffect } from 'react';
  * rejim til almashtirilganda o'z-o'zidan yorug'ga o'tib ketardi.
  *
  * Skriptning o'zi qayta ishga tushmaydi (`window` saqlanadi, sahifa
- * to'liq yuklanmaydi), shuning uchun uni shu yerdan chaqiramiz.
+ * to'liq yuklanmaydi), shuning uchun klassni shu yerdan qaytadan
+ * qo'yamiz.
+ *
+ * Chaqiruv MODULDAN, `window.__applyTheme` dan emas: 404 da Next o'z
+ * xato qobig'ini yuboradi va inline skript umuman bajarilmaydi — o'sha
+ * global esa yo'q bo'lib, tema jimgina qo'llanmay qolardi.
  *
  * `useLayoutEffect`, `useEffect` emas: u DOM o'zgargandan keyin, lekin
  * brauzer CHIZISHIDAN oldin ishlaydi — shu sababli klass bir kadrga ham
@@ -28,7 +35,7 @@ export function ThemeSync() {
   const pathname = usePathname();
 
   useIsomorphicLayoutEffect(() => {
-    window.__applyTheme?.();
+    applyTheme();
   }, [pathname]);
 
   return null;
