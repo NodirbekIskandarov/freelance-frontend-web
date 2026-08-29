@@ -31,6 +31,7 @@ import {
   useGetWalletTransactionsQuery,
   useGetWithdrawalsQuery,
 } from './accountApi';
+import { DisputesAgainstMe } from '@/features/disputes/DisputesAgainstMe';
 import { HeldEarnings } from '@/features/disputes/HeldEarnings';
 import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
@@ -220,8 +221,11 @@ export function WalletView() {
       {/* «Hold» — sotilgan, lekin hali balansga tushmagan pul. Balansning
           ostida turadi: savol aynan shu ikki raqamni solishtirganda
           tug'iladi. */}
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
         <HeldEarnings />
+        {/* Nizo — pul nega ushlanib turganining sababi, shuning uchun u
+            aynan shu yerda: odam «balansim qani» deb kelgan joyda. */}
+        <DisputesAgainstMe />
       </div>
 
       {withdrawals && withdrawals.results.length > 0 && (
