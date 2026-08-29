@@ -196,12 +196,12 @@ function HeroCenterBadge() {
       animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
       transition={reduceMotion ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
     >
-      <div className="relative grid size-32 place-items-center rounded-[2rem] border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-emerald-500/10 to-transparent shadow-[0_0_60px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:size-40 lg:size-48">
+      <div className="relative grid size-32 place-items-center rounded-[1.375rem] border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-emerald-500/10 to-transparent shadow-[0_0_60px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:size-40 lg:size-48">
         <GraduationCap
           className="size-12 text-emerald-300 sm:size-16 lg:size-20"
           strokeWidth={1.4}
         />
-        <span className="absolute -right-2 -bottom-2 grid size-9 place-items-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 sm:size-11">
+        <span className="absolute -right-2 -bottom-2 grid size-9 place-items-center rounded-full bg-emerald-500 text-white sm:size-11">
           <CheckCheck className="size-5" />
         </span>
       </div>
@@ -241,7 +241,7 @@ function FloatingCard({
   return (
     <motion.div
       className={cn(
-        'absolute z-20 hidden w-[152px] rounded-2xl border border-white/10 bg-white/[0.06] p-3 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl md:block lg:w-[164px] lg:p-3.5',
+        'absolute z-20 hidden w-[152px] rounded-2xl border border-white/10 bg-white/[0.06] p-3 backdrop-blur-xl md:block lg:w-[164px] lg:p-3.5',
         className,
       )}
       initial={{ y: 16, scale: 0.96 }}

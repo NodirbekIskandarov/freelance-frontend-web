@@ -17,7 +17,7 @@ export function AuthCard({ children, className }: { children: ReactNode; classNa
   return (
     <div
       className={cn(
-        'relative w-full max-w-[540px] overflow-hidden rounded-[24px] border border-border/70 bg-card p-6 shadow-[0_24px_80px_rgba(0,0,0,0.12)] sm:p-8 dark:border-white/10 dark:bg-zinc-900/92 dark:shadow-[0_24px_80px_rgba(0,0,0,0.55)] dark:backdrop-blur-2xl',
+        'relative w-full max-w-[540px] overflow-hidden rounded-[16px] border border-border/70 bg-card p-6 sm:p-8 dark:border-white/10 dark:bg-zinc-900/92 dark:backdrop-blur-2xl',
         className,
       )}
     >
@@ -110,7 +110,7 @@ export function AuthPrimaryButton({
       type={type}
       disabled={loading || disabled}
       onClick={onClick}
-      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition-all hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-60"
+      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-sm font-semibold text-white transition-all hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-60"
     >
       {children}
     </button>

@@ -28,7 +28,7 @@ export function UniversityLogo({
   return (
     <div
       className={cn(
-        'grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-base font-bold text-white shadow-sm ring-4 ring-card',
+        'grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-base font-bold text-white ring-4 ring-card',
         gradientFor(university.id),
         className,
       )}
@@ -64,7 +64,7 @@ export function SubjectMiniCard({
       href={`/materials/${universitySlug}/${subject.slug}`}
       style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}
       className={cn(
-        'card-enter card-lift card-sheen group relative flex h-full min-h-[152px] min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card p-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.05)] hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] hover:shadow-[0_10px_24px_-12px_rgba(16,185,129,0.45)] sm:p-4 dark:border-zinc-700/80 dark:bg-zinc-900 dark:shadow-[0_2px_12px_rgba(0,0,0,0.35)]',
+        'card-enter card-lift card-sheen group hover: relative flex h-full min-h-[152px] min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card p-3.5 hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-4 dark:border-zinc-700/80 dark:bg-zinc-900',
         className,
       )}
     >
@@ -147,7 +147,7 @@ export function UniversityRow({
   ].filter((item) => item.value > 0);
 
   return (
-    <article className="group/row card-lift overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm hover:border-emerald-500/30 hover:shadow-[0_16px_40px_-24px_rgba(16,185,129,0.5)]">
+    <article className="group/row card-lift hover: overflow-hidden rounded-2xl border border-border/60 bg-card hover:border-emerald-500/30">
       <div className="flex flex-col lg:flex-row lg:items-stretch">
         <div className="relative overflow-hidden border-b border-border/60 bg-muted/20 p-5 sm:p-6 lg:w-[220px] lg:shrink-0 lg:border-r lg:border-b-0 xl:w-[232px]">
           {/* Logotip rangidan olingan yumshoq yorug'lik — qator ustiga

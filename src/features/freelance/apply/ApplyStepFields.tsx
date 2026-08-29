@@ -156,7 +156,7 @@ function DocumentStep({ draft, errors, update }: StepFieldsProps) {
             className={cn(
               'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
               draft.documentType === type
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-emerald-600 text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >

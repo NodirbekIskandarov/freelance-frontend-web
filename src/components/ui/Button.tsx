@@ -10,7 +10,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-foreground text-background hover:bg-foreground/85',
-        emerald: 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-400',
+        emerald: 'bg-emerald-500 text-white hover:bg-emerald-400',
         outline: 'border-border bg-background hover:bg-muted hover:text-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-muted hover:text-foreground',

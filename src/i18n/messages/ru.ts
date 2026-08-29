@@ -875,6 +875,19 @@ export const ru: Messages = {
     openInNewTab: 'Открыть в новой вкладке',
   },
 
+  notFound: {
+    badge: 'Страница не найдена',
+    title: 'Такой страницы нет',
+    text: 'Возможно, адрес указан неверно или страница была перемещена. Выберите один из вариантов ниже.',
+    home: 'Главная',
+    materials: 'Готовые материалы',
+    lookingFor: 'Что вы ищете:',
+    linkMaterials: 'Вузы и предметы',
+    linkFreelancers: 'Фрилансеры',
+    linkFaq: 'Вопросы и ответы',
+    linkAppeals: 'Обратиться за помощью',
+  },
+
   materials: {
     slideNumber: 'Слайд {index}',
     subjectName: 'Название предмета',

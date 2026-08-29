@@ -63,14 +63,14 @@ function TestimonialCard({
         aria-hidden
       />
 
-      <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/90 p-6 shadow-[0_10px_32px_rgba(0,0,0,0.06)] backdrop-blur-md transition-all duration-300 group-hover:-translate-y-1 sm:p-7 dark:border-white/10 dark:bg-zinc-900/75">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/90 p-6 backdrop-blur-md transition-all duration-300 group-hover:-translate-y-1 sm:p-7 dark:border-white/10 dark:bg-zinc-900/75">
         <div className="relative flex items-start justify-between gap-4">
           <div className={cn('grid size-11 place-items-center rounded-2xl', item.quoteBg)}>
             <Quote className="size-5" />
           </div>
           <span
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-sm',
+              'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold',
               item.badge,
             )}
           >
@@ -151,7 +151,7 @@ export function Testimonials() {
             type="button"
             onClick={() => setActive((i) => (i === 0 ? testimonials.length - 1 : i - 1))}
             aria-label={m.home.prevReview}
-            className="absolute top-1/2 left-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground shadow-md transition-all hover:border-emerald-500/30 hover:text-emerald-600"
+            className="absolute top-1/2 left-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground transition-all hover:border-emerald-500/30 hover:text-emerald-600"
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -160,7 +160,7 @@ export function Testimonials() {
             type="button"
             onClick={() => setActive((i) => (i === testimonials.length - 1 ? 0 : i + 1))}
             aria-label={m.home.nextReview}
-            className="absolute top-1/2 right-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground shadow-md transition-all hover:border-emerald-500/30 hover:text-emerald-600"
+            className="absolute top-1/2 right-0 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-muted-foreground transition-all hover:border-emerald-500/30 hover:text-emerald-600"
           >
             <ChevronRight className="size-5" />
           </button>

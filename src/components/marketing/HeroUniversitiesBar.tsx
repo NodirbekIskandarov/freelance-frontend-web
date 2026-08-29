@@ -26,8 +26,8 @@ export function HeroUniversitiesBar({ variant = 'default' }: { variant?: 'defaul
       className={cn(
         'relative z-20 rounded-2xl border px-5 py-5 sm:px-6 sm:py-6 lg:rounded-3xl',
         isHero
-          ? 'border-white/10 bg-white/[0.04] shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl'
-          : 'border-border/50 bg-background shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-zinc-800 dark:bg-zinc-900/80',
+          ? 'border-white/10 bg-white/[0.04] backdrop-blur-xl'
+          : 'border-border/50 bg-background dark:border-zinc-800 dark:bg-zinc-900/80',
       )}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -54,7 +54,7 @@ export function HeroUniversitiesBar({ variant = 'default' }: { variant?: 'defaul
             <div key={u.name} className="flex shrink-0 items-center gap-2.5">
               <div
                 className={cn(
-                  'grid size-10 place-items-center rounded-full bg-gradient-to-br text-[10px] font-bold text-white shadow-sm',
+                  'grid size-10 place-items-center rounded-full bg-gradient-to-br text-[10px] font-bold text-white',
                   u.color,
                 )}
               >

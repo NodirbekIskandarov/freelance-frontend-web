@@ -60,7 +60,7 @@ export function ExchangeBoard() {
 
   return (
     <div className="space-y-4">
-      <section className="relative overflow-hidden rounded-xl border border-border bg-card px-4 py-4 shadow-sm sm:px-5">
+      <section className="relative overflow-hidden rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
@@ -94,7 +94,7 @@ export function ExchangeBoard() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
         <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
           <div>
             <h2 className="text-sm font-semibold text-foreground">{m.ui.myTasks}</h2>
@@ -411,7 +411,7 @@ function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) 
   const [acceptOffer, { isLoading, error }] = useAcceptOfferMutation();
 
   return (
-    <article className="rounded-xl border border-border bg-card p-3.5 shadow-sm">
+    <article className="rounded-xl border border-border bg-card p-3.5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-foreground">

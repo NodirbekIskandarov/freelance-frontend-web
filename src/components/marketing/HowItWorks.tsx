@@ -35,7 +35,7 @@ export function HowItWorks() {
   return (
     <section id="qanday-ishlaydi" className="pb-[40px]" aria-label={m.home.howAria}>
       <Container>
-        <div className="overflow-hidden rounded-3xl bg-zinc-950 px-6 py-10 shadow-sm sm:px-8 sm:py-12 lg:px-10">
+        <div className="overflow-hidden rounded-3xl bg-zinc-950 px-6 py-10 sm:px-8 sm:py-12 lg:px-10">
           <h2 className="text-center text-2xl font-bold tracking-tight text-white sm:text-[1.75rem]">
             {m.home.howTitle}
           </h2>

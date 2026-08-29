@@ -216,7 +216,7 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
                   className={cn(
                     'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all',
                     active
-                      ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
+                      ? 'bg-emerald-500 text-white'
                       : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >

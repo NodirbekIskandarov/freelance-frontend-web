@@ -88,7 +88,7 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     accent: 'text-emerald-600 dark:text-emerald-400',
     badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     orbit: 'border-emerald-500/25',
-    button: 'bg-emerald-600 text-white shadow-emerald-600/25 hover:bg-emerald-700',
+    button: 'bg-emerald-600 text-white hover:bg-emerald-700',
     dotActive: 'bg-emerald-600',
   },
   earn: {
@@ -124,7 +124,7 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     accent: 'text-amber-600 dark:text-amber-400',
     badgeBg: 'bg-amber-500/10 text-amber-800 dark:text-amber-300',
     orbit: 'border-amber-500/25',
-    button: 'bg-amber-500 text-white shadow-amber-500/25 hover:bg-amber-600',
+    button: 'bg-amber-500 text-white hover:bg-amber-600',
     dotActive: 'bg-amber-500',
   },
 };
@@ -178,7 +178,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
         <Link
           href={config.ctaHref}
           className={cn(
-            'mt-5 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold shadow-lg transition-colors',
+            'mt-5 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors',
             config.button,
           )}
         >
@@ -196,7 +196,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
           width={320}
           height={320}
           priority={id === 'upload'}
-          className="relative z-10 h-[88%] w-auto object-contain object-bottom drop-shadow-xl"
+          className="drop- relative z-10 h-[88%] w-auto object-contain object-bottom"
         />
       </div>
 
@@ -247,10 +247,7 @@ export function MaterialsPromo() {
 
   return (
     <section
-      className={cn(
-        'relative overflow-hidden rounded-2xl border shadow-sm transition-shadow',
-        config.shell,
-      )}
+      className={cn('relative overflow-hidden rounded-2xl border transition-shadow', config.shell)}
     >
       <AnimatePresence mode="wait">
         <motion.div

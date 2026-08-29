@@ -177,7 +177,7 @@ export function ApplyWizard() {
       <div className="min-w-0 flex-1 space-y-6">
         <ApplyStepper current={stepIndex} />
 
-        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
           <h2 className="mb-5 text-base font-semibold text-foreground">{step.title}</h2>
           <StepFields draft={draft} errors={errors} update={update} />
         </section>
@@ -214,7 +214,7 @@ export function ApplyWizard() {
       </div>
 
       <aside className="space-y-4 lg:w-[280px] lg:shrink-0">
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="rounded-2xl border border-border bg-card p-5">
           <h2 className="text-sm font-semibold text-foreground">{m.apply.process}</h2>
           <ol className="mt-4 space-y-3">
             {[

@@ -190,7 +190,7 @@ export function SubjectTasks({
         />
       </div>
 
-      <div className="mt-4 rounded-2xl border border-border/60 bg-card/80 p-2 shadow-sm sm:p-2.5">
+      <div className="mt-4 rounded-2xl border border-border/60 bg-card/80 p-2 sm:p-2.5">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 [scrollbar-width:none] overflow-x-auto pb-0.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <div
@@ -211,7 +211,7 @@ export function SubjectTasks({
                     className={cn(
                       'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                       isActive
-                        ? 'bg-background text-emerald-700 shadow-sm dark:text-emerald-300'
+                        ? 'bg-background text-emerald-700 dark:text-emerald-300'
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >

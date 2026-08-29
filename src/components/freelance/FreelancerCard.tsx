@@ -58,7 +58,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
         'group flex h-full flex-col rounded-2xl border p-4 transition-all',
         isBusy
           ? 'border-border/60 bg-muted/30'
-          : 'border-border/60 bg-background hover:-translate-y-0.5 hover:border-emerald-500/40 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900/70',
+          : 'hover: border-border/60 bg-background hover:-translate-y-0.5 hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70',
       )}
     >
       <div className="flex items-start gap-3">

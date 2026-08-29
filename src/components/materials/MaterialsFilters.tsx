@@ -73,7 +73,7 @@ export function MaterialsFilters({
     filters.sort !== DEFAULT_MATERIALS_FILTERS.sort;
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5 lg:p-6">
+    <section className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5 lg:p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
@@ -91,7 +91,7 @@ export function MaterialsFilters({
           type="button"
           onClick={onReset}
           disabled={!isDirty}
-          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-background px-3 text-xs font-medium text-emerald-800 shadow-sm transition-colors hover:bg-emerald-500/10 disabled:opacity-40 dark:text-emerald-300"
+          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-background px-3 text-xs font-medium text-emerald-800 transition-colors hover:bg-emerald-500/10 disabled:opacity-40 dark:text-emerald-300"
         >
           <RotateCcw className="size-3.5" />
           Tozalash

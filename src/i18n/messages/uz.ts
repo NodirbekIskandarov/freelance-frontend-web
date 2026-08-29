@@ -875,6 +875,19 @@ export const uz = {
     openInNewTab: 'Yangi oynada ochish',
   },
 
+  notFound: {
+    badge: 'Sahifa topilmadi',
+    title: 'Bu sahifa yo‘q',
+    text: "Manzil noto'g'ri yozilgan yoki sahifa ko'chirilgan bo'lishi mumkin. Quyidagilardan birini tanlang.",
+    home: 'Bosh sahifa',
+    materials: 'Tayyor materiallar',
+    lookingFor: "Nimani qidirayotgan bo'lsangiz:",
+    linkMaterials: 'Universitetlar va fanlar',
+    linkFreelancers: 'Freelancerlar',
+    linkFaq: 'Savol-javob',
+    linkAppeals: "Yordam so'rash",
+  },
+
   materials: {
     slideNumber: '{index}-slayd',
     subjectName: 'Fan nomi',

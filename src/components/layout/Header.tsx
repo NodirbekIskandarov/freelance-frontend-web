@@ -159,7 +159,7 @@ export function Header() {
 
       <div className={cn('border-t border-border/60 md:hidden', open ? 'block' : 'hidden')}>
         <div className="mx-auto max-w-[90rem] px-4 pt-2 pb-5 sm:px-6">
-          <div className="grid gap-0.5 rounded-2xl border border-border bg-card p-2 shadow-lg dark:border-white/10 dark:bg-zinc-900">
+          <div className="grid gap-0.5 rounded-2xl border border-border bg-card p-2 dark:border-white/10 dark:bg-zinc-900">
             {PUBLIC_NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.href}

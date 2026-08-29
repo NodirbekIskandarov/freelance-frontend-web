@@ -101,7 +101,7 @@ export function HeaderUserMenu({ user, mobile = false }: { user: AppUser; mobile
           />
           <div
             className={cn(
-              'absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border bg-card p-1.5 shadow-lg',
+              'absolute right-0 z-50 mt-2 w-48 rounded-xl border border-border bg-card p-1.5',
             )}
           >
             <Link

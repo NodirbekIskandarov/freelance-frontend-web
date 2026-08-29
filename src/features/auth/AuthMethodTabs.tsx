@@ -56,7 +56,7 @@ export function AuthMethodTabs({
               className={cn(
                 'inline-flex h-10 items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors',
                 active
-                  ? 'bg-emerald-500 text-white shadow-sm'
+                  ? 'bg-emerald-500 text-white'
                   : 'text-muted-foreground hover:text-foreground',
                 tab.disabled && 'cursor-not-allowed opacity-50 hover:text-muted-foreground',
               )}

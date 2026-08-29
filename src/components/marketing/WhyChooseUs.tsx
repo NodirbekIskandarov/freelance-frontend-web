@@ -32,7 +32,7 @@ export function WhyChooseUs() {
           {reasons.map((reason, index) => (
             <div
               key={index}
-              className="rounded-2xl border border-border/60 bg-background p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)] dark:border-zinc-800 dark:bg-zinc-900/70 dark:shadow-[0_8px_20px_rgba(0,0,0,0.35)]"
+              className="rounded-2xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70"
             >
               <div className="grid size-11 place-items-center rounded-xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-500 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300">
                 <reason.icon className="size-5" />

@@ -52,7 +52,7 @@ export function Appeals() {
 
   return (
     <>
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+      <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
           <MessageSquarePlus className="size-4 text-emerald-600 dark:text-emerald-400" />
           {m.appeals.newAppeal}

@@ -122,7 +122,7 @@ export function CatalogueCtaBanner({
   );
 
   return (
-    <div className="relative isolate overflow-hidden rounded-2xl border border-emerald-500/25 bg-[#0a0f0d] shadow-lg shadow-emerald-950/20">
+    <div className="relative isolate overflow-hidden rounded-2xl border border-emerald-500/25 bg-[#0a0f0d]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-r from-emerald-950/40 via-transparent to-emerald-950/20"
@@ -163,7 +163,7 @@ export function CatalogueCtaBanner({
               width={420}
               height={420}
               priority
-              className="h-auto w-full object-contain object-bottom drop-shadow-[0_8px_24px_rgba(16,185,129,0.25)]"
+              className="drop- h-auto w-full object-contain object-bottom"
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ export function CatalogueCtaBanner({
           <button
             type="button"
             onClick={onAction}
-            className="group inline-flex h-11 w-full items-center gap-2.5 rounded-xl border border-emerald-400/30 bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 text-white shadow-md shadow-emerald-600/25 transition-all hover:from-emerald-400 hover:to-emerald-500 active:scale-[0.98] sm:h-12 lg:w-auto"
+            className="group inline-flex h-11 w-full items-center gap-2.5 rounded-xl border border-emerald-400/30 bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 text-white transition-all hover:from-emerald-400 hover:to-emerald-500 active:scale-[0.98] sm:h-12 lg:w-auto"
           >
             <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-white/15">
               <PrimaryIcon className="size-4" strokeWidth={2.25} />

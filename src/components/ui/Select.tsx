@@ -154,7 +154,7 @@ export function Select({
         aria-controls={open ? listId : undefined}
         onClick={() => !disabled && setMenuOpen(!open)}
         className={cn(
-          'flex h-11 w-full min-w-[8rem] items-center justify-between gap-2 rounded-xl border border-border/70 bg-background px-3 text-left text-sm text-foreground shadow-sm transition-colors outline-none hover:border-emerald-500/30 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20 disabled:opacity-50 dark:border-white/12 dark:bg-[#0a100d] dark:text-white',
+          'flex h-11 w-full min-w-[8rem] items-center justify-between gap-2 rounded-xl border border-border/70 bg-background px-3 text-left text-sm text-foreground transition-colors outline-none hover:border-emerald-500/30 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20 disabled:opacity-50 dark:border-white/12 dark:bg-[#0a100d] dark:text-white',
           triggerClassName,
         )}
       >
@@ -169,7 +169,7 @@ export function Select({
 
       {open && anchor ? (
         <div
-          className="fixed z-200 w-max max-w-[min(20rem,80vw)] overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground shadow-lg ring-1 ring-black/5"
+          className="fixed z-200 w-max max-w-[min(20rem,80vw)] overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground ring-1 ring-black/5"
           style={{ top: anchor.top, left: anchor.left, minWidth: anchor.width }}
         >
           {searchable ? (

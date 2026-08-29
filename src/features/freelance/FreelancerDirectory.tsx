@@ -58,7 +58,7 @@ function ToggleChip({
       className={cn(
         'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
         active
-          ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
+          ? 'bg-emerald-600 text-white'
           : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400',
       )}
     >
@@ -122,7 +122,7 @@ export function FreelancerDirectory({
       <form
         role="search"
         onSubmit={(event) => event.preventDefault()}
-        className="flex items-center gap-2 rounded-xl border border-border bg-background p-1 pl-3.5 shadow-sm focus-within:border-emerald-500/50"
+        className="flex items-center gap-2 rounded-xl border border-border bg-background p-1 pl-3.5 focus-within:border-emerald-500/50"
       >
         <Search className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
         <input
@@ -140,7 +140,7 @@ export function FreelancerDirectory({
 
       <section
         aria-label="Saralash va filter"
-        className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm dark:bg-zinc-900/50"
+        className="overflow-hidden rounded-2xl border border-border bg-background dark:bg-zinc-900/50"
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3.5 sm:px-5">
           <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export function FreelancerDirectory({
                   className={cn(
                     'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                     sortId === option.id
-                      ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
+                      ? 'bg-emerald-600 text-white'
                       : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400',
                   )}
                 >
