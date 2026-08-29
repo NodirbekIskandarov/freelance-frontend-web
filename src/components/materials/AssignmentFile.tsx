@@ -8,11 +8,15 @@ import { useT } from '@/i18n/useT';
 /**
  * Topshiriq sharti — variantlar ustidagi fayl.
  *
- * PDF sahifaning O'ZIDA ochiladi: talaba shartni o'qimasdan qaysi
- * variantni tanlashini bilmaydi, fayl yuklab olib, ochib, qaytib
- * kelish esa uzun yo'l. Qolgan formatlar (zip, docx, xlsx) brauzerda
- * ko'rsatilmaydi — ular uchun faqat yuklab olish qoladi, chunki
- * "ochish" tugmasi bosilganda baribir yuklab olish oynasi chiqardi.
+ * PDF sahifaning O'ZIDA ochiladi, lekin FAQAT so'ralganda: talaba
+ * shartni o'qimasdan qaysi variantni tanlashini bilmaydi, ammo o'sha
+ * shartni allaqachon biladigan odam uchun ochiq turgan ko'rsatgich
+ * variantlar to'rini ekrandan pastga surib yuborardi — va u aynan shu
+ * sahifaga kelgan maqsad.
+ *
+ * Qolgan formatlar (zip, docx, xlsx) brauzerda ko'rsatilmaydi — ular
+ * uchun faqat yuklab olish qoladi, chunki "ochish" tugmasi bosilganda
+ * baribir yuklab olish oynasi chiqardi.
  */
 function isPdf(url: string): boolean {
   // So'rov parametrlari (MinIO imzolangan havolasi) kengaytmadan keyin
@@ -28,7 +32,7 @@ function fileNameOf(url: string): string {
 
 export function AssignmentFile({ url }: { url: string }) {
   const { m } = useT();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   if (!url) return null;
 

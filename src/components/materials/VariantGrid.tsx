@@ -10,11 +10,9 @@ import {
 } from '@/features/requests/requestsApi';
 import { useGetLibraryQuery } from '@/features/library/libraryApi';
 import { OwnedSolutionButton } from '@/features/library/OwnedSolutionButton';
+import { PurchaseModal } from '@/features/solutions/PurchaseModal';
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
-import {
-  useGetMySolutionsQuery,
-  usePurchaseSolutionMutation,
-} from '@/features/solutions/solutionsApi';
+import { useGetMySolutionsQuery } from '@/features/solutions/solutionsApi';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
@@ -98,19 +96,26 @@ const ACTIVE_BORDER: Record<VariantStatus, string> = {
 export function VariantGrid({
   variants,
   solutionsByVariant,
+  assignmentTitle,
+  subjectName,
+  universityShortName,
 }: {
   variants: VariantWithCount[];
   /** Tanlangan variant uchun yechimlar — serverdan oldindan kelgan. */
   solutionsByVariant: Record<string, PublicSolution[]>;
+  /** Xarid oynasi nima sotib olinayotganini aytishi uchun. */
+  assignmentTitle: string;
+  subjectName: string;
+  universityShortName: string;
 }) {
   const { t, m } = useT();
   const money = useMoney();
   const dates = useDates();
   const [selectedId, setSelectedId] = useState(variants[0]?.id ?? '');
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
-  const [purchase, purchaseState] = usePurchaseSolutionMutation();
   const [requestedIds, setRequestedIds] = useState<string[]>([]);
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
+  const [buyTarget, setBuyTarget] = useState<PublicSolution | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const panelRef = useRef<HTMLElement>(null);
@@ -358,42 +363,18 @@ export function VariantGrid({
                     variant="emerald"
                     size="sm"
                     className="mt-2 w-full"
-                    /*
-                      Faqat BOSILGAN tugma o'chadi va matnini almashtiradi.
-                      Umumiy `isLoading` bilan uchala tugma ham o'chib,
-                      qaysi biri ishlayotgani ko'rinmasdi.
-                    */
-                    disabled={purchaseState.isLoading}
-                    onClick={() => {
-                      void purchase(solution.id)
-                        .unwrap()
-                        .then(() => setBoughtIds((current) => [...current, solution.id]))
-                        .catch(() => undefined);
-                    }}
+                    /* Pul endi haqiqiy balansdan ketadi — bosish bilan
+                       darhol yechilmaydi, avval oyna nima qancha turishini
+                       va balansda qancha borligini ko'rsatadi. */
+                    onClick={() => setBuyTarget(solution)}
                   >
-                    {purchaseState.isLoading && purchaseState.originalArgs === solution.id ? (
-                      m.variants.buying
-                    ) : (
-                      <>
-                        <ShoppingCart className="size-3.5" />
-                        {m.variants.buy}
-                      </>
-                    )}
+                    <ShoppingCart className="size-3.5" />
+                    {m.variants.buy}
                   </Button>
                 )}
               </li>
             ))}
 
-            {/*
-              Xarid xatosi shu yerda: kirmagan foydalanuvchi 401 oladi,
-              balansi yetmasa esa boshqa xabar — ikkalasi ham backenddan
-              o'zbekcha keladi.
-            */}
-            {purchaseState.error && (
-              <li role="alert" className="text-[11px] text-destructive">
-                {getApiErrorMessage(purchaseState.error)}
-              </li>
-            )}
           </ul>
         ) : (
           <div className="mt-3 space-y-2.5 rounded-lg border border-amber-500/40 bg-amber-500/[0.06] p-3">
@@ -528,6 +509,21 @@ export function VariantGrid({
         assignmentTitle={selected.assignment_title}
         onClose={() => setUploadOpen(false)}
       />
+
+      {/* Shartli chiziladi: oyna har yechim uchun boshlang'ich qiymatlarni
+          holatga bir marta oladi, ya'ni yopilib-ochilganda o'zi tozalanadi. */}
+      {buyTarget && (
+        <PurchaseModal
+          open
+          solution={buyTarget}
+          assignmentTitle={assignmentTitle}
+          variantLabel={t((x) => x.variants.variantNumber, { number: selected.number })}
+          subjectName={subjectName}
+          universityShortName={universityShortName}
+          onClose={() => setBuyTarget(null)}
+          onPurchased={() => setBoughtIds((current) => [...current, buyTarget.id])}
+        />
+      )}
     </div>
   );
 }

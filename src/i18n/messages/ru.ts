@@ -326,6 +326,7 @@ export const ru: Messages = {
     statusRequested: 'Есть спрос',
     statusEmpty: 'Никто не запрашивал',
     noVariants: 'У этого задания нет вариантов.',
+    variantNumber: 'вариант {number}',
     notReady: 'Не готово',
     requestCount: '{count} запросов',
     solutionCount: '{count} решений',
@@ -344,6 +345,28 @@ export const ru: Messages = {
     uploadLimitHint: 'На один вариант можно отправить до {max} решений.',
     uploadLimitReached: 'Вы уже отправили {max} решений на этот вариант.',
     uploadsClosed: 'Приём решений по этому варианту закрыт.',
+  },
+
+  purchase: {
+    title: 'Покупка решения',
+    paymentSection: 'ОПЛАТА — ВНУТРЕННИЙ БАЛАНС',
+    myBalance: 'Мой баланс',
+    balanceLine: '{balance} · после оплаты останется {left}',
+    notEnough: '{balance} · не хватает ещё {missing}',
+    topUpSoon: 'Пополнение баланса (Payme / Click) — скоро подключим',
+    priceRow: 'Цена решения',
+    discountRow: 'Скидка',
+    totalRow: 'Итого',
+    pay: 'Оплатить и скачать',
+    paying: 'Оплата…',
+    cannotPay: 'Недостаточно средств',
+    author: 'Автор: {name}',
+    footnote:
+      'Файл сразу попадёт в «Мою библиотеку» и будет доступен для скачивания без ограничений. Если файл не подошёл — в течение 24 часов можно подать жалобу и вернуть деньги.',
+    loginRequired: 'Чтобы купить, сначала войдите в аккаунт.',
+    done: 'Куплено',
+    doneText: 'Файл в разделе «Моя библиотека» — скачивайте когда угодно.',
+    openLibrary: 'В библиотеку',
   },
 
   solutionStatus: {

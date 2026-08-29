@@ -326,6 +326,7 @@ export const uz = {
     statusRequested: 'Talab mavjud',
     statusEmpty: "Hech kim so'ramagan",
     noVariants: "Bu topshiriqda variantlar yo'q.",
+    variantNumber: '{number}-variant',
     notReady: 'Tayyor emas',
     requestCount: "{count} ta so'rov",
     solutionCount: '{count} ta yechim',
@@ -345,6 +346,28 @@ export const uz = {
     uploadLimitHint: 'Bir variantga {max} tagacha yechim yuborish mumkin.',
     uploadLimitReached: "Bu variantga {max} ta yechim yuborib bo'lgansiz.",
     uploadsClosed: 'Bu variantga yechim qabul qilish yopilgan.',
+  },
+
+  purchase: {
+    title: 'Yechimni sotib olish',
+    paymentSection: "TO'LOV — ICHKI BALANS",
+    myBalance: 'Mening balansim',
+    balanceLine: "{balance} · to'lovdan keyin {left} qoladi",
+    notEnough: "{balance} · yetmaydi, yana {missing} kerak",
+    topUpSoon: "Balansni to'ldirish (Payme / Click) — tez orada ulanadi",
+    priceRow: 'Yechim narxi',
+    discountRow: 'Chegirma',
+    totalRow: 'Jami',
+    pay: "To'lash va yuklab olish",
+    paying: "To'lanmoqda…",
+    cannotPay: "Balans yetarli emas",
+    author: 'Muallif: {name}',
+    footnote:
+      "Fayl darhol «Kutubxonam» bo'limiga tushadi va cheksiz marta yuklab olinadi. Fayl mos kelmasa 24 soat ichida shikoyat qilib pulni qaytarish mumkin.",
+    loginRequired: 'Sotib olish uchun avval hisobingizga kiring.',
+    done: 'Sotib olindi',
+    doneText: "Fayl «Kutubxonam» bo'limida — istagan vaqtda yuklab olasiz.",
+    openLibrary: 'Kutubxonamga',
   },
 
   solutionStatus: {

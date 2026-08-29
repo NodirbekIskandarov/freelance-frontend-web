@@ -408,6 +408,9 @@ export function SubjectTasks({
                     key={active.id}
                     variants={active.variants}
                     solutionsByVariant={solutionsByVariant}
+                    assignmentTitle={active.title}
+                    subjectName={subject.name}
+                    universityShortName={universityShortName}
                   />
                 )}
               </div>
