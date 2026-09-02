@@ -1,6 +1,7 @@
 'use client';
 
-import { Building2, RotateCcw, Search } from 'lucide-react';
+import { Building2, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
+import { useState } from 'react';
 
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/cn';
@@ -64,7 +65,22 @@ export function MaterialsFilters({
   onChange: (patch: Partial<MaterialsFilterState>) => void;
   onReset: () => void;
 }) {
-  const { m } = useT();
+  const { t, m } = useT();
+
+  /*
+    Telefonda tanlagichlar YIG'ILGAN turadi.
+
+    Beshta tanlagich ustma-ust ~300px egallaydi — birinchi institut
+    kartasi ekranga umuman sig'masdi. Qidiruv esa doim ko'rinadi: u eng
+    ko'p ishlatiladigan filtr va uni yashirish hech nima yutmasdi.
+  */
+  const [open, setOpen] = useState(false);
+
+  const activeCount =
+    (filters.universityId !== 'all' ? 1 : 0) +
+    (filters.course !== 'all' ? 1 : 0) +
+    (filters.direction !== 'all' ? 1 : 0);
+
   const isDirty =
     filters.universityId !== 'all' ||
     filters.search !== '' ||
@@ -98,7 +114,59 @@ export function MaterialsFilters({
         </button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.1fr_1.4fr_0.8fr_0.8fr_1fr] lg:items-center">
+      {/* Qidiruv — doim ko'rinadi, yig'ilmaydi. */}
+      <div className="relative">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <label className="sr-only" htmlFor="materials-search">
+          Fan nomi
+        </label>
+        <input
+          id="materials-search"
+          /*
+          `type="text"`, `search` emas: brauzerning o'z tozalash
+          xochi faqat ba'zilarida chiziladi va uslubga bo'ysunmaydi —
+          qorong'i mavzuda u umuman ko'rinmasdi.
+          */
+          type="text"
+          placeholder={m.filters.subjectSearch}
+          value={filters.search}
+          onChange={(event) => onChange({ search: event.target.value })}
+          className={cn(field, 'pl-10', filters.search && 'pr-10')}
+        />
+        {filters.search && (
+          <button
+            type="button"
+            aria-label={m.filters.clearSearch}
+            onClick={() => onChange({ search: '' })}
+            className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <X className="size-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Telefonda tanlagichlar tugma ortida; `sm` dan boshlab doim ochiq. */}
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border/70 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:hidden"
+      >
+        <SlidersHorizontal className="size-4" />
+        {open ? m.filters.toggleHide : m.filters.toggleShow}
+        {!open && activeCount > 0 && (
+          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+            {t((x) => x.filters.activeCount, { count: activeCount })}
+          </span>
+        )}
+      </button>
+
+      <div
+        className={cn(
+          'mt-3 gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-[1.1fr_0.8fr_0.8fr_1fr] lg:items-center',
+          open ? 'grid' : 'hidden',
+        )}
+      >
         {/*
           Institutlar ro'yxati uzun (21 ta va o'sib boradi), shuning uchun
           uning ichida qidiruv bor — aylantirib topishdan ko'ra yozib
@@ -113,21 +181,6 @@ export function MaterialsFilters({
           searchPlaceholder="Institut nomi..."
           options={[{ value: 'all', label: m.filters.pickInstitute }, ...universities]}
         />
-
-        <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <label className="sr-only" htmlFor="materials-search">
-            Fan nomi
-          </label>
-          <input
-            id="materials-search"
-            type="search"
-            placeholder={m.filters.subjectSearch}
-            value={filters.search}
-            onChange={(event) => onChange({ search: event.target.value })}
-            className={cn(field, 'pl-10')}
-          />
-        </div>
 
         <Select
           aria-label="Kurs"

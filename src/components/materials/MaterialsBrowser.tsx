@@ -200,9 +200,22 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
         }}
       />
 
-      {/* Yo'nalish chiplari — backend yo'nalish bermasa umuman chizilmaydi. */}
+      {/*
+        Yo'nalish chiplari — backend yo'nalish bermasa umuman chizilmaydi.
+
+        Qator YOPISHADI: institut kartalari uzun va filtr almashtirmoqchi
+        bo'lgan odam har safar tepaga qaytishi kerak edi. Chiplar bitta
+        qatorda, ya'ni ular yopishganda ham ekrandan deyarli joy olmaydi.
+
+        `top-16`, `top-0` emas: sayt sarlavhasi ham yopishgan va 64px
+        balandlikda turadi — nolda chiplar aynan uning ostiga kirib
+        ketardi va umuman ko'rinmasdi.
+
+        `bg-background` va manfiy chekka: yopishgan qator ostidan
+        o'tayotgan kartalar ko'rinib qolmasin.
+      */}
       {directionOptions.length > 0 && (
-        <div className="mt-4 [scrollbar-width:none] overflow-x-auto pb-1 [-ms-overflow-style:none] sm:mt-5 [&::-webkit-scrollbar]:hidden">
+        <div className="sticky top-16 z-20 -mx-4 mt-4 [scrollbar-width:none] overflow-x-auto border-b border-border/60 bg-background px-4 py-2.5 [-ms-overflow-style:none] sm:mt-5 [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max gap-2">
             {chips.map((chip) => {
               const active = filters.direction === chip.value;
@@ -216,7 +229,9 @@ export function MaterialsBrowser({ groups }: { groups: CatalogueGroup[] }) {
                   className={cn(
                     'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all',
                     active
-                      ? 'bg-emerald-500 text-white'
+                      ? // Qora yorliq: oq matn `emerald-500` ustida 2.54:1
+                        // beradi, ya'ni o'qish chegarasidan past.
+                        'bg-emerald-500 text-emerald-950'
                       : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >

@@ -88,7 +88,10 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     accent: 'text-emerald-600 dark:text-emerald-400',
     badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     orbit: 'border-emerald-500/25',
-    button: 'bg-emerald-600 text-white hover:bg-emerald-700',
+    // Qora yorliq: oq matn bu yashillar ustida 3.77:1 va 2.15:1
+    // berardi, ya'ni ikkalasi ham o'qish chegarasidan past. Sayt
+    // bo'ylab asosiy tugma bilan bir xil yechim.
+    button: 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400',
     dotActive: 'bg-emerald-600',
   },
   earn: {
@@ -124,7 +127,7 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     accent: 'text-amber-600 dark:text-amber-400',
     badgeBg: 'bg-amber-500/10 text-amber-800 dark:text-amber-300',
     orbit: 'border-amber-500/25',
-    button: 'bg-amber-500 text-white hover:bg-amber-600',
+    button: 'bg-amber-500 text-amber-950 hover:bg-amber-400',
     dotActive: 'bg-amber-500',
   },
 };

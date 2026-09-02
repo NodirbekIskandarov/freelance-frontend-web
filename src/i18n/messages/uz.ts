@@ -685,6 +685,10 @@ export const uz = {
   },
 
   filters: {
+    toggleShow: 'Filtrlar',
+    toggleHide: "Filtrlarni yig'ish",
+    activeCount: '{count} ta filtr',
+    clearSearch: 'Qidiruvni tozalash',
     title: 'Qidiruv filtrlari',
     lead: "Institut, fan va kurs bo'yicha natijalarni aniqroq qiling.",
     pickInstitute: 'Institutni tanlang',

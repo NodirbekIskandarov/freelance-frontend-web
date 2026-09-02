@@ -374,7 +374,6 @@ export function VariantGrid({
                 )}
               </li>
             ))}
-
           </ul>
         ) : (
           <div className="mt-3 space-y-2.5 rounded-lg border border-amber-500/40 bg-amber-500/[0.06] p-3">

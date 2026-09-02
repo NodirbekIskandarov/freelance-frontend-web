@@ -685,6 +685,10 @@ export const ru: Messages = {
   },
 
   filters: {
+    toggleShow: 'Фильтры',
+    toggleHide: 'Свернуть фильтры',
+    activeCount: '{count} фильтра',
+    clearSearch: 'Очистить поиск',
     title: 'Фильтры поиска',
     lead: 'Уточните результаты по вузу, предмету и курсу.',
     pickInstitute: 'Выберите вуз',
