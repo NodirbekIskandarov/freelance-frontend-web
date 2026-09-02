@@ -126,6 +126,7 @@ export const ru: Messages = {
     filter: 'Фильтр',
     notFound: 'Задание не найдено',
     sectionEmpty: 'В этом разделе пока пусто',
+    subjectEmpty: 'В этом предмете пока нет заданий',
     changeSearch: 'Измените запрос или фильтр.',
     beFirst: 'Загрузите задание первым.',
     variantCount: '{count} вариантов',

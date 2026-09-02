@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { Link } from '@/i18n/Link';
-import type { ReactNode } from 'react';
 
 import { interpolate } from '@/i18n/interpolate';
 import type { Messages } from '@/i18n/messages/uz';
@@ -104,22 +103,17 @@ export function CatalogueCtaBanner({
   const features = isUniversity ? UNIVERSITY_FEATURES : SUBJECT_FEATURES;
   const PrimaryIcon = isUniversity ? ClipboardList : Upload;
 
-  const subtitle: ReactNode = isUniversity ? (
-    interpolate(m.cta.subtitleSubject, { university: universityShortName })
-  ) : (
-    <>
-      {m.cta.subtitleAssignment}
-      {universityHref && (
-        <>
-          {' '}
-          <Link href={universityHref} className="font-medium text-emerald-400 hover:underline">
-            {m.cta.subjectMissingLink}
-          </Link>{' '}
-          {m.cta.subjectMissingTail}
-        </>
-      )}
-    </>
-  );
+  /*
+   * Yetakchi gap va havola qatori ALOHIDA.
+   *
+   * Ilgari ular bitta xatboshi edi va telefonda to'rt qator egallardi.
+   * Yetakchi gap esa quyidagi uchta yorliq bilan bir xil narsani aytadi
+   * («yordam beramiz», «ko'rib chiqiladi», «bonus») — shuning uchun tor
+   * ekranda yashiriladi. Havola esa boshqa amal: u yo'qolmasligi kerak.
+   */
+  const lead = isUniversity
+    ? interpolate(m.cta.subtitleSubject, { university: universityShortName })
+    : m.cta.subtitleAssignment;
 
   return (
     <div className="relative isolate overflow-hidden rounded-2xl border border-emerald-500/25 bg-[#0a0f0d]">
@@ -137,9 +131,11 @@ export function CatalogueCtaBanner({
       />
       <div aria-hidden className="cta-shimmer" />
 
-      <div className="relative z-10 flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-center lg:gap-4 xl:gap-5">
+      <div className="relative z-10 flex flex-col gap-3 p-3.5 sm:p-5 lg:flex-row lg:items-center lg:gap-4 xl:gap-5">
         {/* Illyustratsiya tor ekranda ham qoladi, lekin kichrayadi. */}
-        <div className="relative mx-auto flex w-full max-w-[150px] shrink-0 items-end justify-center sm:max-w-[190px] lg:mx-0 lg:w-[180px] xl:w-[210px]">
+        {/* Illyustratsiya faqat keng ekranda: telefonda u 150px balandlik
+            egallab, birinchi ekranni butunlay to'ldirib qo'yardi. */}
+        <div className="relative mx-auto hidden w-full max-w-[190px] shrink-0 items-end justify-center lg:mx-0 lg:flex lg:w-[180px] xl:w-[210px]">
           {PARTICLES.map((particle) => (
             <span
               key={particle.left + particle.top}
@@ -168,13 +164,16 @@ export function CatalogueCtaBanner({
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col justify-center py-1 lg:py-2 lg:pl-1">
-          <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
+        <div className="flex min-w-0 flex-1 flex-col justify-center lg:py-2 lg:pl-1">
+          {/* Rozetka faqat keng ekranda: uning matni («Kerakli topshiriqni
+              topa olmadingizmi?») sarlavhaning deyarli aynan o'zi va
+              telefonda bitta savol ikki marta so'ralayotgandek edi. */}
+          <span className="hidden w-fit items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400 lg:inline-flex">
             <HelpCircle className="size-3.5" />
             {isUniversity ? m.cta.badgeSubject : m.cta.badgeAssignment}
           </span>
 
-          <h2 className="mt-3 text-base leading-snug font-bold text-white sm:text-lg lg:text-xl">
+          <h2 className="text-sm leading-snug font-bold text-white sm:text-base lg:mt-3 lg:text-xl">
             {m.cta.headingLead}{' '}
             <span className="text-emerald-400">
               {isUniversity ? m.cta.headingSubject : m.cta.headingAssignment}
@@ -182,21 +181,34 @@ export function CatalogueCtaBanner({
             {m.cta.headingTail}
           </h2>
 
-          <p className="mt-2 max-w-xl text-xs leading-relaxed text-zinc-400 sm:text-sm">
-            {subtitle}
+          <p className="mt-2 hidden max-w-xl text-sm leading-relaxed text-zinc-400 lg:block">
+            {lead}
           </p>
 
-          <ul className="mt-4 grid gap-3 sm:grid-cols-3 sm:gap-2">
+          {/*
+            Uchta afzallik.
+
+            Telefonda — bitta qatorga sig'adigan mayda yorliqlar: ikkinchi
+            darajali izohlar («Moderatsiyadan o'tgach») uch qator egallab,
+            hech kim o'qimasdi. Keng ekranda joy bor, izohlar qoladi.
+          */}
+          <ul className="mt-2.5 flex flex-wrap gap-1 sm:gap-1.5 lg:mt-4 lg:grid lg:grid-cols-3 lg:gap-2">
             {features.map((feature, index) => (
-              <li key={index} className="flex gap-2.5 sm:flex-col sm:gap-2 lg:flex-row">
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5">
-                  <feature.icon className={cn('size-4', feature.iconClass)} strokeWidth={2} />
+              <li
+                key={index}
+                className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-1.5 py-1 sm:gap-1.5 sm:px-2 lg:gap-2.5 lg:border-0 lg:bg-transparent lg:p-0"
+              >
+                <span className="grid shrink-0 place-items-center lg:size-9 lg:rounded-lg lg:border lg:border-white/10 lg:bg-white/5">
+                  <feature.icon
+                    className={cn('size-3.5 lg:size-4', feature.iconClass)}
+                    strokeWidth={2}
+                  />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xs leading-tight font-semibold text-white">
+                  <p className="text-[10px] leading-tight font-semibold text-white sm:text-[11px] lg:text-xs">
                     {feature.title(m)}
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-zinc-500">
+                  <p className="mt-0.5 hidden text-[11px] leading-snug text-zinc-500 lg:block">
                     {feature.subtitle(m)}
                   </p>
                 </div>
@@ -205,7 +217,7 @@ export function CatalogueCtaBanner({
           </ul>
         </div>
 
-        <div className="flex items-center lg:shrink-0 lg:self-center">
+        <div className="flex flex-col gap-2 lg:shrink-0 lg:self-center">
           <button
             type="button"
             onClick={onAction}
@@ -219,6 +231,18 @@ export function CatalogueCtaBanner({
             </span>
             <ChevronRight className="size-4 shrink-0 opacity-70 transition-transform group-hover:translate-x-0.5" />
           </button>
+
+          {/* «Fan ro'yxatda yo'q?» — boshqa amal, boshqa sahifa. Ilgari u
+              yetakchi gap ichiga ko'milgan edi va tugma yonida turgani
+              aniqroq. */}
+          {!isUniversity && universityHref && (
+            <p className="text-center text-[11px] leading-snug text-zinc-500 lg:text-left">
+              <Link href={universityHref} className="font-medium text-emerald-400 hover:underline">
+                {m.cta.subjectMissingLink}
+              </Link>{' '}
+              {m.cta.subjectMissingTail}
+            </p>
+          )}
         </div>
       </div>
     </div>

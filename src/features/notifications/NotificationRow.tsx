@@ -1,17 +1,6 @@
 'use client';
 
-import {
-  Bell,
-  Briefcase,
-  Check,
-  LifeBuoy,
-  ShieldCheck,
-  ShoppingBag,
-  Trash2,
-  UserRound,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { Link } from '@/i18n/Link';
 import { useRef, useState } from 'react';
 

@@ -124,6 +124,7 @@ export const uz = {
     filter: 'Filtr',
     notFound: 'Topshiriq topilmadi',
     sectionEmpty: "Bu bo'lim hozircha bo'sh",
+    subjectEmpty: "Bu fanda hozircha topshiriq yo'q",
     changeSearch: "Qidiruv yoki filtrni o'zgartiring.",
     beFirst: "Birinchi bo'lib topshiriq yuklang.",
     variantCount: '{count} ta variant',

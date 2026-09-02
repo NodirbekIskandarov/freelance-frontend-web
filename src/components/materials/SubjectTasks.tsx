@@ -56,6 +56,31 @@ export function taskAvailability(task: TaskNode): TaskAvailability {
 }
 
 /**
+ * «Barchasi» — bo'lim emas, bo'limlar ustidagi tanlov.
+ *
+ * Turlardan biri BO'LMASLIGI kerak: `VisibleAssignmentType` backend
+ * qiymatlari va manzildagi `?tur=all` ularning hech biriga to'g'ri
+ * kelmaydi.
+ */
+const TAB_ALL = 'all';
+type TabValue = typeof TAB_ALL | VisibleAssignmentType;
+
+function isTabValue(value: string): value is TabValue {
+  return value === TAB_ALL || isVisibleAssignmentType(value);
+}
+
+/** Topshiriqdagi yechim va so'rovlarning umumiy soni. */
+function totals(task: TaskNode) {
+  return task.variants.reduce(
+    (acc, variant) => ({
+      solutions: acc.solutions + variant.solutionCount,
+      requests: acc.requests + variant.request_count,
+    }),
+    { solutions: 0, requests: 0 },
+  );
+}
+
+/**
  * Fan sahifasidagi topshiriq brauzeri.
  *
  * Chapda topshiriqlar ro'yxati, o'ngda tanlanganining tafsiloti va
@@ -106,15 +131,19 @@ export function SubjectTasks({
     { isValid: (value) => tasks.some((task) => task.id === value) },
   );
 
-  const activeTask = tasks.find((task) => task.id === activeId) ?? initial;
-  const defaultType =
-    activeTask && isVisibleAssignmentType(activeTask.type)
-      ? activeTask.type
-      : ASSIGNMENT_TAB_ORDER[0];
-
-  const [type, setType] = useUrlState('tur', defaultType, {
-    isValid: isVisibleAssignmentType,
-  }) as [VisibleAssignmentType, (next: VisibleAssignmentType) => void];
+  /*
+   * Standart bo'lim — «Barchasi».
+   *
+   * Ilgari sahifa birinchi topshiriqning TURI bilan ochilardi va besh
+   * topshiriqli fanda ulardan faqat bittasi ko'rinardi: qolganini
+   * ko'rish uchun tabma-tab yurish kerak edi. «Barchasi» hammasini bir
+   * ekranda beradi, chuqur havola bilan kelingan topshiriq esa qaysi
+   * turda bo'lishidan qat'i nazar ro'yxatda bo'ladi.
+   */
+  const [type, setType] = useUrlState('tur', TAB_ALL, { isValid: isTabValue }) as [
+    TabValue,
+    (next: TabValue) => void,
+  ];
 
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
@@ -122,10 +151,13 @@ export function SubjectTasks({
   const [requestOpen, setRequestOpen] = useState(false);
 
   const counts = useMemo(() => {
-    const result: Record<string, number> = {};
+    const result: Record<string, number> = { [TAB_ALL]: tasks.length };
     for (const task of tasks) result[task.type] = (result[task.type] ?? 0) + 1;
     return result;
   }, [tasks]);
+
+  const tabLabel = (item: TabValue) =>
+    item === TAB_ALL ? m.common.all : assignmentTypeLabel(item, m.assignmentTypes);
 
   /*
    * Uchala bo'lim ham doim chiziladi, bo'shi ham.
@@ -134,13 +166,13 @@ export function SubjectTasks({
    * borligi ko'rinmasdi. Bo'sh tab — bu ham ma'lumot: bo'lim bor, lekin
    * hozircha to'ldirilmagan.
    */
-  const tabs = ASSIGNMENT_TAB_ORDER;
+  const tabs: TabValue[] = [TAB_ALL, ...ASSIGNMENT_TAB_ORDER];
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase();
 
     return tasks.filter((task) => {
-      if (task.type !== type) return false;
+      if (type !== TAB_ALL && task.type !== type) return false;
       if (search && !task.title.toLowerCase().includes(search)) return false;
 
       if (filters.availability !== 'all' && taskAvailability(task) !== filters.availability) {
@@ -166,13 +198,13 @@ export function SubjectTasks({
    */
   const active = filtered.find((task) => task.id === activeId) ?? filtered[0] ?? null;
 
-  function selectType(next: VisibleAssignmentType) {
+  function selectType(next: TabValue) {
     setType(next);
     setQuery('');
     // Manzil doim ekranda turgan narsani nomlashi kerak: eski tanlov
     // boshqa bo'limning topshirig'i bo'lib qolardi va havolani ochgan
     // odam boshqa joyga tushardi.
-    setActiveId(tasks.find((task) => task.type === next)?.id ?? '');
+    setActiveId(tasks.find((task) => next === TAB_ALL || task.type === next)?.id ?? '');
   }
 
   function resetFilters() {
@@ -215,9 +247,7 @@ export function SubjectTasks({
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
-                    <span className="whitespace-nowrap">
-                      {assignmentTypeLabel(item, m.assignmentTypes)}
-                    </span>
+                    <span className="whitespace-nowrap">{tabLabel(item)}</span>
                     <span
                       className={cn(
                         'inline-flex min-w-[1.25rem] items-center justify-center rounded-md px-1 text-[11px] tabular-nums',
@@ -280,10 +310,12 @@ export function SubjectTasks({
 
       <section className="mt-3 grid gap-3 lg:grid-cols-[320px_1fr] lg:items-start lg:gap-4">
         <aside className="flex w-full min-w-0 flex-col rounded-2xl border border-border/70 bg-card">
-          <div className="border-b border-border/60 px-3 py-2.5 sm:px-4">
-            <p className="text-[13px] font-medium text-foreground">
-              {assignmentTypeLabel(type, m.assignmentTypes)}
-            </p>
+          {/* Telefonda YASHIRIN: faol tab allaqachon «Barchasi 5» deb
+              turibdi va bu sarlavha o'sha ikki so'zni qaytarib, birinchi
+              ekrandan 60px yeb qo'yardi. Keng ekranda tablar yon panelning
+              tepasida emas, yonida — u yerda sarlavha kerak. */}
+          <div className="hidden border-b border-border/60 px-3 py-2.5 sm:px-4 lg:block">
+            <p className="text-[13px] font-medium text-foreground">{tabLabel(type)}</p>
             <p className="text-[11px] text-muted-foreground">
               {t((x) => x.materials.taskCount, { count: filtered.length })}
             </p>
@@ -293,7 +325,11 @@ export function SubjectTasks({
             {filtered.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center">
                 <p className="text-sm font-medium text-foreground">
-                  {counts[type] ? m.tasks.notFound : m.tasks.sectionEmpty}
+                  {counts[type]
+                    ? m.tasks.notFound
+                    : type === TAB_ALL
+                      ? m.tasks.subjectEmpty
+                      : m.tasks.sectionEmpty}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {counts[type] ? m.tasks.changeSearch : m.tasks.beFirst}
@@ -303,6 +339,7 @@ export function SubjectTasks({
               filtered.map((task, index) => {
                 const isActive = task.id === active?.id;
                 const availability = taskAvailability(task);
+                const counted = totals(task);
 
                 return (
                   <button
@@ -332,33 +369,53 @@ export function SubjectTasks({
                       <span className="block truncate text-[13px] leading-tight font-medium text-foreground">
                         {task.title}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
-                        {subject.course
-                          ? `${t((x) => x.materials.course, { course: subject.course })} · `
-                          : ''}
-                        {task.variants.length > 0
-                          ? t((x) => x.tasks.variantCount, { count: task.variants.length })
-                          : m.tasks.noVariants}
+
+                      {/*
+                        Ikkinchi qator: tur, variantlar soni va holat.
+
+                        KURS OLIB TASHLANDI — u sahifa sarlavhasida
+                        («TATU · 1-kurs · 5 ta topshiriq») allaqachon bor
+                        va fan ichidagi HAR topshiriqda bir xil, ya'ni
+                        hech nimani ajratmasdi. Tur esa faqat «Barchasi»
+                        tabida ma'noli: bo'lim tanlangan bo'lsa uni tabning
+                        o'zi aytib turibdi.
+                      */}
+                      <span className="mt-1 flex min-w-0 items-center gap-1.5">
+                        <span className="truncate text-[11px] text-muted-foreground">
+                          {type === TAB_ALL
+                            ? `${assignmentTypeLabel(task.type, m.assignmentTypes)} · `
+                            : ''}
+                          {task.variants.length > 0
+                            ? t((x) => x.tasks.variantCount, { count: task.variants.length })
+                            : m.tasks.noVariants}
+                        </span>
+
+                        {/*
+                          Rangli NUQTA o'rniga sonli yorliq.
+
+                          Nuqta 8px edi va ma'nosi faqat `title` da —
+                          telefonda hover yo'q, ya'ni u hech nima
+                          aytmasdi. Son esa o'zi gapiradi: «4 ta so'rov»
+                          va «1 ta so'rov» bir xil emas.
+                        */}
+                        <span
+                          className={cn(
+                            'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap',
+                            availability === 'has_solution'
+                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                              : availability === 'demand'
+                                ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                                : 'bg-muted text-muted-foreground',
+                          )}
+                        >
+                          {availability === 'has_solution'
+                            ? t((x) => x.variants.solutionCount, { count: counted.solutions })
+                            : availability === 'demand'
+                              ? t((x) => x.variants.requestCount, { count: counted.requests })
+                              : m.tasks.noSolution}
+                        </span>
                       </span>
                     </span>
-
-                    <span
-                      title={
-                        availability === 'has_solution'
-                          ? m.tasks.hasSolution
-                          : availability === 'demand'
-                            ? m.tasks.hasDemand
-                            : m.tasks.noSolution
-                      }
-                      className={cn(
-                        'size-2 shrink-0 rounded-full',
-                        availability === 'has_solution'
-                          ? 'bg-emerald-500'
-                          : availability === 'demand'
-                            ? 'bg-amber-500'
-                            : 'bg-zinc-400',
-                      )}
-                    />
                   </button>
                 );
               })
@@ -366,7 +423,18 @@ export function SubjectTasks({
           </div>
         </aside>
 
-        <div className="min-w-0 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+        {/*
+          Hech nima tanlanmagan bo'lsa telefonda bu karta chizilmaydi:
+          `active` faqat ro'yxat bo'sh bo'lgandagina yo'q, ya'ni ustidagi
+          «Bu fanda topshiriq yo'q» yozuvidan keyin ikkinchi bo'sh quti
+          bo'lardi. Keng ekranda esa u o'ng ustunni ushlab turadi.
+        */}
+        <div
+          className={cn(
+            'min-w-0 rounded-2xl border border-border/70 bg-card p-4 sm:p-5',
+            !active && 'hidden lg:block',
+          )}
+        >
           {active ? (
             <>
               <header className="border-b border-border/60 pb-4">
