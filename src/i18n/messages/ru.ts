@@ -352,6 +352,7 @@ export const ru: Messages = {
     requestSent: 'Запрос отправлен',
     leaveRequest: 'Оставить запрос',
     upload: 'Отправить решение',
+    uploadForVariant: 'Отправить решение на вариант {number}',
     uploadsLeft: 'Можно отправить ещё {count}.',
     peopleWaiting: '{count} человек ждут этот вариант.',
     uploadLimitHint: 'На один вариант можно отправить до {max} решений.',

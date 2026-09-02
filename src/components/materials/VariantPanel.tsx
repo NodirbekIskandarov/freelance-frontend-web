@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Flame, Lock, ShoppingCart, Star } from 'lucide-react';
+import { Download, Flame, Lock, ShoppingCart, Star, Upload } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
@@ -11,6 +11,7 @@ import {
   useRequestVariantSolutionMutation,
 } from '@/features/requests/requestsApi';
 import { PurchaseModal } from '@/features/solutions/PurchaseModal';
+import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import { useGetMySolutionsQuery } from '@/features/solutions/solutionsApi';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
@@ -67,6 +68,7 @@ export function VariantPanel({
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
   const [buyTarget, setBuyTarget] = useState<PublicSolution | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   const justRequested = requestedIds.includes(variant.id);
   const status = statusOf(variant, justRequested);
@@ -310,29 +312,60 @@ export function VariantPanel({
       </div>
 
       {/*
-        Yuklash TUGMASI bu yerda emas — u sahifa sarlavhasida va tanlangan
-        variantga yuboradi. Bu yerda faqat shart-sharoit qoladi: nechta
-        yubora olasiz, qabul ochiqmi, moderatsiya nima qiladi.
+        Yechim yuborish — AYNAN SHU YERDA, tanlangan variantning
+        yechimlari ostida.
+
+        Sahifa sarlavhasida turganda tugma qaysi variantni nazarda
+        tutayotganini aytmasdi: odam 7-variantni tanlab, ekranning tepasidagi
+        tugmani bosardi va oyna «7-variant» deyishiga ishonishdan boshqa
+        chorasi qolmasdi. Bu yerda tanlov ko'z oldida turadi.
+
+        Shart-sharoit ham shu yerda: nechta yubora olasiz, qabul ochiqmi,
+        moderatsiya nima qiladi.
       */}
       <footer className="border-t border-border/60 px-4 py-3">
         {!variant.submissions_open ? (
+          /* Yopilgani ochiq aytiladi. Tugmani shunchaki yashirish «bu yerda
+             yuklab bo'lmaydi» degan xulosani o'zi chiqarishga qoldirardi;
+             yuklashga urinib, xato olishdan esa yomonroq. */
           <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground">
             <Lock className="mt-px size-3 shrink-0" />
             {m.variants.uploadsClosed}
           </p>
         ) : uploadsLeft === 0 ? (
+          /* Chegaraga yetildi. Tugmani ko'rsatib, keyin serverdan xato
+             qaytarish o'rniga sababi shu yerda aytiladi. */
           <p className="text-[11px] leading-snug text-muted-foreground">
             {t((x) => x.variants.uploadLimitReached, { max: MAX_UPLOADS_PER_VARIANT })}
           </p>
         ) : (
-          <p className="text-[11px] leading-snug text-muted-foreground">
-            {mine.length > 0
-              ? t((x) => x.variants.uploadsLeft, { count: uploadsLeft })
-              : t((x) => x.variants.uploadLimitHint, { max: MAX_UPLOADS_PER_VARIANT })}{' '}
-            {m.variants.moderationNote}
-          </p>
+          <>
+            <Button
+              variant="emerald"
+              size="sm"
+              className="w-full"
+              onClick={() => setUploadOpen(true)}
+            >
+              <Upload className="size-3.5" />
+              {t((x) => x.variants.uploadForVariant, { number: variant.number })}
+            </Button>
+            <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+              {mine.length > 0
+                ? t((x) => x.variants.uploadsLeft, { count: uploadsLeft })
+                : t((x) => x.variants.uploadLimitHint, { max: MAX_UPLOADS_PER_VARIANT })}{' '}
+              {m.variants.moderationNote}
+            </p>
+          </>
         )}
       </footer>
+
+      <SolutionUploadModal
+        open={uploadOpen}
+        variantId={variant.id}
+        variantNumber={variant.number}
+        assignmentTitle={assignmentTitle}
+        onClose={() => setUploadOpen(false)}
+      />
 
       {/* Shartli chiziladi: oyna har yechim uchun boshlang'ich qiymatlarni
           holatga bir marta oladi, ya'ni yopilib-ochilganda o'zi tozalanadi. */}

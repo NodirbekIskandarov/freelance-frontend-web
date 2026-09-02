@@ -1,12 +1,10 @@
 'use client';
 
-import { FileText, Plus, Search, Upload, X } from 'lucide-react';
+import { FileText, Search, X } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/Button';
 import { AssignmentComments } from '@/features/comments/AssignmentComments';
 import { AssignmentRequestModal } from '@/features/requests/AssignmentRequestModal';
-import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { useUrlState } from '@/lib/useUrlState';
@@ -133,7 +131,6 @@ export function SubjectTasks({
 
   const [query, setQuery] = useState('');
   const [requestOpen, setRequestOpen] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(false);
 
   /*
    * Tanlangan variant va shu seansda so'rov yuborilganlari — SAHIFA
@@ -251,45 +248,22 @@ export function SubjectTasks({
 
   return (
     <>
-      <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
-        <div className="min-w-0">
-          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            {subject.name}
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{subjectMeta.join(' · ')}</p>
-        </div>
+      {/*
+        Sarlavhada TUGMA YO'Q.
 
-        <div className="flex w-full gap-2 sm:w-auto">
-          <Button
-            variant="outline"
-            className="flex-1 sm:flex-none"
-            onClick={() => setRequestOpen(true)}
-          >
-            <Plus className="size-4" />
-            {m.cta.actionAssignment}
-          </Button>
+        «Topshiriqni yuklash» pastdagi bannerda allaqachon bor va u
+        ekranning yarmini egallab turibdi — bir xil amalni ikki marta,
+        yuz piksel oraliqda ko'rsatish tanlov emas, ikkilanish tug'diradi.
 
-          {/*
-            Yechim yuborish TANLANGAN variantga ketadi — shuning uchun
-            faqat variantli topshiriqda ko'rinadi. Variantsizida o'z
-            paneli va o'z tugmasi bor.
-
-            Qabul yopilgan bo'lsa tugma o'chiriladi: bosib, serverdan xato
-            olishdan ko'ra sababni oldindan aytish yaxshiroq.
-          */}
-          {sidePanel && (
-            <Button
-              variant="emerald"
-              className="flex-1 sm:flex-none"
-              disabled={!sidePanel.submissions_open}
-              title={sidePanel.submissions_open ? undefined : m.variants.uploadsClosed}
-              onClick={() => setUploadOpen(true)}
-            >
-              <Upload className="size-4" />
-              {m.variants.upload}
-            </Button>
-          )}
-        </div>
+        «Yechim yuborish» esa TANLANGAN VARIANTGA ketadi va shuning uchun
+        o'sha variantning paneliga qaytarildi: sarlavhada u qaysi
+        variantni nazarda tutayotganini aytmasdi.
+      */}
+      <header className="min-w-0">
+        <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          {subject.name}
+        </h1>
+        <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{subjectMeta.join(' · ')}</p>
       </header>
 
       <div className="mt-4 sm:mt-5">
@@ -632,16 +606,6 @@ export function SubjectTasks({
         subjectSemester={subject.semester}
         onClose={() => setRequestOpen(false)}
       />
-
-      {active && sidePanel && (
-        <SolutionUploadModal
-          open={uploadOpen}
-          variantId={sidePanel.id}
-          variantNumber={sidePanel.number}
-          assignmentTitle={active.title}
-          onClose={() => setUploadOpen(false)}
-        />
-      )}
     </>
   );
 }

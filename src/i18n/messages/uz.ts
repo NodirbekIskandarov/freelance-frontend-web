@@ -353,6 +353,7 @@ export const uz = {
     requestSent: "So'rov yuborildi",
     leaveRequest: "So'rov qoldirish",
     upload: 'Yechim yuborish',
+    uploadForVariant: '{number}-variantga yechim yuborish',
     uploadsLeft: 'Yana {count} ta yubora olasiz.',
     peopleWaiting: '{count} kishi shu variantni kutyapti.',
     uploadLimitHint: 'Bir variantga {max} tagacha yechim yuborish mumkin.',
