@@ -28,16 +28,14 @@ export interface InstituteEntry {
  * Telefonda ro'yxat gorizontal lentaga aylanadi — vertikal ro'yxat
  * ekranning yarmini egallab, fanlar birinchi qarashda ko'rinmasdi.
  */
-export function InstitutePanel({
+export function InstituteList({
   institutes,
   selectedId,
   onSelect,
   alphabetical,
   onToggleAlphabetical,
   onRequestUniversity,
-  onRequestSubject,
-  canRequestSubject,
-  subjectRequestReward,
+  className,
 }: {
   institutes: InstituteEntry[];
   selectedId: string | null;
@@ -45,21 +43,12 @@ export function InstitutePanel({
   alphabetical: boolean;
   onToggleAlphabetical: () => void;
   onRequestUniversity: () => void;
-  onRequestSubject: () => void;
-  /**
-   * Fan arizasi TANLANGAN institutga yoziladi, ya'ni filtr hech nima
-   * qoldirmaganda yuboriladigan joy yo'q — tugma o'shanda o'chiriladi,
-   * bosilganda hech nima qilmaydigan tugma qoldirilmaydi.
-   */
-  canRequestSubject: boolean;
-  /** 0 — mukofot o'chirilgan, matn summani umuman aytmaydi. */
-  subjectRequestReward: number;
+  className?: string;
 }) {
   const { t, m } = useT();
-  const money = useMoney();
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <div className={cn('min-w-0', className)}>
       <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
         <header className="flex items-center justify-between gap-2 border-b border-border/60 px-3.5 py-3">
           <div className="min-w-0">
@@ -94,19 +83,32 @@ export function InstitutePanel({
             {m.materials.noInstitutes}
           </p>
         ) : (
-          <ul className="flex [scrollbar-width:thin] gap-2 overflow-x-auto p-2 lg:max-h-[26rem] lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto">
+          <ul
+            className={cn(
+              // Telefonda gorizontal lenta: `snap` bilan surilganda karta
+              // yarmi ko'rinib to'xtamaydi, oxiridagi bo'sh joy esa lenta
+              // tugaganini ko'rsatadi.
+              'flex snap-x snap-mandatory [scrollbar-width:thin] gap-2 overflow-x-auto p-2 pr-6',
+              'lg:max-h-[26rem] lg:snap-none lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto lg:pr-2',
+            )}
+          >
             {institutes.map((entry) => {
               const active = entry.university.id === selectedId;
               const solutions = entry.university.solution_count ?? 0;
 
               return (
-                <li key={entry.university.id} className="min-w-[13rem] shrink-0 lg:min-w-0">
+                <li
+                  key={entry.university.id}
+                  className="min-w-[13rem] shrink-0 snap-start lg:min-w-0"
+                >
                   <button
                     type="button"
                     onClick={() => onSelect(entry.university.id)}
                     aria-current={active}
                     className={cn(
-                      'flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-colors',
+                      // Telefonda 44px'ga yaqin nishon: 36px qatorga barmoq
+                      // bilan tushish qiyin.
+                      'flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2.5 text-left transition-colors lg:py-2',
                       active
                         ? 'border-emerald-500/50 bg-emerald-500/10'
                         : 'border-transparent hover:bg-muted/60',
@@ -149,13 +151,47 @@ export function InstitutePanel({
         <button
           type="button"
           onClick={onRequestUniversity}
-          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 px-3.5 py-2.5 text-[11px] font-medium text-emerald-700 transition-colors hover:bg-emerald-500/[0.06] dark:text-emerald-300"
+          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 px-3.5 py-3 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-500/[0.06] dark:text-emerald-300"
         >
           {m.materials.instituteMissing}
           <ArrowRight className="size-3.5" />
         </button>
       </section>
+    </div>
+  );
+}
 
+/**
+ * "Fan topilmadimi?" — tanlangan institutga fan qo'shish arizasi.
+ *
+ * Institutlar ro'yxatidan AJRATILGAN. Keng ekranda ikkalasi ham chap
+ * ustunda turadi, telefonda esa u fanlar ro'yxatining OSTIGA tushadi:
+ * ro'yxat bilan fanlar orasida turgan karta har bir tashrifchini kerakli
+ * narsagacha yana bir ekran aylantirishga majbur qilardi — holbuki ariza
+ * kerak bo'ladigan payt aynan ro'yxatda hech nima topilmagandan KEYIN.
+ */
+export function SubjectRequestCard({
+  onRequestSubject,
+  canRequestSubject,
+  subjectRequestReward,
+  className,
+}: {
+  onRequestSubject: () => void;
+  /**
+   * Fan arizasi TANLANGAN institutga yoziladi, ya'ni filtr hech nima
+   * qoldirmaganda yuboriladigan joy yo'q — tugma o'shanda o'chiriladi,
+   * bosilganda hech nima qilmaydigan tugma qoldirilmaydi.
+   */
+  canRequestSubject: boolean;
+  /** 0 — mukofot o'chirilgan, matn summani umuman aytmaydi. */
+  subjectRequestReward: number;
+  className?: string;
+}) {
+  const { t, m } = useT();
+  const money = useMoney();
+
+  return (
+    <div className={cn('min-w-0', className)}>
       <section className="rounded-2xl border border-border/70 bg-card p-3.5">
         <p className="text-sm font-semibold text-foreground">{m.materials.subjectMissing}</p>
         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">

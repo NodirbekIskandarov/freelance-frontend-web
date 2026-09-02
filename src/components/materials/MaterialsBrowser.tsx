@@ -13,7 +13,7 @@ import { formatCount } from '@/lib/format';
 import type { CatalogueStats, University } from '@/shared/types/catalogue';
 
 import { UniversityBadge, type SubjectWithCount } from './CatalogueCards';
-import { InstitutePanel } from './InstitutePanel';
+import { InstituteList, SubjectRequestCard } from './InstitutePanel';
 import {
   DEFAULT_MATERIALS_FILTERS,
   MaterialsFilters,
@@ -364,29 +364,38 @@ export function MaterialsBrowser({
         </div>
       )}
 
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
-        <div className="min-w-0 lg:sticky lg:top-20">
-          <InstitutePanel
-            institutes={institutes.map((group) => ({
-              university: group.university,
-              slug: group.slug,
-              subjectCount: group.subjects.length,
-            }))}
-            selectedId={selected?.university.id ?? null}
-            onSelect={selectInstitute}
-            alphabetical={filters.sort === 'name'}
-            onToggleAlphabetical={() =>
-              applyFilters({ sort: filters.sort === 'name' ? 'material' : 'name' })
-            }
-            onRequestUniversity={() => setUniversityModal(true)}
-            onRequestSubject={() => setSubjectModal(true)}
-            canRequestSubject={Boolean(selected)}
-            subjectRequestReward={stats.subject_request_reward}
-          />
-        </div>
+      {/*
+        Uchta bola, ikkita ustun.
+
+        Telefonda ular DOM tartibida chiqadi: institutlar → fanlar →
+        «Fan topilmadimi?». Ariza kartasi ataylab oxirida — ilgari u
+        ro'yxat bilan fanlar orasida turib, har bir tashrifchini kerakli
+        narsagacha yana bir ekran aylantirishga majbur qilardi, holbuki u
+        kerak bo'ladigan payt ro'yxatda hech nima topilmagandan KEYIN.
+
+        `lg` dan boshlab esa kartaning o'rni aniq ko'rsatiladi: chap
+        ustunning ikkinchi qatori, ya'ni institutlar ro'yxati ostida.
+        Fanlar ustuni ikkala qatorni egallaydi.
+      */}
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start">
+        <InstituteList
+          className="lg:sticky lg:top-20 lg:col-start-1 lg:row-start-1"
+          institutes={institutes.map((group) => ({
+            university: group.university,
+            slug: group.slug,
+            subjectCount: group.subjects.length,
+          }))}
+          selectedId={selected?.university.id ?? null}
+          onSelect={selectInstitute}
+          alphabetical={filters.sort === 'name'}
+          onToggleAlphabetical={() =>
+            applyFilters({ sort: filters.sort === 'name' ? 'material' : 'name' })
+          }
+          onRequestUniversity={() => setUniversityModal(true)}
+        />
 
         {selected ? (
-          <section className="min-w-0">
+          <section className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <UniversityHeader group={selected} />
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 sm:mt-4">
@@ -446,8 +455,19 @@ export function MaterialsBrowser({
             )}
           </section>
         ) : (
-          <EmptyState title={m.materials.nothingFound} text={m.filters.noResults} />
+          <EmptyState
+            title={m.materials.nothingFound}
+            text={m.filters.noResults}
+            className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          />
         )}
+
+        <SubjectRequestCard
+          className="lg:col-start-1 lg:row-start-2"
+          onRequestSubject={() => setSubjectModal(true)}
+          canRequestSubject={Boolean(selected)}
+          subjectRequestReward={stats.subject_request_reward}
+        />
       </div>
 
       <UniversityRequestModal open={universityModal} onClose={() => setUniversityModal(false)} />
@@ -464,9 +484,22 @@ export function MaterialsBrowser({
   );
 }
 
-function EmptyState({ title, text }: { title: string; text: string }) {
+function EmptyState({
+  title,
+  text,
+  className,
+}: {
+  title: string;
+  text: string;
+  className?: string;
+}) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-16 text-center">
+    <div
+      className={cn(
+        'flex flex-col items-center rounded-2xl border border-dashed border-border px-6 py-16 text-center',
+        className,
+      )}
+    >
       <SearchX className="size-8 text-muted-foreground" />
       <p className="mt-3 text-sm font-medium text-foreground">{title}</p>
       <p className="mt-1 max-w-sm text-sm text-muted-foreground">{text}</p>

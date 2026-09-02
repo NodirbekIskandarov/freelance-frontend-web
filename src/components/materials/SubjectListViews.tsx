@@ -205,7 +205,7 @@ export function SubjectTable({
             <li key={subject.id}>
               <Link
                 href={`/materials/${universitySlug}/${subject.slug}`}
-                className="group flex items-center gap-2 px-3 py-3 transition-colors hover:bg-emerald-500/[0.04] sm:px-4"
+                className="group flex items-center gap-2 px-3 py-3.5 transition-colors hover:bg-emerald-500/[0.04] sm:px-4 lg:py-3"
               >
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 transition-colors group-hover:bg-emerald-500/20 dark:text-emerald-400">
                   <SubjectIcon name={subject.name} className="size-4" />
@@ -217,6 +217,20 @@ export function SubjectTable({
                   </span>
                   <span className="mt-0.5 block truncate text-[11px]">
                     <SubjectMeta subject={subject} />
+                  </span>
+
+                  {/*
+                    Telefonda «Yechilgan» ustuni yo'q — chiziq nom ostiga
+                    tushadi. Usiz tor ekranda qatorda faqat nom va rozetka
+                    qolardi: fanning qanchasi javoblangani jadvalning eng
+                    foydali soni, va u aynan telefonda yo'qolardi.
+                  */}
+                  <span className="mt-1.5 block max-w-[15rem] lg:hidden">
+                    <SolvedProgress
+                      solved={counts.solved}
+                      variants={counts.variants}
+                      percent={counts.percent}
+                    />
                   </span>
                 </span>
 

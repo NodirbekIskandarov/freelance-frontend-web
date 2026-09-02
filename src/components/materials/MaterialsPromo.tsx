@@ -178,7 +178,7 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
   const CtaIcon = config.ctaIcon;
 
   return (
-    <div className="grid items-center gap-6 p-5 sm:p-7 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:gap-8 lg:p-9">
+    <div className="grid items-center gap-5 p-4 sm:gap-6 sm:p-7 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:gap-8 lg:p-9">
       <div className="min-w-0">
         <span
           className={cn(
@@ -198,11 +198,15 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
           {config.subtitle(m, awaiting)}
         </p>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2.5">
+        {/* Telefonda ikkalasi BIR QATORDA: ustma-ust qo'yilganda ular
+            banner balandligiga yuz piksel qo'shardi, holbuki bannerdan
+            keyin darhol katalog boshlanishi kerak. Shuning uchun tor
+            ekranda matn ham, ichki bo'shliq ham kichrayadi. */}
+        <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-5 sm:gap-2.5">
           <Link
             href={config.ctaHref}
             className={cn(
-              'inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors',
+              'inline-flex h-10 items-center gap-1.5 rounded-xl px-3.5 text-[13px] font-semibold transition-colors sm:h-11 sm:gap-2 sm:px-5 sm:text-sm',
               config.button,
             )}
           >
@@ -215,7 +219,7 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
               shunchaki takrorlangan tugma bo'lardi. */}
           <Link
             href={config.secondaryHref}
-            className="inline-flex h-11 items-center rounded-xl border border-foreground/15 px-4 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5"
+            className="inline-flex h-10 items-center rounded-xl border border-foreground/15 px-3.5 text-[13px] font-medium text-foreground transition-colors hover:bg-foreground/5 sm:h-11 sm:px-4 sm:text-sm"
           >
             {m.promo.secondaryCta}
           </Link>
@@ -235,17 +239,31 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
         />
       </div>
 
-      <ul className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+      {/*
+        Telefonda uchta afzallik — bitta qatorga sig'adigan mayda
+        yorliqlar, izohlarsiz. Izohlar («Javobsiz topshiriqlarni toping va
+        yeching») sarlavhaning boshqacha aytilishi bo'lib, tor ekranda
+        yana yuz piksel egallardi va ularni hech kim o'qimasdi.
+      */}
+      <ul className="flex flex-wrap gap-1.5 sm:grid sm:grid-cols-3 sm:gap-4 lg:grid-cols-1">
         {config.features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-3">
+          <li
+            key={index}
+            className="flex items-center gap-1.5 rounded-lg border border-foreground/10 px-2 py-1 sm:items-start sm:gap-3 sm:rounded-none sm:border-0 sm:px-0 sm:py-0"
+          >
             <span
-              className={cn('grid size-10 shrink-0 place-items-center rounded-xl', config.badgeBg)}
+              className={cn(
+                'grid size-6 shrink-0 place-items-center rounded-md sm:size-10 sm:rounded-xl',
+                config.badgeBg,
+              )}
             >
-              <feature.icon className={cn('size-5', config.accent)} />
+              <feature.icon className={cn('size-3.5 sm:size-5', config.accent)} />
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">{feature.label(m)}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+              <p className="text-[11px] font-semibold text-foreground sm:text-sm">
+                {feature.label(m)}
+              </p>
+              <p className="mt-0.5 hidden text-xs leading-relaxed text-muted-foreground sm:block">
                 {feature.description(m)}
               </p>
             </div>
