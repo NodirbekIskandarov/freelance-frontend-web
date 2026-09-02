@@ -122,7 +122,7 @@ export const ru: Messages = {
   },
 
   tasks: {
-    searchPlaceholder: 'Поиск...',
+    searchPlaceholder: 'Задание или номер варианта',
     filter: 'Фильтр',
     notFound: 'Задание не найдено',
     sectionEmpty: 'В этом разделе пока пусто',
@@ -320,6 +320,13 @@ export const ru: Messages = {
   },
 
   variants: {
+    title: 'Варианты',
+    filterSolved: 'С решением',
+    filterDemand: 'С запросом',
+    noneMatch: 'Вариантов с таким статусом нет',
+    availableCount: 'Доступно решений: {count}',
+    reviews: '{count} отз.',
+    moderationNote: 'Решение поступит в продажу после модерации.',
     variantless: 'Это задание не разделено на варианты — оно одно для всех.',
     requestLeft: 'Запрос оставлен',
     notUploadedYet:
@@ -1019,6 +1026,17 @@ export const ru: Messages = {
     youReceive: 'получите на руки',
     deliveredFile: 'Файл готовой работы',
     recentOrders: 'Последние заказы',
+  },
+
+  assignmentStats: {
+    title: 'По этому заданию',
+    solvedTile: 'вариантов с решением',
+    demandTile: 'вариантов с запросом',
+    cheapestTile: 'самое дешёвое решение',
+    publishedSolutions: 'Опубликовано решений',
+    soldSolutions: 'Продано решений',
+    averagePrice: 'Средняя цена',
+    lastUpload: 'Последняя загрузка',
   },
 
   assignmentFile: {

@@ -120,7 +120,7 @@ export const uz = {
   },
 
   tasks: {
-    searchPlaceholder: 'Qidirish...',
+    searchPlaceholder: 'Topshiriq yoki variant raqami',
     filter: 'Filtr',
     notFound: 'Topshiriq topilmadi',
     sectionEmpty: "Bu bo'lim hozircha bo'sh",
@@ -320,6 +320,13 @@ export const uz = {
   },
 
   variants: {
+    title: 'Variantlar',
+    filterSolved: 'Yechimli',
+    filterDemand: 'Talabli',
+    noneMatch: "Bu holatdagi variant yo'q",
+    availableCount: '{count} ta yechim mavjud',
+    reviews: '{count} sharh',
+    moderationNote: "Yechim moderatsiyadan o'tgach sotuvga chiqadi.",
     variantless: "Bu topshiriq variantlarga bo'linmagan — hamma uchun bitta.",
     requestLeft: 'Talab qoldirildi',
     notUploadedYet:
@@ -1019,6 +1026,17 @@ export const uz = {
     youReceive: "qo'lga tegadi",
     deliveredFile: 'Tayyor ish fayli',
     recentOrders: "So'nggi buyurtmalar",
+  },
+
+  assignmentStats: {
+    title: "Shu topshiriq bo'yicha",
+    solvedTile: 'variantda yechim bor',
+    demandTile: "variantda talab yig'ilgan",
+    cheapestTile: 'eng arzon yechim',
+    publishedSolutions: 'Chop etilgan yechimlar',
+    soldSolutions: 'Sotilgan yechimlar',
+    averagePrice: "O'rtacha narx",
+    lastUpload: 'Oxirgi yuklash',
   },
 
   assignmentFile: {

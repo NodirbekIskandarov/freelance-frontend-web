@@ -42,8 +42,19 @@ export function formatDecimalSom(value: string | null, currency = "so'm"): strin
  *  2. Bu sanalar biznes sanasi ("qachon yuklangan"), tashrif
  *     buyuruvchining mahalliy soati emas. Platforma O'zbekiston uchun.
  *
- * Ajratgichni til hal qiladi: o'zbekchada `28/08/2026`, ruschada
- * `28.08.2026`.
+ * Ko'rinish ikkala tilda ham BIR XIL — `28.08.2026` — va u qo'lda
+ * yig'iladi, `Intl` ning tayyor namunasidan olinmaydi.
+ *
+ * Sababi tekshirilgan: `uz-UZ` uchun ICU namunasi muhitga qarab farq
+ * qiladi. Node (to'liq ICU) `26/08/2026` beradi, Chromium esa
+ * `2026-08-26`. Sahifa serverda chizilib brauzerda hydration qilinadi,
+ * ya'ni bu farq HAR SAFAR «server rendered text didn't match» xatosini
+ * chiqarardi va React butun daraxtni qaytadan chizardi. `ru-RU` da
+ * ikkala muhit ham `26.08.2026` beradi — shu ko'rinish ikkalasiga
+ * qoldirildi.
+ *
+ * `Intl` baribir kerak: mintaqa hisobini (`Asia/Tashkent`) o'zi qiladi.
+ * Undan faqat RAQAMLAR olinadi, tartib va ajratgich bizniki.
  */
 const TIME_ZONE = 'Asia/Tashkent';
 
@@ -60,28 +71,49 @@ const DATE_TIME_OPTIONS: Intl.DateTimeFormatOptions = {
   minute: '2-digit',
 };
 
-function format(
-  value: string | null | undefined,
-  tag: string,
-  options: Intl.DateTimeFormatOptions,
-): string {
-  if (!value) return '—';
+/**
+ * Sana bo'laklari — raqam sifatida.
+ *
+ * `en-GB` ATAYLAB: bizga uning namunasi emas, faqat lotin raqamlari va
+ * ikki xonali to'ldirish kerak. Til qaysi bo'lishidan qat'i nazar
+ * natija bir xil bo'ladi.
+ */
+function partsOf(date: Date, options: Intl.DateTimeFormatOptions): Record<string, string> {
+  const found: Record<string, string> = {};
+  for (const part of new Intl.DateTimeFormat('en-GB', options).formatToParts(date)) {
+    found[part.type] = part.value;
+  }
+  return found;
+}
+
+function parse(value: string | null | undefined): Date | null {
+  if (!value) return null;
 
   const date = new Date(value);
-  // Noto'g'ri qiymatni "Invalid Date" qilib ko'rsatishdan ko'ra xom
-  // holicha qaytargan tushunarliroq — hech bo'lmasa nima kelganini
-  // ko'rish mumkin.
-  if (Number.isNaN(date.getTime())) return value;
-
-  return new Intl.DateTimeFormat(tag, options).format(date);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 /** `28.08.2026` */
-export function formatDate(value: string | null | undefined, tag: string): string {
-  return format(value, tag, DATE_OPTIONS);
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return '—';
+
+  const date = parse(value);
+  // Noto'g'ri qiymatni "Invalid Date" qilib ko'rsatishdan ko'ra xom
+  // holicha qaytargan tushunarliroq — hech bo'lmasa nima kelganini
+  // ko'rish mumkin.
+  if (!date) return value;
+
+  const part = partsOf(date, DATE_OPTIONS);
+  return `${part.day}.${part.month}.${part.year}`;
 }
 
 /** `28.08.2026, 14:26` */
-export function formatDateTime(value: string | null | undefined, tag: string): string {
-  return format(value, tag, DATE_TIME_OPTIONS);
+export function formatDateTime(value: string | null | undefined): string {
+  if (!value) return '—';
+
+  const date = parse(value);
+  if (!date) return value;
+
+  const part = partsOf(date, DATE_TIME_OPTIONS);
+  return `${part.day}.${part.month}.${part.year}, ${part.hour}:${part.minute}`;
 }

@@ -166,24 +166,20 @@ export default async function SubjectPage(
       <Container className="py-6 sm:py-8">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-5">
-          <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            {subject.name}
-          </h1>
-          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-            {university.short_name}
-            {subject.course ? ` · ${interpolate(m.course, { course: subject.course })}` : ''} ·{' '}
-            {interpolate(m.taskCount, { count: tasks.length })}
-          </p>
-        </header>
-
-        <SubjectTasks
-          subject={subject}
-          universitySlug={uniSlug}
-          universityShortName={university.short_name || university.name}
-          tasks={tasks}
-          solutionsByVariant={solutionsByVariant}
-        />
+        {/* Sarlavha `SubjectTasks` ICHIDA: uning yonidagi ikkita tugma
+            («Topshiriq yuklash», «Yechim yuborish») oyna ochadi va
+            tanlangan variantni biladi, ya'ni mijoz tomonda bo'lishi
+            kerak. Sahifa serverda chizilgani uchun `<h1>` baribir HTML
+            javobiga tushadi. */}
+        <div className="mt-5">
+          <SubjectTasks
+            subject={subject}
+            universitySlug={uniSlug}
+            universityShortName={university.short_name || university.name}
+            tasks={tasks}
+            solutionsByVariant={solutionsByVariant}
+          />
+        </div>
       </Container>
     </>
   );
