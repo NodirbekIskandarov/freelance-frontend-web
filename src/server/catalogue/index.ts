@@ -65,6 +65,17 @@ export async function getUniversityBySlug(slug: string): Promise<University | nu
  */
 const SUBJECT_ORDERING = '-assignment_count,name';
 
+/**
+ * BUTUN katalogni olishda esa alifbo bo'yicha.
+ *
+ * Materiallar sahifasi fanlarni o'zi qayta saralaydi (yechim ko'p / yechim
+ * kerak / A→Z), ya'ni serverdan kelgan tartib u yerda baribir buziladi.
+ * Farqi narxda: sanoq bo'yicha saralash backendni HAR BIR fanning
+ * sanoqlarini oldindan hisoblashga majbur qiladi, saqlangan ustun bo'yicha
+ * saralash esa sanoqlarni faqat sahifadagi qatorlar uchun oldiradi.
+ */
+const CATALOGUE_ORDERING = 'name';
+
 export async function getSubjectsByUniversity(universityId: string): Promise<Subject[]> {
   const subjects = await requestAll<Subject>(`/universities/${universityId}/subjects/`, {
     ordering: SUBJECT_ORDERING,
@@ -98,7 +109,7 @@ export async function getAssignmentsBySubject(subjectId: string): Promise<Assign
  * ro'yxatlar jimgina bir-biriga to'g'ri kelmay qolardi.
  */
 export async function getAllSubjects(): Promise<Subject[]> {
-  const subjects = await requestAll<Subject>('/subjects/', { ordering: SUBJECT_ORDERING });
+  const subjects = await requestAll<Subject>('/subjects/', { ordering: CATALOGUE_ORDERING });
   return subjects.filter((item) => item.is_active);
 }
 

@@ -129,23 +129,53 @@ async function request<T>(path: string, params?: Record<string, string | number>
 }
 
 /**
+ * Bir vaqtning o'zida nechta sahifa so'raladi.
+ *
+ * To'rtta: sahifalar ketma-ket olinganda ular bir-birini kutib turardi va
+ * 1400 ta topshiriq o'n to'rtta navbatdagi so'rovga aylanardi. Hammasini
+ * birdaniga otish esa boshqa chekka — build paytida ikki til va o'nlab
+ * sahifa qo'shilib, backendga bir lahzada yuzlab so'rov tushardi.
+ */
+const PAGE_CONCURRENCY = 4;
+
+/** Ro'yxatni bir vaqtda ko'pi bilan `PAGE_CONCURRENCY` ta bo'lib oladi. */
+async function fetchPages<T>(
+  path: string,
+  params: Record<string, string | number> | undefined,
+  pages: number[],
+): Promise<T[]> {
+  const items: T[] = [];
+
+  for (let start = 0; start < pages.length; start += PAGE_CONCURRENCY) {
+    const batch = pages.slice(start, start + PAGE_CONCURRENCY);
+    const results = await Promise.all(
+      batch.map((page) => request<ApiPaginated<T>>(path, { ...params, page, page_size: 100 })),
+    );
+    for (const result of results) items.push(...result.results);
+  }
+
+  return items;
+}
+
+/**
  * Ro'yxatni to'liq oladi.
  *
  * Katalog sahifalari BARCHA yozuvlarni ko'rsatadi (universitetlar,
  * fanlar), shuning uchun sahifalash bo'ylab yurib chiqamiz. Faqat
  * birinchi sahifani olish katalogni jimgina qirqib qo'yardi — 20 tadan
  * keyingisi hech qayerda ko'rinmasdi.
+ *
+ * Birinchi sahifa YOLG'IZ olinadi: nechta sahifa borligini undan bilamiz.
+ * Qolganlari esa parallel, chunki ular bir-biriga bog'liq emas —
+ * ketma-ket kutish katalog o'sgani sari chiziqli sekinlashardi.
  */
 async function requestAll<T>(path: string, params?: Record<string, string | number>): Promise<T[]> {
   const first = await request<ApiPaginated<T>>(path, { ...params, page: 1, page_size: 100 });
-  const items = [...first.results];
 
-  for (let page = 2; page <= first.total_pages; page += 1) {
-    const next = await request<ApiPaginated<T>>(path, { ...params, page, page_size: 100 });
-    items.push(...next.results);
-  }
+  if (first.total_pages <= 1) return first.results;
 
-  return items;
+  const rest = Array.from({ length: first.total_pages - 1 }, (_, index) => index + 2);
+  return [...first.results, ...(await fetchPages<T>(path, params, rest))];
 }
 
 export { request, requestAll };
