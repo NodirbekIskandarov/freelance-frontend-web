@@ -56,7 +56,6 @@ export function SubjectMiniCard({
   className?: string;
   index?: number;
 }) {
-  const { m } = useT();
   const hasAssignments = subject.assignmentCount > 0;
 
   return (
@@ -64,7 +63,7 @@ export function SubjectMiniCard({
       href={`/materials/${universitySlug}/${subject.slug}`}
       style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}
       className={cn(
-        'card-enter card-lift card-sheen group hover: relative flex h-full min-h-[152px] min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card p-3.5 hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-4 dark:border-zinc-700/80 dark:bg-zinc-900',
+        'card-enter card-lift card-sheen group hover: relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card p-3 hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-3.5 dark:border-zinc-700/80 dark:bg-zinc-900',
         className,
       )}
     >
@@ -96,21 +95,52 @@ export function SubjectMiniCard({
         </span>
       </div>
 
-      <h3 className="mt-2.5 line-clamp-2 flex-1 text-[13px] leading-snug font-semibold text-foreground transition-colors group-hover:text-emerald-700 sm:text-sm dark:group-hover:text-emerald-300">
+      {/*
+        `flex-1` ATAYLAB YO'Q. U bo'lganda sarlavha qolgan bo'sh joyni
+        egallab, yorliqlarni kartaning pastiga itarardi. To'rdagi kartalar
+        bir xil balandlikka cho'zilgani uchun bu sarlavha bilan yorliqlar
+        orasida katta teshik ochardi — «Falsafa» kabi bitta yorlig'i bor
+        fanda ayniqsa ko'rinardi. Yorliqlar pastda TEKISLANMASDI ham:
+        yorliqlar soni har fanda har xil.
+      */}
+      <h3 className="mt-2.5 line-clamp-2 text-[15px] leading-snug font-bold text-foreground transition-colors group-hover:text-emerald-700 sm:text-base dark:group-hover:text-emerald-300">
         {subject.name}
       </h3>
 
-      <div className="mt-3 space-y-2 border-t border-border/50 pt-3">
-        <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
-          {subject.course ? `${subject.course}-kurs` : 'Kurs ko‘rsatilmagan'}
-          {subject.semester ? ` · ${subject.semester}-semestr` : ''}
-          {subject.direction_name ? ` · ${subject.direction_name}` : ''}
-        </p>
-        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 sm:text-xs dark:text-emerald-400">
-          {m.ui.view}
-          <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
-        </span>
-      </div>
+      {/*
+        Kurs, semestr va yo'nalish — alohida yorliqlar, bitta uzun qator
+        emas.
+
+        Ilgari ular «1-kurs · 2-semestr · Sun'iy intellekt» bo'lib bitta
+        qatorga sig'dirilardi va tor kartada oxiri kesilib ketardi:
+        yo'nalish ko'rinmasdi, ba'zan semestr ham. Yorliqlar esa keyingi
+        qatorga o'tadi.
+
+        «Ko'rish →» OLIB TASHLANDI: kartaning o'zi havola va har kartada
+        takrorlangan bir xil yozuv faqat balandlik egallardi.
+      */}
+      {(subject.course || subject.semester || subject.direction_name) && (
+        <div className="mt-2.5 flex flex-wrap gap-1 border-t border-border/50 pt-2.5">
+          {subject.course && (
+            <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+              {subject.course}-kurs
+            </span>
+          )}
+          {subject.semester && (
+            <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+              {subject.semester}-semestr
+            </span>
+          )}
+          {subject.direction_name && (
+            <span
+              title={subject.direction_name}
+              className="max-w-full truncate rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+            >
+              {subject.direction_name}
+            </span>
+          )}
+        </div>
+      )}
     </Link>
   );
 }
@@ -199,7 +229,13 @@ export function UniversityRow({
             </p>
           ) : (
             <>
-              <div className="grid min-w-0 flex-1 grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
+              {/*
+                  `items-start` — kartalar mazmun balandligida qolsin.
+                  Cho'zilganda ular chapdagi institut ustuni balandligiga
+                  tenglashardi (logotip + sanoqlar + tugma ≈ 450px) va
+                  ichi bo'm-bo'sh baland qutilar bo'lib chiqardi.
+              */}
+              <div className="grid min-w-0 flex-1 grid-cols-2 items-start gap-2.5 sm:gap-3 lg:grid-cols-4">
                 {visible.map((subject, index) => (
                   <SubjectMiniCard
                     key={subject.id}

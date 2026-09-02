@@ -1,6 +1,6 @@
 'use client';
 
-import { RotateCcw, Search, SearchX } from 'lucide-react';
+import { RotateCcw, Search, SearchX, SlidersHorizontal, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Pagination } from '@/components/ui/Pagination';
@@ -41,6 +41,7 @@ export function UniversitySubjects({
   const [direction, setDirection] = useState('all');
   const [page, setPage] = useState(1);
   const [requestOpen, setRequestOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const courseOptions = useMemo(() => {
     const courses = new Set<number>();
@@ -86,6 +87,11 @@ export function UniversitySubjects({
   const hasActiveFilters =
     search.trim() !== '' || course !== 'all' || semester !== 'all' || direction !== 'all';
 
+  /* Tugmadagi son — yig'ilgan holatda nima yoqilganini ko'rsatadi.
+     Qidiruv sanalmaydi: u maydonning o'zida ko'rinib turibdi. */
+  const activeFilterCount =
+    (course !== 'all' ? 1 : 0) + (semester !== 'all' ? 1 : 0) + (direction !== 'all' ? 1 : 0);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
   /*
@@ -122,8 +128,19 @@ export function UniversitySubjects({
         />
       </div>
 
-      <section className="mt-5 rounded-2xl border border-border/70 bg-card/80 p-4 sm:p-5">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+      {/*
+        Qidiruv YOPISHADI.
+
+        Fanlar ro'yxati uzun (bitta institutda yigirma ikkitagacha) va
+        qidirmoqchi bo'lgan odam har safar tepaga qaytishi kerak edi.
+        `top-16` — sayt sarlavhasi ham yopishgan va 64px balandlikda.
+
+        Tanlagichlar esa telefonda tugma ortida: uchtasi ustma-ust
+        ~150px egallardi va yopishgan holatda ekranning choragini
+        yeb qo'yardi.
+      */}
+      <section className="sticky top-16 z-20 -mx-4 mt-5 border-b border-border/60 bg-background px-4 py-3 sm:mx-0 sm:rounded-2xl sm:border sm:border-border/70 sm:bg-card/80 sm:px-5 sm:py-4">
+        <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
             <label className="sr-only" htmlFor="subject-search">
@@ -131,84 +148,117 @@ export function UniversitySubjects({
             </label>
             <input
               id="subject-search"
-              type="search"
+              /* `text`, `search` emas: brauzerning o'z tozalash xochi
+                 qorong'i mavzuda ko'rinmasdi. */
+              type="text"
               placeholder={m.materials.subjectSearch}
               value={search}
               onChange={(event) => applyFilter(() => setSearch(event.target.value))}
-              className={cn(field, 'pl-10')}
+              className={cn(field, 'pl-10', search && 'pr-10')}
             />
+            {search && (
+              <button
+                type="button"
+                aria-label={m.filters.clearSearch}
+                onClick={() => applyFilter(() => setSearch(''))}
+                className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <X className="size-4" />
+              </button>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+          {/* Telefonda tanlagichlarni ochadigan tugma. `sm` dan boshlab
+              ular doim ko'rinadi va tugma kerak emas. */}
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((value) => !value)}
+            aria-expanded={filtersOpen}
+            aria-label={m.filters.toggleShow}
+            className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border/70 text-muted-foreground transition-colors hover:text-foreground sm:hidden"
+          >
+            <SlidersHorizontal className="size-4" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-emerald-500 text-[10px] font-bold text-emerald-950">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        <div
+          className={cn(
+            'gap-2 sm:mt-3 sm:flex sm:flex-wrap',
+            filtersOpen ? 'mt-3 grid grid-cols-2' : 'hidden',
+          )}
+        >
+          <Select
+            aria-label={m.materials.courseLabel}
+            value={course}
+            onChange={(value) => applyFilter(() => setCourse(value))}
+            triggerClassName="h-10"
+            options={[
+              { value: 'all', label: m.materials.allCourses },
+              ...courseOptions.map((item) => ({
+                value: String(item),
+                label: t((x) => x.materials.course, { course: item }),
+              })),
+            ]}
+          />
+
+          {/* Semestr ham, yo'nalish ham backendda ixtiyoriy — ma'lumot
+              bo'lmasa tanlagich chizilmaydi, aks holda hech nimani
+              o'zgartirmaydigan bo'sh ro'yxat qolardi. */}
+          {semesterOptions.length > 0 ? (
             <Select
-              aria-label={m.materials.courseLabel}
-              value={course}
-              onChange={(value) => applyFilter(() => setCourse(value))}
+              aria-label={m.materials.semester}
+              value={semester}
+              onChange={(value) => applyFilter(() => setSemester(value))}
               triggerClassName="h-10"
               options={[
-                { value: 'all', label: m.materials.allCourses },
-                ...courseOptions.map((item) => ({
+                { value: 'all', label: m.materials.allSemesters },
+                ...semesterOptions.map((item) => ({
                   value: String(item),
-                  label: t((x) => x.materials.course, { course: item }),
+                  label: t((x) => x.materials.semesterValue, { value: item }),
                 })),
               ]}
             />
+          ) : null}
 
-            {/* Semestr ham, yo'nalish ham backendda ixtiyoriy — ma'lumot
-                bo'lmasa tanlagich chizilmaydi, aks holda hech nimani
-                o'zgartirmaydigan bo'sh ro'yxat qolardi. */}
-            {semesterOptions.length > 0 ? (
-              <Select
-                aria-label={m.materials.semester}
-                value={semester}
-                onChange={(value) => applyFilter(() => setSemester(value))}
-                triggerClassName="h-10"
-                options={[
-                  { value: 'all', label: m.materials.allSemesters },
-                  ...semesterOptions.map((item) => ({
-                    value: String(item),
-                    label: t((x) => x.materials.semesterValue, { value: item }),
-                  })),
-                ]}
-              />
-            ) : null}
+          {directionOptions.length > 0 ? (
+            <Select
+              aria-label={m.materials.direction}
+              value={direction}
+              onChange={(value) => applyFilter(() => setDirection(value))}
+              triggerClassName="h-10"
+              /* Uzun ro'yxatda aylantirib topishdan ko'ra yozib topish tezroq. */
+              searchable={directionOptions.length > 8}
+              searchPlaceholder={m.materials.directionPlaceholder}
+              options={[
+                { value: 'all', label: m.materials.allDirections },
+                ...directionOptions.map((item) => ({ value: item, label: item })),
+              ]}
+            />
+          ) : null}
 
-            {directionOptions.length > 0 ? (
-              <Select
-                aria-label={m.materials.direction}
-                value={direction}
-                onChange={(value) => applyFilter(() => setDirection(value))}
-                triggerClassName="h-10"
-                /* Uzun ro'yxatda aylantirib topishdan ko'ra yozib topish tezroq. */
-                searchable={directionOptions.length > 8}
-                searchPlaceholder={m.materials.directionPlaceholder}
-                options={[
-                  { value: 'all', label: m.materials.allDirections },
-                  ...directionOptions.map((item) => ({ value: item, label: item })),
-                ]}
-              />
-            ) : null}
-          </div>
-
-          {/* «Ariza qoldirish» bu qatordan olib tashlandi — u yuqoridagi
-              bannerda turibdi va u yerda ko'rinarliroq. Bu qator endi
-              faqat filtrlar uchun. */}
           {hasActiveFilters ? (
             <button
               type="button"
               onClick={resetFilters}
-              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:shrink-0"
+              className="col-span-2 inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:col-span-1"
             >
               <RotateCcw className="size-4" />
               {m.materials.clear}
             </button>
           ) : null}
         </div>
-
-        <p className="mt-4 border-t border-border/50 pt-3 text-xs leading-relaxed text-muted-foreground">
-          {m.materials.findOrRequest}
-        </p>
       </section>
+
+      {/* Izoh yopishgan paneldan TASHQARIDA: u har aylantirishda ko'rinib
+          turishi shart emas va panelni balandlashtirardi. */}
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+        {m.materials.findOrRequest}
+      </p>
 
       <div className="mt-5">
         {filtered.length === 0 ? (
@@ -223,7 +273,15 @@ export function UniversitySubjects({
           </div>
         ) : (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {/*
+              Telefonda ham IKKI ustun.
+
+              Ilgari bitta ustun edi va baland kartalar bilan ekranga
+              ikkitasi zo'rg'a sig'ardi — yigirma ikkita fanni ko'rish
+              uchun uzoq aylantirish kerak bo'lardi. Ikki ustunda bir
+              ekranda to'rt-oltitasi ko'rinadi.
+            */}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {visible.map((subject, index) => (
                 <SubjectMiniCard
                   key={subject.id}
