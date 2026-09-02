@@ -242,7 +242,8 @@ export const uz = {
     uploadBadge: 'Kerakli topshiriqni topa olmadingizmi?',
     uploadTitleLead: 'Aniq izlayotgan topshiriqni',
     uploadTitleAccent: 'topa olmadingizmi?',
-    uploadSubtitle: 'Uni bizga yuklang va biz unga yechim beramiz.',
+    uploadSubtitle:
+      "Uni bizga yuklang — mutaxassislar va boshqa talabalar yechim tayyorlaydi, tayyor bo'lganda xabar keladi.",
     uploadCta: 'Topshiriqni yuklash',
     uploadFeature1: 'Xavfsiz va ishonchli',
     uploadFeature1Desc: "Ma'lumotlaringiz maxfiy va himoyalangan.",
@@ -253,8 +254,11 @@ export const uz = {
     earnBadge: 'Online daromad qilishni xohlaysizmi?',
     earnTitleLead: 'Javobsiz topshiriqlarni bajaring va',
     earnTitleAccent: 'daromad qiling!',
-    earnSubtitle: "Bilimingizni baham ko'ring va uni daromad manbaiga aylantiring.",
+    earnSubtitle:
+      "Hozir {count} ta variantda yechim yo'q, ammo talab bor. Birinchi bo'lib yuklang va sotuvdan daromad oling.",
+    earnSubtitleEmpty: "Bilimingizni baham ko'ring va uni daromad manbaiga aylantiring.",
     earnCta: 'Daromad qilishni boshlash',
+    secondaryCta: 'Qanday ishlaydi?',
     earnFeature1: "Ko'proq bajaring",
     earnFeature1Desc: 'Javobsiz topshiriqlarni toping va yeching.',
     earnFeature2: 'Daromad qiling',
@@ -689,6 +693,19 @@ export const uz = {
     pickFile: 'PDF yoki hujjatni tanlang',
     subjectName: 'Fan nomi',
     subjectNamePlaceholder: 'Masalan: Dasturlash asoslari',
+    universityTitle: "Institut qo'shish so'rovi",
+    universityDesc:
+      "Institutingiz katalogda bo'lmasa, ma'lumotlarini yuboring. Tekshirgach ro'yxatga qo'shamiz.",
+    universityName: 'Institut nomi',
+    universityNamePlaceholder: 'Masalan: Toshkent Davlat Transport Universiteti',
+    universityShortName: 'Qisqartma (ixtiyoriy)',
+    universityShortPlaceholder: 'Masalan: TDTU',
+    universityCity: 'Shahar (ixtiyoriy)',
+    universityCityPlaceholder: 'Masalan: Toshkent',
+    universitySentText:
+      "Moderatsiyadan o'tgach institut katalogga qo'shiladi. Holatini «Arizalarim» bo'limida kuzatasiz.",
+    universityLoginRequired:
+      'Ariza qoldirish uchun avval hisobingizga kiring — arizangiz holatini kuzatib borishingiz uchun shart.',
     course: 'Kurs',
     semester: 'Semestr',
     extraNote: "Qo'shimcha izoh (ixtiyoriy)",
@@ -739,19 +756,17 @@ export const uz = {
   filters: {
     toggleShow: 'Filtrlar',
     toggleHide: "Filtrlarni yig'ish",
-    activeCount: '{count} ta filtr',
     clearSearch: 'Qidiruvni tozalash',
-    title: 'Qidiruv filtrlari',
-    lead: "Institut, fan va kurs bo'yicha natijalarni aniqroq qiling.",
-    pickInstitute: 'Institutni tanlang',
-    subjectSearch: 'Fan nomini qidiring...',
+    searchLabel: 'Fan yoki institut nomi',
+    searchPlaceholder: 'Fan yoki institut nomi',
+    sortLabel: 'Institutlar tartibi',
     sortName: 'Nomi bo‘yicha',
     sortMaterial: "Materiali ko'p",
     sortSolutions: "Yechimi ko'p",
     sortAssignments: "Topshirig'i ko'p",
     sortSubjects: "Fani ko'p",
     noResults:
-      "Filtrni o'zgartirib ko'ring yoki kerakli fan bo'lmasa institut sahifasidan ariza qoldiring.",
+      "Filtrni o'zgartirib ko'ring yoki kerakli fan bo'lmasa «Fan qo'shish» orqali ariza qoldiring.",
   },
 
   student: {
@@ -1131,13 +1146,61 @@ export const uz = {
     breadcrumbHome: 'Bosh sahifa',
     breadcrumbMaterials: 'Tayyor materiallar',
     heading: 'Tayyor materiallar',
-    lead: '{institutes} ta institut va {subjects} ta fan. Kerakli institut, fan va topshiriqni tanlang va tayyor yechimlarni oling.',
+    lead: 'Institutni tanlang → fanni oching → variant bo‘yicha tayyor yechimni oling.',
     itemListName: 'Yopamiz.uz tayyor materiallari',
     subjectCount: '{count} ta fan',
     subjectsOf: '{name} fanlari',
     assignmentsOf: '{name} topshiriqlari',
     course: '{course}-kurs',
     taskCount: '{count} ta topshiriq',
+
+    // — Sarlavha ostidagi to'rtta sanoq —
+    statSubjects: 'fan',
+    statSubjectsIn: '{count} institutda',
+    statSolutions: 'tayyor yechim sotuvda',
+    statAwaiting: "variantda talab bor, yechim yo'q",
+    statDownloads: 'bu oy yuklab olindi',
+
+    // — Ko'rinish almashtirgichi —
+    viewCards: 'Fanlar',
+    viewTable: 'Jadval',
+
+    // — Institutlar paneli —
+    institutes: 'Institutlar',
+    institutesListed: "{count} ta ro'yxatda",
+    alphabetical: 'A…Z',
+    instituteMissing: "Institutim yo'q — qo'shish so'rovi",
+    subjectMissing: 'Fan topilmadimi?',
+    subjectMissingReward: "Qo'shish so'rovi tasdiqlansa hisobingizga {amount} tushadi.",
+    subjectMissingBonus: "Ro'yxatda yo'q fanni yuboring — tekshirgach katalogga qo'shamiz.",
+    addSubject: "Fan qo'shish",
+    instituteSubjects: '{count} fan',
+    noInstitutes: 'Institut topilmadi',
+
+    // — Institut sarlavhasidagi sanoqlar —
+    statAssignments: 'topshiriq',
+    statVariants: 'variant',
+    statReady: 'tayyor yechim',
+    statOpen: "variant bo'sh",
+
+    // — Fanlar ro'yxati —
+    subjectsHeading: 'Fanlar',
+    sortBySolutions: "Yechim ko'p",
+    sortByNeed: 'Yechim kerak',
+    colSubject: 'Fan',
+    colDirection: "Yo'nalish",
+    colCourse: 'Kurs / semestr',
+    colAssignments: 'Topshiriq',
+    colVariants: 'Variantlar',
+    colSolved: 'Yechilgan',
+    colSolution: 'Yechim',
+    averagePrice: "o'rtacha {price}",
+    authors: '{count} muallif',
+    noAuthors: "hali muallif yo'q",
+    solutionsBadge: '{count} yechim',
+    noSolutions: "yechim yo'q",
+    solvedVariants: 'Yechimi bor variant',
+    nothingFound: 'Hech narsa topilmadi',
   },
 
   nav: {

@@ -11,7 +11,7 @@ import { cn } from '@/lib/cn';
 import type { University } from '@/shared/types/catalogue';
 
 import { CatalogueCtaBanner } from './CatalogueCtaBanner';
-import { SubjectMiniCard, type SubjectWithCount } from './UniversityRow';
+import { SubjectMiniCard, type SubjectWithCount } from './CatalogueCards';
 
 const field =
   'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';

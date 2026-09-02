@@ -4,6 +4,7 @@ import { findBySlugId, toSlug, toSlugId } from '@/lib/slug';
 import type {
   ApiPaginated,
   Assignment,
+  CatalogueStats,
   PublicSolution,
   Subject,
   University,
@@ -18,6 +19,17 @@ import { request, requestAll } from './client';
  * Sahifalar faqat shu funksiyalarni biladi — API yo'llari, sahifalash
  * va slug yechish shu yerda to'xtaydi.
  */
+
+/**
+ * Materiallar sahifasining to'rtta sarlavha sanog'i.
+ *
+ * Ular katalog daraxtidan HISOBLANMAYDI: daraxtda faqat ochiq katalog
+ * bor, sanoqlar esa xarid va talab kabi u yerda umuman yo'q narsalarni
+ * ham qamraydi.
+ */
+export async function getCatalogueStats(): Promise<CatalogueStats> {
+  return request<CatalogueStats>('/catalogue/stats/');
+}
 
 export async function getUniversities(): Promise<University[]> {
   const universities = await requestAll<University>('/universities/', { ordering: 'short_name' });

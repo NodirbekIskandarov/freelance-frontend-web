@@ -1,13 +1,13 @@
+import { CatalogueStatsRow } from '@/components/materials/CatalogueStatsRow';
 import { MaterialsBrowser } from '@/components/materials/MaterialsBrowser';
 import { MaterialsPromo } from '@/components/materials/MaterialsPromo';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
-import { interpolate } from '@/i18n/interpolate';
 import { getMessages } from '@/i18n/messages';
 import { setRequestLocale } from '@/i18n/requestLocale';
 import { breadcrumbJsonLd, buildMetadata, JsonLd } from '@/lib/seo';
-import { getCatalogueTree } from '@/server/catalogue';
+import { getCatalogueStats, getCatalogueTree } from '@/server/catalogue';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
   const { locale: raw } = await params;
@@ -30,14 +30,15 @@ export default async function MaterialsPage({ params }: PageProps<'/[locale]'>) 
     { name: m.breadcrumbMaterials, path: '/materials' },
   ];
 
-  const groups = await getCatalogueTree();
-
-  const totalSubjects = groups.reduce((sum, group) => sum + group.subjects.length, 0);
+  /* Ikkalasi PARALLEL: sanoqlar katalogdan hisoblanmaydi (ular xarid va
+     talab kabi katalogda umuman yo'q narsalarni ham qamraydi), ya'ni
+     ketma-ket kutishning sababi yo'q. */
+  const [groups, stats] = await Promise.all([getCatalogueTree(), getCatalogueStats()]);
 
   /*
-   * ItemList — botga katalogning to'liq ro'yxati. Sahifada fanlar
-   * filtrlanadi va institut qatorida faqat to'rttasi ko'rinadi, qidiruv
-   * tizimi esa tugma bosmaydi.
+   * ItemList — botga katalogning to'liq ro'yxati. Sahifada bir vaqtning
+   * o'zida bitta institut ochiq turadi, qidiruv tizimi esa tugma
+   * bosmaydi.
    */
   const itemListJsonLd = {
     '@context': 'https://schema.org',
@@ -66,20 +67,15 @@ export default async function MaterialsPage({ params }: PageProps<'/[locale]'>) 
         <Breadcrumbs items={crumbs} />
 
         <div className="mt-5 sm:mt-6">
-          <MaterialsPromo />
+          <MaterialsPromo awaitingVariants={stats.awaiting_variants} />
         </div>
 
-        <header className="mt-8 max-w-2xl sm:mt-10">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            {m.heading}
-          </h1>
-          <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
-            {interpolate(m.lead, { institutes: groups.length, subjects: totalSubjects })}
-          </p>
-        </header>
+        <div className="mt-4 sm:mt-5">
+          <CatalogueStatsRow stats={stats} />
+        </div>
 
         <div className="mt-8 sm:mt-10">
-          <MaterialsBrowser groups={groups} />
+          <MaterialsBrowser groups={groups} stats={stats} />
         </div>
       </Container>
     </>

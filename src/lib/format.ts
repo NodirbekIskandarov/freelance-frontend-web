@@ -10,7 +10,24 @@
  * ko'rinmas belgi ergashadi va qidiruvda mos kelmay qoladi.
  */
 export function formatSom(value: number, currency = "so'm"): string {
-  return `${value.toLocaleString('ru-RU').replace(/ /g, ' ')} ${currency}`;
+  return `${formatCount(value)} ${currency}`;
+}
+
+/**
+ * 4210 → «4 210» — sanoq, valyutasiz.
+ *
+ * Ajratgich `formatSom` bilan bir xil: bitta sahifada «4 210 ta fan» va
+ * «4210 ta variant» yonma-yon turgani xatoga o'xshab ko'rinardi.
+ *
+ * Ajratgich ODDIY probelga almashtiriladi. Ikki sabab: nusxa olganda
+ * ko'rinmas belgi ergashmaydi, va — muhimrogʻi — `ru-RU` qaysi belgini
+ * qo'yishi ICU versiyasiga bogʻliq (Node uzilmas probel, brauzer esa tor
+ * uzilmas probel berishi mumkin). Ikkalasini ham bir xil holga keltirmasa,
+ * server chizgan matn brauzernikiga mos kelmay hydration ogohlantirishi
+ * chiqardi.
+ */
+export function formatCount(value: number): string {
+  return value.toLocaleString('ru-RU').replace(/[\u00a0\u202f ]/g, ' ');
 }
 
 /**

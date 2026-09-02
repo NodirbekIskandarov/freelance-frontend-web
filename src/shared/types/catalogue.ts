@@ -40,7 +40,13 @@ export interface University {
    */
   subject_count?: number;
   assignment_count?: number;
+  variant_count?: number;
   solution_count?: number;
+  /**
+   * Nechta variantga javob bor. `variant_count` bilan farqi — hali
+   * yechim kutayotgan variantlar, ya'ni institutdagi bo'sh ish hajmi.
+   */
+  solved_variant_count?: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -56,12 +62,6 @@ export interface Subject {
   name_uz: string | null;
   name_ru: string | null;
   course: number | null;
-  /*
-   * Semestr — backend HOZIRCHA bu maydonni qaytarmaydi (tekshirilgan:
-   * `/api/v1/subjects/` javobida yo'q). Ixtiyoriy qilib qo'yildi: qo'shilishi
-   * bilan kartadagi yozuv ham, semestr filtri ham o'z-o'zidan paydo bo'ladi,
-   * komponentlarga tegish shart emas.
-   */
   semester?: number | null;
   /**
    * Backend hisoblab beradi (`subjects_with_counts()`).
@@ -71,9 +71,44 @@ export interface Subject {
    */
   assignment_count?: number;
   variant_count?: number;
+  /** Sotuvdagi (chop etilgan) yechimlar soni. */
+  solution_count?: number;
+  /** Yechimi bor variantlar — «15 / 47» ning birinchi soni. */
+  solved_variant_count?: number;
+  /** Nechta HAR XIL odam yechim yuklagan. */
+  author_count?: number;
+  /**
+   * Sotuvdagi yechimlarning o'rtacha narxi, DRF o'nlik satri (`"9000.00"`).
+   * `null` — hali hech nima sotuvda yo'q, ya'ni o'rtacha ham yo'q.
+   */
+  average_price?: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Materiallar sahifasi boshidagi to'rtta sanoq.
+ *
+ * Hammasi bitta ochiq so'rovdan (`/catalogue/stats/`) keladi: to'rttasi
+ * to'rt joydan olinsa, ular bir-biriga to'g'ri kelmay qolishi mumkin edi.
+ */
+export interface CatalogueStats {
+  universities: number;
+  subjects: number;
+  assignments: number;
+  variants: number;
+  /** Sotuvdagi yechimlar. */
+  solutions: number;
+  /** Talab bor, lekin yechim yo'q variantlar. */
+  awaiting_variants: number;
+  /** Shu oyda to'langan xaridlar. */
+  downloads_this_month: number;
+  /**
+   * Tasdiqlangan fan arizasi uchun to'lanadigan mukofot (so'm).
+   * `0` — mukofot o'chirilgan, sahifa summani umuman aytmaydi.
+   */
+  subject_request_reward: number;
 }
 
 export interface Assignment {

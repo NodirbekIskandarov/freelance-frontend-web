@@ -1,7 +1,6 @@
 'use client';
 
-import { Building2, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react';
-import { useState } from 'react';
+import { RotateCcw, Search, X } from 'lucide-react';
 
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/cn';
@@ -25,18 +24,25 @@ export const SORT_OPTIONS = [
 
 export type MaterialsSort = (typeof SORT_OPTIONS)[number]['value'];
 
+/**
+ * Institut bu yerda YO'Q.
+ *
+ * U endi chapdagi ro'yxatdan tanlanadi — bitta narsani ikki joydan
+ * tanlash mumkin bo'lganda ular albatta bir-biriga zid tushib qoladi
+ * (tanlagichda «TATU», ro'yxatda esa boshqa institut yoritilgan).
+ */
 export interface MaterialsFilterState {
-  universityId: string;
   search: string;
   course: string;
+  semester: string;
   direction: string;
   sort: MaterialsSort;
 }
 
 export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
-  universityId: 'all',
   search: '',
   course: 'all',
+  semester: 'all',
   direction: 'all',
   sort: 'material',
 };
@@ -49,86 +55,53 @@ export interface FilterOption {
   label: string;
 }
 
+/**
+ * Qidiruv qatori: fan yoki institut nomi, kurs, semestr va tartib.
+ *
+ * Hammasi BITTA qatorda va yig'ilmaydi. Ilgari tanlagichlar telefonda
+ * tugma ortida turardi — institut tanlagichi ro'yxatga ko'chgach ular
+ * uchtaga tushdi va ikki ustunda o'zi sig'adi, ya'ni yashirish endi
+ * faqat qo'shimcha bosish bo'lib qolardi.
+ */
 export function MaterialsFilters({
   filters,
-  universities,
   courses,
-  directions,
+  semesters,
   onChange,
   onReset,
 }: {
   filters: MaterialsFilterState;
-  universities: FilterOption[];
   courses: FilterOption[];
-  /** Bo'sh bo'lsa yo'nalish tanlagichi umuman chizilmaydi. */
-  directions: FilterOption[];
+  /** Bo'sh bo'lsa semestr tanlagichi umuman chizilmaydi. */
+  semesters: FilterOption[];
   onChange: (patch: Partial<MaterialsFilterState>) => void;
   onReset: () => void;
 }) {
-  const { t, m } = useT();
-
-  /*
-    Telefonda tanlagichlar YIG'ILGAN turadi.
-
-    Beshta tanlagich ustma-ust ~300px egallaydi — birinchi institut
-    kartasi ekranga umuman sig'masdi. Qidiruv esa doim ko'rinadi: u eng
-    ko'p ishlatiladigan filtr va uni yashirish hech nima yutmasdi.
-  */
-  const [open, setOpen] = useState(false);
-
-  const activeCount =
-    (filters.universityId !== 'all' ? 1 : 0) +
-    (filters.course !== 'all' ? 1 : 0) +
-    (filters.direction !== 'all' ? 1 : 0);
+  const { m } = useT();
 
   const isDirty =
-    filters.universityId !== 'all' ||
     filters.search !== '' ||
     filters.course !== 'all' ||
+    filters.semester !== 'all' ||
     filters.direction !== 'all' ||
     filters.sort !== DEFAULT_MATERIALS_FILTERS.sort;
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5 lg:p-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
-            <Building2 className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold tracking-[0.14em] text-emerald-700 uppercase dark:text-emerald-400">
-              {m.filters.title}
-            </p>
-            <p className="text-sm text-muted-foreground">{m.filters.lead}</p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onReset}
-          disabled={!isDirty}
-          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-emerald-500/35 bg-background px-3 text-xs font-medium text-emerald-800 transition-colors hover:bg-emerald-500/10 disabled:opacity-40 dark:text-emerald-300"
-        >
-          <RotateCcw className="size-3.5" />
-          Tozalash
-        </button>
-      </div>
-
-      {/* Qidiruv — doim ko'rinadi, yig'ilmaydi. */}
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+    <section className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:gap-3">
+      <div className="relative min-w-0 lg:flex-1">
+        <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
         <label className="sr-only" htmlFor="materials-search">
-          Fan nomi
+          {m.filters.searchLabel}
         </label>
         <input
           id="materials-search"
           /*
-          `type="text"`, `search` emas: brauzerning o'z tozalash
-          xochi faqat ba'zilarida chiziladi va uslubga bo'ysunmaydi —
-          qorong'i mavzuda u umuman ko'rinmasdi.
+            `type="text"`, `search` emas: brauzerning o'z tozalash xochi
+            faqat ba'zilarida chiziladi va uslubga bo'ysunmaydi — qorong'i
+            mavzuda u umuman ko'rinmasdi.
           */
           type="text"
-          placeholder={m.filters.subjectSearch}
+          placeholder={m.filters.searchPlaceholder}
           value={filters.search}
           onChange={(event) => onChange({ search: event.target.value })}
           className={cn(field, 'pl-10', filters.search && 'pr-10')}
@@ -145,73 +118,47 @@ export function MaterialsFilters({
         )}
       </div>
 
-      {/* Telefonda tanlagichlar tugma ortida; `sm` dan boshlab doim ochiq. */}
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border/70 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:hidden"
-      >
-        <SlidersHorizontal className="size-4" />
-        {open ? m.filters.toggleHide : m.filters.toggleShow}
-        {!open && activeCount > 0 && (
-          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
-            {t((x) => x.filters.activeCount, { count: activeCount })}
-          </span>
-        )}
-      </button>
-
-      <div
-        className={cn(
-          'mt-3 gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-[1.1fr_0.8fr_0.8fr_1fr] lg:items-center',
-          open ? 'grid' : 'hidden',
-        )}
-      >
-        {/*
-          Institutlar ro'yxati uzun (21 ta va o'sib boradi), shuning uchun
-          uning ichida qidiruv bor — aylantirib topishdan ko'ra yozib
-          topish tezroq.
-        */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:shrink-0 lg:items-center">
         <Select
-          aria-label="Institut"
-          value={filters.universityId}
-          onChange={(universityId) => onChange({ universityId })}
-          triggerClassName={field}
-          searchable
-          searchPlaceholder="Institut nomi..."
-          options={[{ value: 'all', label: m.filters.pickInstitute }, ...universities]}
-        />
-
-        <Select
-          aria-label="Kurs"
+          aria-label={m.materials.courseLabel}
           value={filters.course}
           onChange={(course) => onChange({ course })}
-          triggerClassName={field}
+          triggerClassName={cn(field, 'lg:w-40')}
           options={[{ value: 'all', label: m.materials.allCourses }, ...courses]}
         />
 
-        {/* Yo'nalish backendda ixtiyoriy — bo'sh bo'lsa tanlagich chizilmaydi. */}
-        {directions.length > 0 && (
+        {/* Semestr backendda ixtiyoriy — hech bir fanda ko'rsatilmagan
+            bo'lsa tanlagich chizilmaydi, aks holda hech nimani
+            o'zgartirmaydigan bo'sh ro'yxat qolardi. */}
+        {semesters.length > 0 && (
           <Select
-            aria-label={m.materials.direction}
-            value={filters.direction}
-            onChange={(direction) => onChange({ direction })}
-            triggerClassName={field}
-            searchable={directions.length > 8}
-            searchPlaceholder={m.materials.directionPlaceholder}
-            options={[{ value: 'all', label: m.materials.allDirections }, ...directions]}
+            aria-label={m.materials.semester}
+            value={filters.semester}
+            onChange={(semester) => onChange({ semester })}
+            triggerClassName={cn(field, 'lg:w-44')}
+            options={[{ value: 'all', label: m.materials.allSemesters }, ...semesters]}
           />
         )}
 
-        {/* Saralash oxirida: u natijalarni toraytirmaydi, faqat tartibini
-            o'zgartiradi — filtrlardan keyin turgani mantiqan to'g'ri. */}
+        {/* Saralash oxirida: u natijalarni toraytirmaydi, faqat
+            institutlar tartibini o'zgartiradi. */}
         <Select
-          aria-label="Saralash"
+          aria-label={m.filters.sortLabel}
           value={filters.sort}
           onChange={(sort) => onChange({ sort: sort as MaterialsSort })}
-          triggerClassName={field}
+          triggerClassName={cn(field, 'lg:w-44')}
           options={SORT_OPTIONS.map((option) => ({ value: option.value, label: option.label(m) }))}
         />
+
+        <button
+          type="button"
+          onClick={onReset}
+          disabled={!isDirty}
+          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+        >
+          <RotateCcw className="size-4" />
+          {m.materials.clear}
+        </button>
       </div>
     </section>
   );

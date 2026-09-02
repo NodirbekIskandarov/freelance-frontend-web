@@ -1,0 +1,181 @@
+'use client';
+
+import { ArrowRight, ArrowUpDown, Plus } from 'lucide-react';
+
+import { useT } from '@/i18n/useT';
+import { cn } from '@/lib/cn';
+import { formatCount } from '@/lib/format';
+import { useMoney } from '@/lib/useMoney';
+import type { University } from '@/shared/types/catalogue';
+
+import { UniversityBadge } from './CatalogueCards';
+
+export interface InstituteEntry {
+  university: University;
+  slug: string;
+  /** Joriy filtrga mos fanlar soni — qidiruv toraysa qator ham torayadi. */
+  subjectCount: number;
+}
+
+/**
+ * Chapdagi institutlar ro'yxati.
+ *
+ * Ro'yxat, tanlagich emas: institut tanlash — bu sahifadagi ASOSIY amal
+ * va uni ochiladigan ro'yxat ichiga yashirish har safar ikki bosish
+ * degani edi. Yonidagi rozetka esa tanlashdan oldin javob beradi:
+ * "bu institutda umuman material bormi?".
+ *
+ * Telefonda ro'yxat gorizontal lentaga aylanadi — vertikal ro'yxat
+ * ekranning yarmini egallab, fanlar birinchi qarashda ko'rinmasdi.
+ */
+export function InstitutePanel({
+  institutes,
+  selectedId,
+  onSelect,
+  alphabetical,
+  onToggleAlphabetical,
+  onRequestUniversity,
+  onRequestSubject,
+  canRequestSubject,
+  subjectRequestReward,
+}: {
+  institutes: InstituteEntry[];
+  selectedId: string | null;
+  onSelect: (universityId: string) => void;
+  alphabetical: boolean;
+  onToggleAlphabetical: () => void;
+  onRequestUniversity: () => void;
+  onRequestSubject: () => void;
+  /**
+   * Fan arizasi TANLANGAN institutga yoziladi, ya'ni filtr hech nima
+   * qoldirmaganda yuboriladigan joy yo'q — tugma o'shanda o'chiriladi,
+   * bosilganda hech nima qilmaydigan tugma qoldirilmaydi.
+   */
+  canRequestSubject: boolean;
+  /** 0 — mukofot o'chirilgan, matn summani umuman aytmaydi. */
+  subjectRequestReward: number;
+}) {
+  const { t, m } = useT();
+  const money = useMoney();
+
+  return (
+    <div className="flex min-w-0 flex-col gap-3">
+      <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
+        <header className="flex items-center justify-between gap-2 border-b border-border/60 px-3.5 py-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">{m.materials.institutes}</p>
+            <p className="text-[11px] text-muted-foreground tabular-nums">
+              {t((x) => x.materials.institutesListed, { count: institutes.length })}
+            </p>
+          </div>
+
+          {/* Alifbo — tezkor almashtirgich, yuqoridagi «Materiali ko'p»
+              tanlagichining o'sha holati. Ikkalasi bitta qiymatni
+              boshqaradi, ya'ni ular hech qachon bir-biriga zid
+              ko'rinmaydi. */}
+          <button
+            type="button"
+            onClick={onToggleAlphabetical}
+            aria-pressed={alphabetical}
+            className={cn(
+              'inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border px-2 text-[11px] font-medium transition-colors',
+              alphabetical
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                : 'border-border/70 text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <ArrowUpDown className="size-3" />
+            {m.materials.alphabetical}
+          </button>
+        </header>
+
+        {institutes.length === 0 ? (
+          <p className="px-3.5 py-6 text-center text-sm text-muted-foreground">
+            {m.materials.noInstitutes}
+          </p>
+        ) : (
+          <ul className="flex [scrollbar-width:thin] gap-2 overflow-x-auto p-2 lg:max-h-[26rem] lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto">
+            {institutes.map((entry) => {
+              const active = entry.university.id === selectedId;
+              const solutions = entry.university.solution_count ?? 0;
+
+              return (
+                <li key={entry.university.id} className="min-w-[13rem] shrink-0 lg:min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => onSelect(entry.university.id)}
+                    aria-current={active}
+                    className={cn(
+                      'flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-colors',
+                      active
+                        ? 'border-emerald-500/50 bg-emerald-500/10'
+                        : 'border-transparent hover:bg-muted/60',
+                    )}
+                  >
+                    <UniversityBadge university={entry.university} />
+
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold text-foreground">
+                        {entry.university.short_name || entry.university.name}
+                      </span>
+                      <span className="block truncate text-[11px] text-muted-foreground">
+                        {entry.university.city ? `${entry.university.city} · ` : ''}
+                        {t((x) => x.materials.instituteSubjects, {
+                          count: formatCount(entry.subjectCount),
+                        })}
+                      </span>
+                    </span>
+
+                    {/* Rozetka — sotuvdagi yechimlar. Noli kulrang: nol ham
+                        raqam, lekin uni yashilda ko'rsatish "material bor"
+                        degan taassurot berardi. */}
+                    <span
+                      className={cn(
+                        'shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums',
+                        solutions > 0
+                          ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+                          : 'bg-muted text-muted-foreground',
+                      )}
+                    >
+                      {formatCount(solutions)}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        <button
+          type="button"
+          onClick={onRequestUniversity}
+          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 px-3.5 py-2.5 text-[11px] font-medium text-emerald-700 transition-colors hover:bg-emerald-500/[0.06] dark:text-emerald-300"
+        >
+          {m.materials.instituteMissing}
+          <ArrowRight className="size-3.5" />
+        </button>
+      </section>
+
+      <section className="rounded-2xl border border-border/70 bg-card p-3.5">
+        <p className="text-sm font-semibold text-foreground">{m.materials.subjectMissing}</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+          {subjectRequestReward > 0
+            ? t((x) => x.materials.subjectMissingReward, {
+                amount: money.som(subjectRequestReward),
+              })
+            : m.materials.subjectMissingBonus}
+        </p>
+
+        <button
+          type="button"
+          onClick={onRequestSubject}
+          disabled={!canRequestSubject}
+          className="mt-3 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-500 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-400 disabled:opacity-40"
+        >
+          <Plus className="size-4" />
+          {m.materials.addSubject}
+        </button>
+      </section>
+    </div>
+  );
+}

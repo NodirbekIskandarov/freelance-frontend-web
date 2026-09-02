@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/Link';
 import { useEffect, useState } from 'react';
 
+import { interpolate } from '@/i18n/interpolate';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
@@ -39,10 +40,14 @@ interface SlideConfig {
   badgeIcon: LucideIcon;
   titleLead: (messages: Messages) => string;
   titleAccent: (messages: Messages) => string;
-  subtitle: (messages: Messages) => string;
+  /* Javobsiz variantlar soni — «earn» slaydi uni matnining ichida
+     aytadi, «upload» esa ishlatmaydi. */
+  subtitle: (messages: Messages, awaiting: number) => string;
   cta: (messages: Messages) => string;
   ctaIcon: LucideIcon;
   ctaHref: string;
+  /** Ikkinchi darajali havola — asosiy tugmadan BOSHQA joyga. */
+  secondaryHref: string;
   image: string;
   imageAlt: string;
   features: Feature[];
@@ -64,6 +69,7 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     cta: (m) => m.promo.uploadCta,
     ctaIcon: CloudUpload,
     ctaHref: '/requests',
+    secondaryHref: '/faq',
     image: '/materials/promo/upload-character.png',
     imageAlt: '',
     features: [
@@ -99,10 +105,16 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     badgeIcon: Star,
     titleLead: (m) => m.promo.earnTitleLead,
     titleAccent: (m) => m.promo.earnTitleAccent,
-    subtitle: (m) => m.promo.earnSubtitle,
+    /* Sanoq nol bo'lsa boshqa gap: «Hozir 0 ta variantda yechim yo'q»
+       yechim yozmoqchi bo'lgan odamni ishontirmaydi, aksincha. */
+    subtitle: (m, awaiting) =>
+      awaiting > 0
+        ? interpolate(m.promo.earnSubtitle, { count: awaiting })
+        : m.promo.earnSubtitleEmpty,
     cta: (m) => m.promo.earnCta,
     ctaIcon: ArrowUpRight,
     ctaHref: '/freelance/apply',
+    secondaryHref: '/faq',
     image: '/materials/promo/earn-character.png',
     imageAlt: '',
     features: [
@@ -132,7 +144,15 @@ const SLIDES: Record<SlideId, SlideConfig> = {
   },
 };
 
-const ORDER: SlideId[] = ['upload', 'earn'];
+/*
+ * «Daromad qilish» BIRINCHI.
+ *
+ * Materiallar sahifasiga kelgan odam allaqachon katalogni ko'rmoqchi;
+ * unga birinchi bo'lib «topa olmadingizmi?» deb savol berish sahifani
+ * hali ochilmasidan muammo bilan boshlash edi. Yechim yozadigan odamga
+ * qilingan taklif esa katalogning o'zi bilan bir xil paytda foydali.
+ */
+const ORDER: SlideId[] = ['earn', 'upload'];
 
 /** Aylanuvchi punktir halqalar — illyustratsiya ortidagi bezak. */
 function OrbitRings({ orbit, still }: { orbit: string; still: boolean }) {
@@ -151,7 +171,7 @@ function OrbitRings({ orbit, still }: { orbit: string; still: boolean }) {
   );
 }
 
-function Slide({ id, still }: { id: SlideId; still: boolean }) {
+function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting: number }) {
   const { m } = useT();
   const config = SLIDES[id];
   const BadgeIcon = config.badgeIcon;
@@ -175,19 +195,31 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
         </h2>
 
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-          {config.subtitle(m)}
+          {config.subtitle(m, awaiting)}
         </p>
 
-        <Link
-          href={config.ctaHref}
-          className={cn(
-            'mt-5 inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors',
-            config.button,
-          )}
-        >
-          <CtaIcon className="size-4" />
-          {config.cta(m)}
-        </Link>
+        <div className="mt-5 flex flex-wrap items-center gap-2.5">
+          <Link
+            href={config.ctaHref}
+            className={cn(
+              'inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors',
+              config.button,
+            )}
+          >
+            <CtaIcon className="size-4" />
+            {config.cta(m)}
+          </Link>
+
+          {/* Ikkinchi tugma boshqa savolga javob beradi — «bu qanday
+              ishlaydi?». Asosiy tugma bilan bir joyga olib borsa, u
+              shunchaki takrorlangan tugma bo'lardi. */}
+          <Link
+            href={config.secondaryHref}
+            className="inline-flex h-11 items-center rounded-xl border border-foreground/15 px-4 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5"
+          >
+            {m.promo.secondaryCta}
+          </Link>
+        </div>
       </div>
 
       {/* Illyustratsiya o'rta ustunda — tor ekranda birinchi bo'lib yashiriladi. */}
@@ -198,7 +230,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
           alt={config.imageAlt}
           width={320}
           height={320}
-          priority={id === 'upload'}
+          priority={id === ORDER[0]}
           className="drop- relative z-10 h-[88%] w-auto object-contain object-bottom"
         />
       </div>
@@ -231,7 +263,7 @@ function Slide({ id, still }: { id: SlideId; still: boolean }) {
  * avtomatik aylanish TO'XTAYDI: u tanlagan slayd ko'z oldidan
  * o'z-o'zidan ketib qolmasin.
  */
-export function MaterialsPromo() {
+export function MaterialsPromo({ awaitingVariants }: { awaitingVariants: number }) {
   const { t } = useT();
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -260,7 +292,7 @@ export function MaterialsPromo() {
           exit={still ? undefined : { opacity: 0, y: -12 }}
           transition={{ duration: 0.35 }}
         >
-          <Slide id={current} still={still} />
+          <Slide id={current} still={still} awaiting={awaitingVariants} />
         </motion.div>
       </AnimatePresence>
 

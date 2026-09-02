@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { UniversityLogo } from '@/components/materials/UniversityRow';
+import { UniversityLogo } from '@/components/materials/CatalogueCards';
 import { UniversitySubjects } from '@/components/materials/UniversitySubjects';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
