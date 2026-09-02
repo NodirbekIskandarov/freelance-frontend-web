@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
+import { useDates } from '@/lib/useDates';
 import { useMoney } from '@/lib/useMoney';
 import { useNow } from '@/lib/useNow';
 import { getApiErrorMessage } from '@/shared/api/errors';
@@ -17,15 +18,26 @@ import { useGetDisputeStatsQuery, useSubmitDisputeMutation } from './disputesApi
 /** Backenddagi `MAX_DISPUTE_EVIDENCE` bilan bir xil. */
 const MAX_FILES = 3;
 const MAX_FILE_MB = 10;
-/** Backenddagi `DISPUTE_WINDOW_HOURS`. */
-export const DISPUTE_WINDOW_HOURS = 24;
 /** Backenddagi `DISPUTE_AUTHOR_RESPONSE_HOURS`. */
 const AUTHOR_HOURS = 12;
 
+/**
+ * Qolgan vaqt.
+ *
+ * Yetti kunlik oynada `168:00` degan yozuv odamga hech nima aytmaydi —
+ * bir kundan oshsa kun bilan ko'rsatiladi, oxirgi kunda esa soat:daqiqa
+ * bo'lib, sanoq aniq bo'ladi.
+ */
 function timeLeftLabel(closesAt: number, now: number): string {
   const left = closesAt - now;
   if (left <= 0) return '00:00';
+
   const hours = Math.floor(left / 3_600_000);
+  if (hours >= 24) {
+    const days = Math.floor(hours / 24);
+    return `${days} kun ${hours % 24} soat`;
+  }
+
   const minutes = Math.floor((left % 3_600_000) / 60_000);
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
@@ -46,6 +58,8 @@ export function DisputeModal({
   solutionTitle,
   variantLabel,
   purchasedAt,
+  deadline,
+  windowHours,
   price,
   onClose,
 }: {
@@ -54,11 +68,16 @@ export function DisputeModal({
   solutionTitle: string;
   variantLabel?: string;
   purchasedAt: string;
+  /** Oynaning yopilish vaqti — serverdan kelgan sana. */
+  deadline: string | null;
+  /** Shu xaridga berilgan muddat, soatda. */
+  windowHours: number | null;
   price: string;
   onClose: () => void;
 }) {
   const { t, m } = useT();
   const money = useMoney();
+  const dates = useDates();
   const [submit, { isLoading, error, isSuccess, reset }] = useSubmitDisputeMutation();
   const stats = useGetDisputeStatsQuery(undefined, { skip: !open });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,8 +88,8 @@ export function DisputeModal({
   const [touched, setTouched] = useState(false);
 
   const now = useNow();
-  const closesAt = new Date(purchasedAt).getTime() + DISPUTE_WINDOW_HOURS * 3_600_000;
-  const expired = closesAt <= now;
+  const closesAt = deadline ? new Date(deadline).getTime() : 0;
+  const expired = !deadline || closesAt <= now;
 
   function close() {
     reset();
@@ -158,8 +177,12 @@ export function DisputeModal({
       ) : (
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <form id="dispute-form" onSubmit={handleSubmit} className="space-y-5">
+            {/* Muddat SERVERDAN. Bir kundan uzun bo'lsa kunda aytiladi:
+                «168 soat ichida» ni odam o'zi bo'lishga majbur bo'lardi. */}
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {t((x) => x.dispute.intro, { hours: DISPUTE_WINDOW_HOURS })}
+              {windowHours && windowHours >= 48
+                ? t((x) => x.dispute.introDays, { days: Math.round(windowHours / 24) })
+                : t((x) => x.dispute.intro, { hours: windowHours ?? 24 })}
             </p>
 
             {/* Qaysi xarid — va qancha vaqt qolgani. Muddat o'tsa forma
@@ -169,7 +192,11 @@ export function DisputeModal({
                 <p className="truncate text-sm font-semibold text-foreground">
                   {[solutionTitle, variantLabel].filter(Boolean).join(' · ')}
                 </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{money.decimalSom(price)}</p>
+                {/* Sana ham: bir xil yechimni ikki marta olgan odam qaysi
+                    xaridga shikoyat qilayotganini shundan ajratadi. */}
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {dates.dateTime(purchasedAt)} · {money.decimalSom(price)}
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-medium tracking-wider text-muted-foreground uppercase">

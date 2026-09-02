@@ -19,6 +19,16 @@ export interface LibraryItem {
   order_id: string;
   /** Bo'sh — shikoyat yo'q. Bo'lsa tugma o'rniga holat ko'rsatiladi. */
   dispute_status: string;
+  /**
+   * Shikoyat oynasi qachon yopiladi — SERVERDAN.
+   *
+   * Mijozda «xarid + 24 soat» deb hisoblab bo'lmaydi: muddat sozlamaga
+   * bog'liq va har buyurtma o'zi sotilgan qoidani olib yuradi. Eski
+   * buyurtmalarda `null` bo'lishi mumkin.
+   */
+  dispute_deadline: string | null;
+  /** O'sha buyurtmaga berilgan muddat, soatda. */
+  dispute_window_hours: number | null;
   title: string;
   variant_label: string;
   /** Sotib olingan paytdagi narx — hozirgi narx o'zgargan bo'lishi mumkin. */

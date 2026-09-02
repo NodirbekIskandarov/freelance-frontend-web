@@ -365,6 +365,8 @@ export const uz = {
     title: "Xarid bo'yicha shikoyat",
     intro:
       'Xariddan keyin {hours} soat ichida yuboriladi. Shikoyat kelgan zahoti muallifning pul ulushi «hold»da muzlatiladi — moderator qarori chiqmaguncha yechib olinmaydi.',
+    introDays:
+      'Xariddan keyin {days} kun ichida yuboriladi. Shikoyat kelgan zahoti muallifning pul ulushi «hold»da muzlatiladi — moderator qarori chiqmaguncha yechib olinmaydi.',
     timeLeft: 'Qolgan vaqt',
     windowClosed: 'Shikoyat muddati tugagan',
     reasonSection: 'Sabab',

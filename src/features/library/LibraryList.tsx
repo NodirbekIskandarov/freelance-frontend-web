@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { LIBRARY_ORDERING_OPTIONS, type LibraryItem } from '@/shared/types/library';
-import { DISPUTE_WINDOW_HOURS, DisputeModal } from '@/features/disputes/DisputeModal';
+import { DisputeModal } from '@/features/disputes/DisputeModal';
 import { disputeStatusLabel, type DisputeStatus } from '@/shared/types/disputes';
 
 import { useGetLibraryQuery, useLazyGetLibraryItemQuery } from './libraryApi';
@@ -153,7 +153,7 @@ export function LibraryList() {
                   {disputeStatusLabel(item.dispute_status as DisputeStatus, m)}
                 </span>
               ) : (
-                windowOpen(item.purchased_at, now) && (
+                windowOpen(item.dispute_deadline, now) && (
                   <button
                     type="button"
                     onClick={() => setDisputeTarget(item)}
@@ -176,6 +176,8 @@ export function LibraryList() {
           solutionTitle={disputeTarget.title}
           variantLabel={disputeTarget.variant_label}
           purchasedAt={disputeTarget.purchased_at}
+          deadline={disputeTarget.dispute_deadline}
+          windowHours={disputeTarget.dispute_window_hours}
           price={disputeTarget.price_paid}
           onClose={() => setDisputeTarget(null)}
         />
@@ -184,9 +186,15 @@ export function LibraryList() {
   );
 }
 
-/** Xariddan keyingi shikoyat oynasi hali ochiqmi. */
-function windowOpen(purchasedAt: string, now: number): boolean {
-  if (!purchasedAt) return false;
-  const closesAt = new Date(purchasedAt).getTime() + DISPUTE_WINDOW_HOURS * 3_600_000;
-  return closesAt > now;
+/**
+ * Xariddan keyingi shikoyat oynasi hali ochiqmi.
+ *
+ * Muddat SERVERDAN keladi. Ilgari u shu yerda «xarid + 24 soat» deb
+ * hisoblanardi, muddat sozlamaga aylangach esa sayt yolg'on gapira
+ * boshladi: server yetti kun qabul qilaverar, tugma esa birinchi kundan
+ * keyin yo'qolardi.
+ */
+function windowOpen(deadline: string | null, now: number): boolean {
+  if (!deadline) return false;
+  return new Date(deadline).getTime() > now;
 }
