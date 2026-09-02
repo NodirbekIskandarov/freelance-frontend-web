@@ -449,6 +449,41 @@ export const ru: Messages = {
     refunded: 'Возвращено: {amount}',
   },
 
+  sales: {
+    tab: 'Мои продажи',
+    empty: 'Продаж пока нет',
+    emptyHint: 'Загрузите материал — деньги за продажи появятся здесь.',
+    emptyAction: 'К материалам',
+    filterEmpty: 'Продаж с таким статусом нет',
+    nothingHeld: 'Сейчас на удержании ничего нет',
+    opensAt: 'Откроется: {date}',
+    releasedAt: 'Зачислено: {date}',
+    refunded: 'Возвращено: {amount}',
+    remainingDays: 'осталось {days} дн. {hours} ч.',
+    remainingHours: 'осталось {hours} ч.',
+    remainingSoon: 'Откроется сегодня',
+    remainingDue: 'Зачисляется…',
+    disputeLink: 'Открыть спор',
+    statusHeld: 'Удержано',
+    statusReleased: 'Зачислено',
+    statusDisputed: 'Спор',
+    statusRefunded: 'Возвращено',
+    statusPartiallyRefunded: 'Частичный возврат',
+  },
+
+  txn: {
+    topup: 'Пополнение баланса',
+    purchase: 'Покупка',
+    sale: 'Доход от продажи',
+    refund: 'Возврат',
+    withdrawal: 'Вывод средств',
+    adjustment: 'Ручная корректировка',
+    reward: 'Вознаграждение',
+    escrow_hold: 'Зарезервировано',
+    escrow_release: 'Выплачено из резерва',
+    escrow_refund: 'Возвращено из резерва',
+  },
+
   hold: {
     cardLabel: 'Холд',
     cardHint: '{count} продаж ожидают',
@@ -573,6 +608,14 @@ export const ru: Messages = {
   },
 
   wallet: {
+    available: 'Доступный баланс',
+    heldTile: 'Удержано',
+    heldLine: '{amount} на удержании',
+    heldNearest: 'ближайшее {date}',
+    heldWindowHint: 'удерживается {days} дн.',
+    withdrawHeldNote:
+      'Доступно: {available}. Ещё {held} на удержании — ближайшее откроется {date}.',
+    holdExplain: 'Что такое удержание?',
     balance: 'Текущий баланс',
     withdraw: 'Вывести',
     withdrawTitle: 'Вывод средств',

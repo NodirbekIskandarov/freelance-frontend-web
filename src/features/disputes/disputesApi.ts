@@ -5,6 +5,7 @@ import type {
   DisputeStats,
   HeldEarnings,
 } from '@/shared/types/disputes';
+import type { Sale, SalesQuery } from '@/shared/types/sales';
 import { baseApi } from '@/store/api';
 
 /**
@@ -35,13 +36,12 @@ export const disputesApi = baseApi.injectEndpoints({
       invalidatesTags: ['Dispute', 'Library', 'Order', 'Wallet'],
     }),
 
-    getMyDisputes: build.query<
-      ApiPaginated<Dispute>,
-      { page?: number; page_size?: number } | void
-    >({
-      query: (params) => ({ url: '/me/disputes/', params: params ?? undefined }),
-      providesTags: ['Dispute'],
-    }),
+    getMyDisputes: build.query<ApiPaginated<Dispute>, { page?: number; page_size?: number } | void>(
+      {
+        query: (params) => ({ url: '/me/disputes/', params: params ?? undefined }),
+        providesTags: ['Dispute'],
+      },
+    ),
 
     /** Muallifga kelgan shikoyatlar — javob berish uchun. */
     getDisputesAgainstMe: build.query<
@@ -66,9 +66,21 @@ export const disputesApi = baseApi.injectEndpoints({
       providesTags: [{ type: 'Dispute', id: 'STATS' }],
     }),
 
-    /** Muallifning hali balansga tushmagan puli. */
+    /** Muallifning hali balansga tushmagan puli — hamyondagi qisqa karta. */
     getHeldEarnings: build.query<HeldEarnings, void>({
       query: () => ({ url: '/me/sales/held/' }),
+      providesTags: ['Dispute', 'Wallet'],
+    }),
+
+    /**
+     * Butun sotuv tarixi — «Sotuvlarim» bo'limi.
+     *
+     * `/me/sales/held/` dan alohida: u faqat hozir ushlab turilganini
+     * beradi va sotuvchi «o'tgan oy sotganim nima bo'ldi» degan savolga
+     * javob topa olmasdi.
+     */
+    getMySales: build.query<ApiPaginated<Sale>, SalesQuery | void>({
+      query: (params) => ({ url: '/me/sales/', params: params ?? undefined }),
       providesTags: ['Dispute', 'Wallet'],
     }),
   }),
@@ -81,4 +93,5 @@ export const {
   useRespondToDisputeMutation,
   useGetDisputeStatsQuery,
   useGetHeldEarningsQuery,
+  useGetMySalesQuery,
 } = disputesApi;

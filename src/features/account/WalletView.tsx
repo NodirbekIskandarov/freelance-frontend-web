@@ -4,6 +4,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Clock,
+  Lock,
   PiggyBank,
   Plus,
   Send,
@@ -19,7 +20,6 @@ import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import {
   isCreditTransaction,
-  TRANSACTION_TYPE_LABELS,
   WITHDRAWAL_METHOD_LABELS,
   WITHDRAWAL_METHODS,
   WITHDRAWAL_STATUS_LABELS,
@@ -33,9 +33,13 @@ import {
   useGetWithdrawalsQuery,
 } from './accountApi';
 import { DisputesAgainstMe } from '@/features/disputes/DisputesAgainstMe';
-import { HeldEarnings } from '@/features/disputes/HeldEarnings';
+import { useGetHeldEarningsQuery } from '@/features/disputes/disputesApi';
+
+import { Link } from '@/i18n/Link';
 
 import { DepositModal } from './DepositModal';
+import { SalesList } from './SalesList';
+import { transactionTitle } from './transactionTitle';
 import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
 import { useDates } from '@/lib/useDates';
@@ -43,14 +47,20 @@ import { useDates } from '@/lib/useDates';
 function WithdrawModal({
   open,
   balance,
+  held,
+  nextReleaseAt,
   onClose,
 }: {
   open: boolean;
   balance: string;
+  /** Ushlab turilgan pul — yechib bo'lmaydi, lekin sababi aytilishi kerak. */
+  held: string;
+  nextReleaseAt: string | null;
   onClose: () => void;
 }) {
-  const { m } = useT();
+  const { t, m } = useT();
   const money = useMoney();
+  const dates = useDates();
   const [create, { isLoading, error }] = useCreateWithdrawalMutation();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState<WithdrawalMethod>('card');
@@ -85,7 +95,7 @@ function WithdrawModal({
       open={open}
       onClose={onClose}
       title={m.wallet.withdrawTitle}
-      description={`Mavjud balans: ${money.decimalSom(balance)}`}
+      description={`${m.wallet.available}: ${money.decimalSom(balance)}`}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
@@ -111,6 +121,22 @@ function WithdrawModal({
           error={tooMuch ? m.wallet.overBalance : undefined}
           onChange={(event) => setAmount(event.target.value)}
         />
+
+        {/*
+          «Balansdan ortiq» degan xato o'zi savolga javob bermaydi: odam
+          sotganini biladi va puli qayerdaligini so'raydi. Ushlab turilgan
+          summa va ochilish sanasi aynan shu javob, shuning uchun ular
+          xatoning yonida turadi — boshqa ekranda emas.
+        */}
+        {tooMuch && Number(held) > 0 && (
+          <p className="rounded-lg border border-amber-500/30 bg-amber-500/[0.08] px-3.5 py-2.5 text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+            {t((x) => x.wallet.withdrawHeldNote, {
+              available: money.decimalSom(balance),
+              held: money.decimalSom(held),
+              date: nextReleaseAt ? dates.date(nextReleaseAt) : m.common.none,
+            })}
+          </p>
+        )}
 
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-foreground">{m.wallet.method}</span>
@@ -153,13 +179,17 @@ function WithdrawModal({
 
 export function WalletView() {
   const dates = useDates();
-  const { m } = useT();
+  const { t, m } = useT();
   const money = useMoney();
   const [modalOpen, setModalOpen] = useState(false);
   const [depositOpen, setDepositOpen] = useState(false);
   const [direction, setDirection] = useState<'all' | 'in' | 'out'>('all');
+  const [tab, setTab] = useState<'transactions' | 'sales'>('transactions');
 
   const { data: wallet, isLoading, error } = useGetWalletQuery();
+  // Muddat SERVERDAN o'qiladi — «7 kun» tarjimaga yozilmaydi. Sozlama
+  // o'zgarganda sayt o'zi bilan qolib ketmasligi kerak.
+  const { data: held } = useGetHeldEarningsQuery();
   const { data: transactions } = useGetWalletTransactionsQuery({ page_size: 30 });
   const { data: withdrawals } = useGetWithdrawalsQuery({ page_size: 10 });
 
@@ -190,15 +220,50 @@ export function WalletView() {
         />
 
         <div className="relative">
+          {/*
+            «Joriy» EMAS, «Mavjud».
+
+            Hold paydo bo'lgandan keyin «joriy balans» ikki narsani
+            anglatishi mumkin — sarflasa bo'ladigan puli yoki jami puli —
+            va aynan shu noaniqlik qo'llab-quvvatlashga savol bo'lib keladi.
+          */}
           <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
             <WalletIcon className="size-3.5" />
-            {m.wallet.balance}
+            {m.wallet.available}
           </p>
 
           {/* Raqam iyerarxiyaning cho'qqisi: sahifadagi eng katta matn. */}
           <p className="mt-2 text-[34px] leading-none font-bold tracking-tight text-foreground tabular-nums sm:text-[40px]">
             {money.decimalSom(wallet.balance)}
           </p>
+
+          {/*
+            Ushlab turilgan pul — ASOSIY raqamning ostida.
+
+            Savol aynan shu ikki sonni solishtirganda tug'iladi («sotdim,
+            nega balansda yo'q»), shuning uchun javob ham shu yerda va
+            bosilganda sotuvlar ro'yxatiga olib boradi.
+          */}
+          {Number(wallet.totals.held) > 0 && (
+            <button
+              type="button"
+              onClick={() => setTab('sales')}
+              className="mt-2.5 inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-lg text-left text-xs text-amber-800 transition-colors hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
+            >
+              <Lock className="size-3.5 shrink-0" />
+              <span className="font-semibold">
+                {t((x) => x.wallet.heldLine, { amount: money.decimalSom(wallet.totals.held) })}
+              </span>
+              {wallet.totals.next_release_at && (
+                <span className="text-muted-foreground">
+                  ·{' '}
+                  {t((x) => x.wallet.heldNearest, {
+                    date: dates.date(wallet.totals.next_release_at!),
+                  })}
+                </span>
+              )}
+            </button>
+          )}
 
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
             {/*
@@ -233,26 +298,48 @@ export function WalletView() {
       </section>
 
       {/* Telefonda 2×2, kengroq ekranda bitta qator. */}
-      <dl className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-5">
         {[
           {
             label: m.wallet.toppedUp,
             value: wallet.totals.topped_up,
             icon: ArrowDownLeft,
             tone: 'text-emerald-600 dark:text-emerald-400',
+            hint: '',
           },
           {
             label: m.wallet.earned,
             value: wallet.totals.earned,
             icon: PiggyBank,
             tone: 'text-emerald-600 dark:text-emerald-400',
+            hint: '',
           },
-          { label: m.wallet.spent, value: wallet.totals.spent, icon: ArrowUpRight, tone: '' },
+          {
+            label: m.wallet.heldTile,
+            value: wallet.totals.held,
+            icon: Lock,
+            tone: 'text-amber-600 dark:text-amber-400',
+            // Muddat SERVERDAN. «7 kun» ni tarjimaga yozib qo'ysak,
+            // sozlama o'zgargan kuni sayt yolg'on gapira boshlardi.
+            hint: held
+              ? t((x) => x.wallet.heldWindowHint, {
+                  days: Math.max(1, Math.round(held.window_hours / 24)),
+                })
+              : '',
+          },
+          {
+            label: m.wallet.spent,
+            value: wallet.totals.spent,
+            icon: ArrowUpRight,
+            tone: '',
+            hint: '',
+          },
           {
             label: m.wallet.pending,
             value: wallet.totals.pending_withdrawal,
             icon: Clock,
             tone: '',
+            hint: '',
           },
         ].map((item) => (
           <div key={item.label} className="rounded-xl border border-border/70 bg-card p-3.5">
@@ -263,17 +350,35 @@ export function WalletView() {
             <dd className="mt-1.5 text-[15px] font-bold text-foreground tabular-nums">
               {money.decimalSom(item.value)}
             </dd>
+            {item.hint && (
+              <dd className="mt-0.5 text-[11px] text-muted-foreground">
+                {item.hint}
+                {/* Nima uchun ushlanadi — qoidalar sahifasida yozilgan.
+                    Bir jumlaga sig'maydigan javob, shuning uchun havola. */}
+                {item.label === m.wallet.heldTile && (
+                  <>
+                    {' · '}
+                    <Link
+                      href="/legal#hold"
+                      className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                    >
+                      {m.wallet.holdExplain}
+                    </Link>
+                  </>
+                )}
+              </dd>
+            )}
           </div>
         ))}
       </dl>
 
-      {/* «Hold» — sotilgan, lekin hali balansga tushmagan pul. Balansning
-          ostida turadi: savol aynan shu ikki raqamni solishtirganda
-          tug'iladi. */}
-      <div className="mt-6 space-y-6">
-        <HeldEarnings />
-        {/* Nizo — pul nega ushlanib turganining sababi, shuning uchun u
-            aynan shu yerda: odam «balansim qani» deb kelgan joyda. */}
+      {/* Nizo — pul nega ushlanib turganining sababi, shuning uchun u
+          aynan shu yerda: odam «balansim qani» deb kelgan joyda.
+
+          Eski `HeldEarnings` kartasi OLIB TASHLANDI: u endi «Sotuvlarim»
+          bo'limi bilan bir xil ro'yxatni ikkinchi marta chizardi, faqat
+          kambag'alroq — filtrsiz va sanoqsiz. */}
+      <div id="disputes" className="mt-6 scroll-mt-20">
         <DisputesAgainstMe />
       </div>
 
@@ -319,10 +424,48 @@ export function WalletView() {
         </section>
       )}
 
-      <section className="mt-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-foreground">{m.wallet.transactions}</h2>
+      {/*
+        Ikkita ro'yxat, ikkita savol: «hamyonimda nima bo'ldi» va
+        «sotuvlarimga nima bo'ldi». Ularni bir ustunga qo'yish sahifani
+        ikki barobar uzaytirardi va ikkalasini ham topish qiyinlashardi.
+      */}
+      <div
+        role="tablist"
+        aria-label={m.wallet.transactions}
+        className="mt-8 inline-flex gap-1 rounded-xl bg-muted/50 p-1"
+      >
+        {(
+          [
+            ['transactions', m.wallet.transactions],
+            ['sales', m.sales.tab],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            aria-selected={tab === value}
+            onClick={() => setTab(value)}
+            className={cn(
+              'rounded-lg px-3.5 py-2 text-sm font-medium transition-colors',
+              tab === value
+                ? 'bg-background text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
+      {tab === 'sales' && (
+        <section className="mt-4">
+          <SalesList />
+        </section>
+      )}
+
+      <section className={cn('mt-4', tab !== 'transactions' && 'hidden')}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
           {/*
             Kirim/chiqim JOYIDA saralanadi, serverda emas.
 
@@ -402,13 +545,13 @@ export function WalletView() {
                   */}
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-medium text-foreground">
-                      {transaction.description || TRANSACTION_TYPE_LABELS[transaction.type]}
+                      {transactionTitle(transaction, m)}
                     </h3>
                     <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                       {/* Tur — yorliq, oddiy matn emas: qatorda u sarlavha
                           bilan qo'shilib ketmasin. */}
                       <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                        {TRANSACTION_TYPE_LABELS[transaction.type]}
+                        {m.txn[transaction.type]}
                       </span>
                       {dates.dateTime(transaction.created_at)}
                     </p>
@@ -445,6 +588,8 @@ export function WalletView() {
       <WithdrawModal
         open={modalOpen}
         balance={wallet.balance}
+        held={wallet.totals.held}
+        nextReleaseAt={wallet.totals.next_release_at}
         onClose={() => setModalOpen(false)}
       />
     </>

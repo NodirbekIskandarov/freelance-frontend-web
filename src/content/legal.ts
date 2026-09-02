@@ -41,8 +41,20 @@ const LEGAL_UZ: LegalSection[] = [
     ],
   },
   {
+    id: 'hold',
+    title: "4. Sotuvdan tushgan mablag'ni ushlab turish",
+    paragraphs: [
+      "Tayyor material sotilganda muallif ulushi darhol balansga tushmaydi: u belgilangan muddat davomida platformada ushlab turiladi. Muddat tugagach summa avtomatik ravishda balansga o'tkaziladi va muallifga xabar boradi.",
+      "Ushlab turish XARIDOR KAFOLATI uchun. Shu muddat ichida xaridor xarid bo'yicha shikoyat qoldirishi mumkin — masalan fayl ochilmasa yoki e'lon qilingan tavsifga mos kelmasa. Ushlab turilgan mablag' bo'lmasa, asosli shikoyat bo'yicha pulni qaytarib bo'lmasdi.",
+      "Shikoyat qoldirilsa, ushlab turish muddat bo'yicha emas, QAROR bo'yicha yakunlanadi: moderator xaridor foydasiga hal qilsa mablag' unga qaytariladi, aks holda muallifga o'tkaziladi. Shikoyat qoldirish muddati ushlab turish muddati bilan bir xil va u tugagach xarid yakuniy hisoblanadi.",
+      "Har bir sotuvga uning sotilgan kunidagi qoida qo'llaniladi. Muddat keyinchalik o'zgartirilsa, bu faqat YANGI sotuvlarga taalluqli bo'ladi — allaqachon e'lon qilingan ochilish sanasi o'zgarmaydi.",
+      "Hisob tekshiruv sababli vaqtincha bloklansa yoki muzlatilsa, ushlab turilgan mablag' yo'qolmaydi: u hisobda saqlanadi va cheklov olib tashlangach to'liq o'tkaziladi. Hisobni o'chirishni so'ragan foydalanuvchining ushlab turilgan mablag'i muddat tugagach yoki ochiq shikoyatlar hal bo'lgach beriladi.",
+      "Ushlab turilgan mablag'ni sarflash yoki yechib olish mumkin emas — u hali muallifga o'tmagan. Joriy summa va har bir sotuvning ochilish sanasi hamyon bo'limida ko'rinadi.",
+    ],
+  },
+  {
     id: 'maxfiylik',
-    title: "4. Shaxsiy ma'lumotlar",
+    title: "5. Shaxsiy ma'lumotlar",
     paragraphs: [
       "Ro'yxatdan o'tishda kiritilgan ism, telefon raqam va elektron pochta faqat xizmat ko'rsatish, buyurtmalar bo'yicha xabar berish va qo'llab-quvvatlash uchun ishlatiladi.",
       "Freelancer arizasidagi hujjat ma'lumotlari yopiq saqlanadi va faqat administrator tekshiruvi uchun ochiladi. Ular uchinchi shaxslarga berilmaydi.",
@@ -51,7 +63,7 @@ const LEGAL_UZ: LegalSection[] = [
   },
   {
     id: 'javobgarlik',
-    title: '5. Javobgarlikni cheklash',
+    title: '6. Javobgarlikni cheklash',
     paragraphs: [
       "Platforma texnik uzilishlar, uchinchi tomon to'lov tizimlaridagi nosozliklar yoki foydalanuvchi tomonidan noto'g'ri kiritilgan ma'lumotlar oqibatlari uchun javob bermaydi.",
       "Ushbu shartlarga o'zgartirish kiritilishi mumkin. Muhim o'zgarishlar haqida foydalanuvchilar oldindan xabardor qilinadi.",
@@ -85,8 +97,20 @@ const LEGAL_RU: LegalSection[] = [
     ],
   },
   {
+    id: 'hold',
+    title: '4. Удержание средств от продажи',
+    paragraphs: [
+      'При продаже готового материала доля автора не поступает на баланс сразу: она удерживается платформой в течение установленного срока. По его истечении сумма зачисляется на баланс автоматически, а автор получает уведомление.',
+      'Удержание существует ради ГАРАНТИИ ПОКУПАТЕЛЮ. В течение этого срока покупатель может подать жалобу на покупку — например, если файл не открывается или не соответствует описанию. Без удержанных средств вернуть деньги по обоснованной жалобе было бы не из чего.',
+      'Если жалоба подана, удержание завершается не по сроку, а по РЕШЕНИЮ: при решении в пользу покупателя средства возвращаются ему, иначе — зачисляются автору. Срок подачи жалобы равен сроку удержания; после его истечения покупка считается окончательной.',
+      'К каждой продаже применяется правило, действовавшее в день продажи. Если срок будет изменён позже, это коснётся только НОВЫХ продаж — уже объявленная дата зачисления не меняется.',
+      'Если аккаунт временно заблокирован или заморожен из-за проверки, удержанные средства не пропадают: они сохраняются за аккаунтом и зачисляются полностью после снятия ограничения. Пользователю, запросившему удаление аккаунта, удержанные средства выплачиваются по истечении срока или после закрытия открытых жалоб.',
+      'Удержанные средства нельзя потратить или вывести — они ещё не перешли автору. Текущая сумма и дата зачисления по каждой продаже видны в разделе кошелька.',
+    ],
+  },
+  {
     id: 'maxfiylik',
-    title: '4. Персональные данные',
+    title: '5. Персональные данные',
     paragraphs: [
       'Имя, номер телефона и электронная почта, указанные при регистрации, используются только для оказания услуг, уведомлений по заказам и поддержки.',
       'Данные документов из заявки фрилансера хранятся закрыто и открываются только для проверки администратором. Третьим лицам они не передаются.',
@@ -95,7 +119,7 @@ const LEGAL_RU: LegalSection[] = [
   },
   {
     id: 'javobgarlik',
-    title: '5. Ограничение ответственности',
+    title: '6. Ограничение ответственности',
     paragraphs: [
       'Платформа не отвечает за технические сбои, неполадки в сторонних платёжных системах и последствия неверно введённых пользователем данных.',
       'В настоящие условия могут вноситься изменения. О существенных изменениях пользователи уведомляются заранее.',

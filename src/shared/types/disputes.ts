@@ -104,6 +104,8 @@ export interface HeldEarnings {
   disputed_total: string;
   disputed_count: number;
   window_hours: number;
+  /** Eng yaqin ochilish sanasi. `null` — soat bilan ochiladigan ulush yo'q. */
+  next_release_at: string | null;
   results: HeldSale[];
 }
 

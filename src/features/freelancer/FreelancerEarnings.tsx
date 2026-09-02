@@ -6,7 +6,7 @@ import { Link } from '@/i18n/Link';
 import { ErrorNotice } from '@/components/ui/ErrorNotice';
 import { StatCard } from '@/components/ui/StatCard';
 import { useGetWalletQuery, useGetWalletTransactionsQuery } from '@/features/account/accountApi';
-import { TRANSACTION_TYPE_LABELS } from '@/shared/types/account';
+import { transactionTitle } from '@/features/account/transactionTitle';
 import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
 import { useDates } from '@/lib/useDates';
@@ -90,7 +90,7 @@ export function FreelancerEarnings() {
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-medium text-foreground">
-                    {entry.description || TRANSACTION_TYPE_LABELS[entry.type]}
+                    {transactionTitle(entry, m)}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground/80">
                     {dates.dateTime(entry.created_at)}

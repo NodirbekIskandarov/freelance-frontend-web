@@ -70,23 +70,22 @@ export const TRANSACTION_TYPES = [
   'refund',
   'withdrawal',
   'adjustment',
+  // Tasdiqlangan katalog arizasi uchun platforma to'lovi. Ilgari bu
+  // ro'yxatda YO'Q edi va bunday yozuv turi bo'sh chiqardi.
+  'reward',
   'escrow_hold',
   'escrow_release',
   'escrow_refund',
 ] as const;
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
-export const TRANSACTION_TYPE_LABELS: Record<TransactionType, string> = {
-  topup: "To'ldirish",
-  purchase: 'Xarid',
-  sale: 'Sotuv',
-  refund: 'Qaytarish',
-  withdrawal: 'Yechib olish',
-  adjustment: 'Tuzatish',
-  escrow_hold: 'Kafolatga olindi',
-  escrow_release: 'Kafolatdan berildi',
-  escrow_refund: 'Kafolatdan qaytarildi',
-};
+/*
+  Yorliqlar TARJIMA LUG'ATIDA (`m.txn`), bu yerda emas.
+
+  Ilgari ular shu faylda qat'iy o'zbekcha yozilgan edi va rus tilida ham
+  o'zbekcha chiqardi — `assignmentTypeLabel` da allaqachon tuzatilgan
+  o'sha xato.
+*/
 
 /**
  * Tranzaksiya balansni oshiradimi.
@@ -111,6 +110,16 @@ export interface WalletTotals {
   spent: string;
   withdrawn: string;
   pending_withdrawal: string;
+  /**
+   * Sotilgan, lekin hali yetib kelmagan pul.
+   *
+   * `balance` ning ICHIDA EMAS — ulush sotuvchiga o'tmagan. Shuning uchun
+   * uni balansdan ayirish ham, qo'shish ham noto'g'ri: bu alohida raqam.
+   */
+  held: string;
+  held_count: number;
+  /** Eng yaqin ochilish. Nizodagi ulushlar hisobga olinmaydi. */
+  next_release_at: string | null;
 }
 
 export interface Wallet {

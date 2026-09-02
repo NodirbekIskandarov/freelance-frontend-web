@@ -10,7 +10,7 @@ import { useI18n } from '@/i18n/I18nProvider';
 import { localizeHref, stripLocale, type Locale } from '@/i18n/config';
 import type { Messages } from '@/i18n/messages/uz';
 import { cn } from '@/lib/cn';
-import { selectCurrentUser } from '@/store/slices/authSlice';
+import { selectAuthHydrated, selectCurrentUser } from '@/store/slices/authSlice';
 import { useAppSelector } from '@/store/hooks';
 
 import { HeaderUserMenu } from './HeaderUserMenu';
@@ -84,6 +84,15 @@ export function Header() {
   const pathname = usePathname();
   const { locale, messages } = useI18n();
   const user = useAppSelector(selectCurrentUser);
+  /*
+   * Token `localStorage` dan O'QILGUNCHA hech kim ko'rsatilmaydi.
+   *
+   * Ilgari bu tekshiruv yo'q edi va kirgan odam har sahifa yuklanishida
+   * bir lahza «Kirish / Ro'yxatdan o'tish» ni ko'rardi — tizimdan
+   * chiqarib yuborilgandek. `hydrated` bayrog'i aynan shuning uchun
+   * qo'shilgan edi, lekin sarlavha undan foydalanmasdi.
+   */
+  const hydrated = useAppSelector(selectAuthHydrated);
   const [open, setOpen] = useState(false);
 
   /*
@@ -125,7 +134,12 @@ export function Header() {
           {/* Til va tema yonma-yon: ikkalasi ham ko'rinish sozlamasi. */}
           <LocaleToggle compact />
           <ThemeToggle compact />
-          {user ? (
+          {!hydrated ? (
+            /* Kim ekani hali noma'lum. Bo'sh joy emas, XUDDI SHU
+               o'lchamdagi joy: aks holda tugmalar paydo bo'lganda
+               sarlavha silkinib ketardi. */
+            <span aria-hidden className="h-10 w-[13.5rem] rounded-lg bg-muted/50" />
+          ) : user ? (
             <>
               <NotificationBell />
               <HeaderUserMenu user={user} />
@@ -175,7 +189,9 @@ export function Header() {
             <div className="my-2 h-px bg-border dark:bg-white/10" />
 
             <div className="flex flex-col gap-2 p-1">
-              {user ? (
+              {!hydrated ? (
+                <span aria-hidden className="h-11 rounded-lg bg-muted/50" />
+              ) : user ? (
                 <HeaderUserMenu user={user} mobile />
               ) : (
                 <>
