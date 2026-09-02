@@ -387,8 +387,18 @@ export function SubjectTasks({
             : 'lg:grid-cols-[250px_minmax(0,1fr)]',
         )}
       >
-        {/* ——— Chap ustun: ro'yxat va belgilar izohi ——— */}
-        <div className="min-w-0 space-y-3 lg:col-start-1 lg:row-start-1">
+        {/*
+          ——— Chap ustun: ro'yxat va belgilar izohi ———
+
+          `row-span-2` — yon ustunlar QATOR BALANDLIGINI belgilamasin.
+
+          Ular birinchi qatorda qolsa, qator eng balandiga tenglashardi va
+          ikkinchi qatordagi izohlar shu balandlikdan KEYIN boshlanardi:
+          variantlar to'ri tugagach, izohlargacha bo'sh joy osilib qolardi.
+          Ikkala qatorga cho'zilganda esa birinchi qator balandligini faqat
+          o'rta ustun belgilaydi va izohlar to'r ostidan darhol chiqadi.
+        */}
+        <div className="min-w-0 space-y-3 lg:col-start-1 lg:row-span-2 lg:row-start-1">
           <div className="flex w-full min-w-0 flex-col rounded-2xl border border-border/70 bg-card">
             {/* Telefonda YASHIRIN: faol tab allaqachon «Barchasi 5» deb
                 turibdi va bu sarlavha o'sha ikki so'zni qaytarib, birinchi
@@ -571,7 +581,10 @@ export function SubjectTasks({
 
         {/* ——— O'ng ustun: tanlangan variant va sanoqlar ——— */}
         {active && sidePanel && (
-          <div ref={panelRef} className="min-w-0 space-y-3 lg:col-start-3 lg:row-start-1">
+          <div
+            ref={panelRef}
+            className="min-w-0 space-y-3 lg:col-start-3 lg:row-span-2 lg:row-start-1"
+          >
             <VariantPanel
               key={sidePanel.id}
               variant={sidePanel}
@@ -592,11 +605,13 @@ export function SubjectTasks({
         )}
 
         {/*
-          Izohlar — markaziy ustun ostida, alohida qator.
+          Izohlar — markaziy ustunning IKKINCHI qatori, ya'ni variantlar
+          to'ri ostidan darhol chiqadi. Yon ustunlar ikkala qatorga
+          cho'zilgani uchun ular bu joylashuvga ta'sir qilmaydi.
 
-          Ular uchinchi ustundan KEYIN chiziladi: telefonda ustunlar
+          DOM da ular uchinchi ustundan KEYIN turadi: telefonda ustunlar
           ustma-ust tushadi va variantlar paneli — sahifaga kelish sababi —
-          izohlardan oldin turishi kerak.
+          izohlardan oldin bo'lishi kerak.
         */}
         {active && (
           <div className="min-w-0 rounded-2xl border border-border/70 bg-card p-4 sm:p-5 lg:col-start-2 lg:row-start-2">
