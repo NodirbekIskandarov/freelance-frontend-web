@@ -230,12 +230,24 @@ export function UniversityRow({
           ) : (
             <>
               {/*
-                  `items-start` — kartalar mazmun balandligida qolsin.
-                  Cho'zilganda ular chapdagi institut ustuni balandligiga
-                  tenglashardi (logotip + sanoqlar + tugma ≈ 450px) va
-                  ichi bo'm-bo'sh baland qutilar bo'lib chiqardi.
+                `content-start`, `items-start` EMAS — farqi shu yerda hal
+                qiluvchi.
+
+                `items-start` bilan har karta o'z mazmuni balandligida
+                qolardi va yonma-yon turgan to'rttasi har xil bo'lib,
+                pastki chekkasi tishlanib ketardi.
+
+                `content-start` esa QATORNI cho'zilishdan to'xtatadi:
+                qator eng baland kartaning mazmuniga teng bo'ladi,
+                kartalar esa o'sha qator ichida bir-biriga tenglashadi.
+                Ortiqcha joy pastda qoladi.
+
+                Ikkalasi ham kerak edi, chunki cho'zilishning sababi
+                yonidagi institut ustuni: usiz kartalar uning
+                balandligiga (logotip + sanoqlar + tugma ≈ 450px)
+                tortilib, ichi bo'm-bo'sh qutilar bo'lib chiqardi.
               */}
-              <div className="grid min-w-0 flex-1 grid-cols-2 items-start gap-2.5 sm:gap-3 lg:grid-cols-4">
+              <div className="grid min-w-0 flex-1 grid-cols-2 content-start gap-2.5 sm:gap-3 lg:grid-cols-4">
                 {visible.map((subject, index) => (
                   <SubjectMiniCard
                     key={subject.id}
