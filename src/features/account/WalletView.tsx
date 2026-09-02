@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   Clock,
   PiggyBank,
+  Plus,
   Send,
   Wallet as WalletIcon,
 } from 'lucide-react';
@@ -33,6 +34,8 @@ import {
 } from './accountApi';
 import { DisputesAgainstMe } from '@/features/disputes/DisputesAgainstMe';
 import { HeldEarnings } from '@/features/disputes/HeldEarnings';
+
+import { DepositModal } from './DepositModal';
 import { useT } from '@/i18n/useT';
 import { useMoney } from '@/lib/useMoney';
 import { useDates } from '@/lib/useDates';
@@ -153,70 +156,116 @@ export function WalletView() {
   const { m } = useT();
   const money = useMoney();
   const [modalOpen, setModalOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [direction, setDirection] = useState<'all' | 'in' | 'out'>('all');
 
   const { data: wallet, isLoading, error } = useGetWalletQuery();
   const { data: transactions } = useGetWalletTransactionsQuery({ page_size: 30 });
   const { data: withdrawals } = useGetWithdrawalsQuery({ page_size: 10 });
+
+  /* Ishora bo'yicha saralash — sabab quyida, filtr tugmalari yonida. */
+  const visibleTransactions = (transactions?.results ?? []).filter((transaction) => {
+    if (direction === 'all') return true;
+    const credit = isCreditTransaction(transaction.amount);
+    return direction === 'in' ? credit : !credit;
+  });
 
   if (error) return <ErrorNotice error={error} />;
   if (isLoading || !wallet) return <div className="h-40 animate-pulse rounded-2xl bg-muted" />;
 
   return (
     <>
-      <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-              <WalletIcon className="size-5" />
-            </span>
-            <div>
-              <p className="text-xs text-muted-foreground">{m.wallet.balance}</p>
-              <p className="text-2xl font-bold text-foreground tabular-nums">
-                {money.decimalSom(wallet.balance)}
-              </p>
-            </div>
+      {/*
+        Balans kartasi — sahifaning yagona asosiy raqami.
+
+        Gradient tokenlardan yasaladi, qat'iy hexdan emas: sayt yorug' va
+        qorong'i mavzuda ham ishlaydi va bittasida karta o'qilmay qolishi
+        mumkin emas.
+      */}
+      <section className="relative overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/[0.12] via-emerald-500/[0.05] to-transparent p-5 sm:p-6">
+        {/* Yumshoq yorug'lik — kartaga chuqurlik beradi, matnga tegmaydi. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-16 -right-10 size-48 rounded-full bg-emerald-500/15 blur-3xl"
+        />
+
+        <div className="relative">
+          <p className="flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <WalletIcon className="size-3.5" />
+            {m.wallet.balance}
+          </p>
+
+          {/* Raqam iyerarxiyaning cho'qqisi: sahifadagi eng katta matn. */}
+          <p className="mt-2 text-[34px] leading-none font-bold tracking-tight text-foreground tabular-nums sm:text-[40px]">
+            {money.decimalSom(wallet.balance)}
+          </p>
+
+          <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+            {/*
+              Ikkita amal, biri asosiy. Ilgari faqat «Pul yechish» bor
+              edi va balansga pul QANDAY tushishi ekranda hech qayerda
+              aytilmasdi.
+            */}
+            <Button variant="emerald" className="flex-1" onClick={() => setDepositOpen(true)}>
+              <Plus className="size-4" />
+              {m.wallet.deposit}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="flex-1"
+              disabled={wallet.is_frozen || Number(wallet.balance) <= 0}
+              title={Number(wallet.balance) <= 0 ? m.wallet.withdrawNothing : undefined}
+              onClick={() => setModalOpen(true)}
+            >
+              <Send className="size-4" />
+              {m.wallet.withdraw}
+            </Button>
           </div>
 
-          <Button
-            variant="emerald"
-            disabled={wallet.is_frozen || Number(wallet.balance) <= 0}
-            onClick={() => setModalOpen(true)}
-          >
-            <Send className="size-4" />
-            {m.wallet.withdraw}
-          </Button>
+          {/* Muzlatilgan hamyonda amallar bloklanadi — sababi ko'rsatilishi kerak. */}
+          {wallet.is_frozen && (
+            <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-xs text-amber-800 dark:text-amber-300">
+              {m.wallet.frozen}
+            </p>
+          )}
         </div>
-
-        {/* Muzlatilgan hamyonda amallar bloklanadi — sababi ko'rsatilishi kerak. */}
-        {wallet.is_frozen && (
-          <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-xs text-amber-800 dark:text-amber-300">
-            {m.wallet.frozen}
-          </p>
-        )}
-
-        <dl className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: "To'ldirilgan", value: wallet.totals.topped_up, icon: ArrowDownLeft },
-            { label: m.wallet.earned, value: wallet.totals.earned, icon: PiggyBank },
-            { label: m.wallet.spent, value: wallet.totals.spent, icon: ArrowUpRight },
-            {
-              label: m.wallet.pending,
-              value: wallet.totals.pending_withdrawal,
-              icon: Clock,
-            },
-          ].map((item) => (
-            <div key={item.label} className="rounded-xl border border-border/60 bg-background p-3">
-              <dt className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <item.icon className="size-3.5" />
-                {item.label}
-              </dt>
-              <dd className="mt-1 text-sm font-bold text-foreground tabular-nums">
-                {money.decimalSom(item.value)}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </section>
+
+      {/* Telefonda 2×2, kengroq ekranda bitta qator. */}
+      <dl className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          {
+            label: m.wallet.toppedUp,
+            value: wallet.totals.topped_up,
+            icon: ArrowDownLeft,
+            tone: 'text-emerald-600 dark:text-emerald-400',
+          },
+          {
+            label: m.wallet.earned,
+            value: wallet.totals.earned,
+            icon: PiggyBank,
+            tone: 'text-emerald-600 dark:text-emerald-400',
+          },
+          { label: m.wallet.spent, value: wallet.totals.spent, icon: ArrowUpRight, tone: '' },
+          {
+            label: m.wallet.pending,
+            value: wallet.totals.pending_withdrawal,
+            icon: Clock,
+            tone: '',
+          },
+        ].map((item) => (
+          <div key={item.label} className="rounded-xl border border-border/70 bg-card p-3.5">
+            <dt className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <item.icon className={cn('size-3.5', item.tone)} />
+              {item.label}
+            </dt>
+            <dd className="mt-1.5 text-[15px] font-bold text-foreground tabular-nums">
+              {money.decimalSom(item.value)}
+            </dd>
+          </div>
+        ))}
+      </dl>
 
       {/* «Hold» — sotilgan, lekin hali balansga tushmagan pul. Balansning
           ostida turadi: savol aynan shu ikki raqamni solishtirganda
@@ -271,21 +320,64 @@ export function WalletView() {
       )}
 
       <section className="mt-8">
-        <h2 className="text-lg font-bold text-foreground">{m.wallet.transactions}</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold text-foreground">{m.wallet.transactions}</h2>
 
-        {!transactions || transactions.results.length === 0 ? (
+          {/*
+            Kirim/chiqim JOYIDA saralanadi, serverda emas.
+
+            Backend `?type=` bo'yicha filtrlaydi, yo'nalish esa tur emas:
+            `adjustment` ikkala tomonga ham ketadi va bitta tur bilan uni
+            ajratib bo'lmaydi. Yagona ishonchli manba — summaning ishorasi,
+            u esa allaqachon qo'lda. Ro'yxat bitta odamniki va o'ttizta
+            yozuv bilan cheklangan, ya'ni bu arzon.
+          */}
+          <div
+            role="group"
+            aria-label={m.wallet.transactions}
+            className="flex gap-1 rounded-full border border-border/70 p-1"
+          >
+            {(
+              [
+                ['all', m.wallet.filterAll],
+                ['in', m.wallet.filterIn],
+                ['out', m.wallet.filterOut],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={direction === value}
+                onClick={() => setDirection(value)}
+                className={cn(
+                  'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  direction === value
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {visibleTransactions.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-border px-6 py-16 text-center text-sm text-muted-foreground">
-            {m.wallet.noTransactions}
+            {/* «Umuman yo'q» va «bu filtrda yo'q» — boshqa-boshqa gap. */}
+            {transactions && transactions.results.length > 0
+              ? m.wallet.filterEmpty
+              : m.wallet.noTransactions}
           </p>
         ) : (
-          <div className="mt-4 grid gap-3">
-            {transactions.results.map((transaction) => {
+          <div className="mt-4 grid gap-2.5">
+            {visibleTransactions.map((transaction) => {
               const isCredit = isCreditTransaction(transaction.amount);
 
               return (
                 <article
                   key={transaction.id}
-                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-background p-4 sm:gap-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-card p-3.5 sm:gap-4"
                 >
                   <span
                     className={cn(
@@ -302,12 +394,22 @@ export function WalletView() {
                     )}
                   </span>
 
-                  <div className="min-w-0 flex-1 basis-40">
+                  {/*
+                    `basis` YO'Q: u matn blokini 10rem'dan kichrayishga
+                    qo'ymasdi va 390px ekranda summa alohida qatorga
+                    tushib, har yozuv ikki barobar baland bo'lardi.
+                    Endi sarlavha qisqaradi, summa esa yonida qoladi.
+                  */}
+                  <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm font-medium text-foreground">
                       {transaction.description || TRANSACTION_TYPE_LABELS[transaction.type]}
                     </h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {TRANSACTION_TYPE_LABELS[transaction.type]} &middot;{' '}
+                    <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                      {/* Tur — yorliq, oddiy matn emas: qatorda u sarlavha
+                          bilan qo'shilib ketmasin. */}
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        {TRANSACTION_TYPE_LABELS[transaction.type]}
+                      </span>
                       {dates.dateTime(transaction.created_at)}
                     </p>
                   </div>
@@ -327,8 +429,8 @@ export function WalletView() {
                     >
                       {money.decimalSom(transaction.amount)}
                     </div>
-                    <div className="text-[11px] text-muted-foreground">
-                      Qoldiq: {money.decimalSom(transaction.balance_after)}
+                    <div className="text-[11px] whitespace-nowrap text-muted-foreground">
+                      {m.wallet.balanceAfter}: {money.decimalSom(transaction.balance_after)}
                     </div>
                   </div>
                 </article>
@@ -337,6 +439,8 @@ export function WalletView() {
           </div>
         )}
       </section>
+
+      <DepositModal open={depositOpen} onClose={() => setDepositOpen(false)} />
 
       <WithdrawModal
         open={modalOpen}

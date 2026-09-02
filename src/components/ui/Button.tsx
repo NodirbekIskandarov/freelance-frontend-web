@@ -10,7 +10,16 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-foreground text-background hover:bg-foreground/85',
-        emerald: 'bg-emerald-500 text-white hover:bg-emerald-400',
+        /*
+          Yorliq QORA, oq emas.
+
+          Oq matn `emerald-500` ustida 2.54:1 beradi — talab 4.5:1, ya'ni
+          sayt bo'ylab asosiy tugma o'qish chegarasidan ancha past edi.
+          Yashilni to'qlashtirish yo'l emas: u brend rangi va katalogda
+          matn bo'lib ham ishlatiladi. Qora yorliq esa o'sha yorqin
+          yashilni saqlab, 7.5:1 beradi.
+        */
+        emerald: 'bg-emerald-500 text-emerald-950 hover:bg-emerald-400',
         outline: 'border-border bg-background hover:bg-muted hover:text-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-muted hover:text-foreground',
