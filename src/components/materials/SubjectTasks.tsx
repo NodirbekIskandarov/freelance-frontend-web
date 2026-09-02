@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Plus, Search, SlidersHorizontal, Upload, X } from 'lucide-react';
+import { FileText, Plus, Search, Upload, X } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
@@ -21,13 +21,6 @@ import {
 import { AssignmentOverview } from './AssignmentOverview';
 import { AssignmentStatsCard } from './AssignmentStatsCard';
 import { CatalogueCtaBanner } from './CatalogueCtaBanner';
-import {
-  DEFAULT_TASK_FILTERS,
-  hasActiveTaskFilters,
-  TaskFilterModal,
-  type TaskAvailability,
-  type TaskFilters,
-} from './TaskFilterModal';
 import { VariantChips } from './VariantChips';
 import { VariantPanel } from './VariantPanel';
 import { VariantlessTask } from './VariantlessTask';
@@ -46,13 +39,9 @@ export interface TaskNode {
   variants: VariantWithCount[];
 }
 
-/**
- * Topshiriqning yechim holati.
- *
- * Yon ro'yxatdagi yorliq ham, filtr ham AYNAN shu funksiyaga tayanadi —
- * ikki joyda alohida hisoblansa, filtr «yechim bor» deb ko'rsatgan
- * topshiriq yonida kulrang yorliq turib qolishi mumkin edi.
- */
+/** Topshiriqda yechim bor-yo'qligi — qatordagi rangli yorliq shunga qarab. */
+export type TaskAvailability = 'has_solution' | 'demand' | 'missing';
+
 export function taskAvailability(task: TaskNode): TaskAvailability {
   if (task.variants.some((variant) => variant.solutionCount > 0)) return 'has_solution';
   if (task.variants.some((variant) => variant.request_count > 0)) return 'demand';
@@ -143,8 +132,6 @@ export function SubjectTasks({
   ];
 
   const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState<TaskFilters>(DEFAULT_TASK_FILTERS);
-  const [filterOpen, setFilterOpen] = useState(false);
   const [requestOpen, setRequestOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
@@ -200,22 +187,9 @@ export function SubjectTasks({
         if (!titleHit && !variantHit) return false;
       }
 
-      if (filters.availability !== 'all' && taskAvailability(task) !== filters.availability) {
-        return false;
-      }
-
-      if (filters.format !== 'all') {
-        const hasVariants = task.variants.length > 0;
-        if (filters.format === 'with_variants' && !hasVariants) return false;
-        if (filters.format === 'without_variants' && hasVariants) return false;
-      }
-
       return true;
     });
-  }, [filters, query, tasks, type]);
-
-  const filtersActive = hasActiveTaskFilters(filters);
-  const filterCount = (filters.availability !== 'all' ? 1 : 0) + (filters.format !== 'all' ? 1 : 0);
+  }, [query, tasks, type]);
 
   /*
    * Tanlov ro'yxatdan chiqib ketsa (tab yoki qidiruv o'zgargach)
@@ -369,50 +343,38 @@ export function SubjectTasks({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 lg:shrink-0">
-            <div className="relative min-w-0 flex-1 lg:w-[260px] lg:flex-none">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <label className="sr-only" htmlFor="task-search">
-                {m.ui.searchTasks}
-              </label>
-              <input
-                id="task-search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={m.tasks.searchPlaceholder}
-                className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery('')}
-                  aria-label={m.ui.clearSearch}
-                  className="absolute top-1/2 right-2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  <X className="size-3" />
-                </button>
-              )}
-            </div>
+          {/*
+            Filtr TUGMASI OLIB TASHLANDI.
 
-            <button
-              type="button"
-              onClick={() => setFilterOpen(true)}
-              aria-label={m.ui.filters}
-              className={cn(
-                'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border/60 bg-background/80 px-2.5 text-xs font-medium transition-colors hover:bg-muted sm:px-3',
-                filtersActive && 'border-emerald-500/40 text-emerald-700 dark:text-emerald-300',
-              )}
-            >
-              <SlidersHorizontal className="size-4" />
-              <span className="hidden sm:inline">{m.tasks.filter}</span>
-              {/* Nuqta emas, SON: ikkita filtr yoqilganini nuqta aytmasdi
-                  va oynani ochmasdan bilib bo'lmasdi. */}
-              {filterCount > 0 && (
-                <span className="inline-flex min-w-[1.125rem] items-center justify-center rounded-md bg-emerald-500/15 px-1 text-[11px] font-bold text-emerald-700 tabular-nums dark:text-emerald-300">
-                  {filterCount}
-                </span>
-              )}
-            </button>
+            U oyna ochib, ikkita tanlagich ko'rsatardi: «yechim holati» va
+            «variant formati». Ikkalasi ham endi ortiqcha — holat har
+            qatorda rangli yorliq bo'lib turibdi, variant bor-yo'qligi esa
+            o'sha qatorda yozilgan. Bitta fanda topshiriqlar yigirmatadan
+            oshmaydi, ya'ni ko'z bilan ko'rinadigan narsani oyna ortiga
+            yashirish qidiruvni osonlashtirmasdi.
+          */}
+          <div className="relative min-w-0 lg:w-[260px] lg:shrink-0">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <label className="sr-only" htmlFor="task-search">
+              {m.ui.searchTasks}
+            </label>
+            <input
+              id="task-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={m.tasks.searchPlaceholder}
+              className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label={m.ui.clearSearch}
+                className="absolute top-1/2 right-2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -646,14 +608,6 @@ export function SubjectTasks({
           </div>
         )}
       </section>
-
-      <TaskFilterModal
-        open={filterOpen}
-        filters={filters}
-        onChange={setFilters}
-        onClose={() => setFilterOpen(false)}
-        onReset={() => setFilters(DEFAULT_TASK_FILTERS)}
-      />
 
       <AssignmentRequestModal
         open={requestOpen}

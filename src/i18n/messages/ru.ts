@@ -123,11 +123,10 @@ export const ru: Messages = {
 
   tasks: {
     searchPlaceholder: 'Задание или номер варианта',
-    filter: 'Фильтр',
     notFound: 'Задание не найдено',
     sectionEmpty: 'В этом разделе пока пусто',
     subjectEmpty: 'В этом предмете пока нет заданий',
-    changeSearch: 'Измените запрос или фильтр.',
+    changeSearch: 'Попробуйте изменить запрос.',
     beFirst: 'Загрузите задание первым.',
     variantCount: '{count} вариантов',
     noVariants: 'Без вариантов',
@@ -1041,8 +1040,6 @@ export const ru: Messages = {
     prevPage: 'Предыдущая страница',
     nextPage: 'Следующая страница',
     clearSearch: 'Очистить поиск',
-    filters: 'Фильтры',
-    filtersDesc: 'Сузьте список заданий.',
     searchTasks: 'Поиск задания',
     view: 'Смотреть',
     allSubjects: 'Все предметы',

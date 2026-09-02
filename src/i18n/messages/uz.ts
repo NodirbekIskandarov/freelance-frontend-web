@@ -121,11 +121,10 @@ export const uz = {
 
   tasks: {
     searchPlaceholder: 'Topshiriq yoki variant raqami',
-    filter: 'Filtr',
     notFound: 'Topshiriq topilmadi',
     sectionEmpty: "Bu bo'lim hozircha bo'sh",
     subjectEmpty: "Bu fanda hozircha topshiriq yo'q",
-    changeSearch: "Qidiruv yoki filtrni o'zgartiring.",
+    changeSearch: "Qidiruvni o'zgartirib ko'ring.",
     beFirst: "Birinchi bo'lib topshiriq yuklang.",
     variantCount: '{count} ta variant',
     noVariants: 'Variantsiz',
@@ -1040,8 +1039,6 @@ export const uz = {
     prevPage: 'Oldingi sahifa',
     nextPage: 'Keyingi sahifa',
     clearSearch: 'Qidiruvni tozalash',
-    filters: 'Filtrlar',
-    filtersDesc: "Topshiriqlar ro'yxatini toraytiring.",
     searchTasks: 'Topshiriq qidirish',
     view: "Ko'rish",
     allSubjects: 'Barcha fanlar',
