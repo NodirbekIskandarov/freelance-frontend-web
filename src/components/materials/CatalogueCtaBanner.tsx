@@ -153,12 +153,14 @@ export function CatalogueCtaBanner({
           ))}
           <div aria-hidden className="cta-glow" />
           <div className="cta-float relative z-10 w-full">
+            {/* `priority` yo'q: illyustratsiya `lg` dan pastda
+                ko'rinmaydi, preload esa uni telefonga ham yuklab
+                qo'yardi. */}
             <Image
               src="/materials/cta-student.png"
               alt=""
               width={420}
               height={420}
-              priority
               className="drop- h-auto w-full object-contain object-bottom"
             />
           </div>

@@ -459,3 +459,139 @@
     transform: none;
   }
 }
+
+/*
+ * Hero va materiallar banneri — kirish animatsiyalari.
+ *
+ * Ilgari bular Framer Motion bilan chizilardi. Kutubxona bundle'ga 43 KB
+ * (gzip) qo'shardi va u SAYTNING IKKI KIRISH NUQTASIDA — bosh sahifa va
+ * katalogda — yuklanardi, ya'ni har bir yangi tashrifchi to'laydigan narx
+ * edi. Bu yerdagi effektlar esa oddiy: siljish, kattalashish, aylanish va
+ * suzish. Hammasi CSS bilan chiziladi, JS'siz.
+ *
+ * Yonaki foyda: CSS animatsiyalari boshqa tabga o'tilganda muzlab
+ * qolmaydi. Framer'da bu muammo bor edi va uni `visibilitychange` ga
+ * ulangan alohida hook bilan tuzatib turishga to'g'ri kelardi.
+ *
+ * `opacity` ATAYLAB yo'q (`hero-rise`, `hero-scale-in`): animatsiya
+ * qandaydir sababga ko'ra ishlamay qolsa ham matn ko'rinib turishi kerak.
+ */
+@keyframes hero-rise {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-scale-in {
+  from {
+    transform: scale(0.97);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/*
+ * Markazdagi belgi suzadi. Markazlash `transform` ning O'ZIDA: element
+ * `-translate-x-1/2 -translate-y-1/2` bilan joylashgan va animatsiya ham
+ * `transform` ni yozadi — ikkalasi bir xil xususiyatga tegsa, oxirgisi
+ * birinchisini butunlay almashtiradi va element burchakka sakrab ketardi.
+ */
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% - 10px));
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.hero-scale-in {
+  animation: hero-scale-in 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.hero-float {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+/* Banner slaydi almashganda — `key` o'zgaradi, element qaytadan
+   yaratiladi va animatsiya o'zi boshidan ishga tushadi. */
+@keyframes promo-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes promo-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.promo-slide-in {
+  animation: promo-slide-in 350ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.promo-orbit {
+  animation: promo-orbit 32s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-scale-in,
+  .hero-float,
+  .promo-slide-in,
+  .promo-orbit {
+    animation: none;
+  }
+}
+
+/* Hero atrofidagi to'rtta karta: bir marta chiqadi, keyin suzib turadi. */
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.hero-card-in {
+  animation: hero-card-in 500ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.hero-card-float {
+  animation: hero-card-float 4.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-in,
+  .hero-card-float {
+    animation: none;
+  }
+}

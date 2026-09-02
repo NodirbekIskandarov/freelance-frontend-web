@@ -1,33 +1,30 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 /**
- * Framer Motion variant'lari — hero va boshqa marketing bo'limlarida
- * takrorlanadigan kirish animatsiyalari.
+ * Foydalanuvchi harakatni kamaytirishni so'raganmi.
+ *
+ * Animatsiyalarning O'ZI CSS'da (`globals.css`) va ular
+ * `prefers-reduced-motion` bilan o'zi o'chadi — bu hook faqat
+ * ANIMATSIYA EMAS, XATTI-HARAKAT uchun kerak: masalan bannerning
+ * slaydlarni o'zi almashtirishi. Uni CSS to'xtata olmaydi.
+ *
+ * Serverda va birinchi chizishda `false`: `matchMedia` faqat brauzerda
+ * bor, va boshlang'ich qiymatni taxmin qilish server chizgan HTML bilan
+ * mos kelmay hydration ogohlantirishini chiqarardi.
  */
+export function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
 
-const easeOut = [0.22, 1, 0.36, 1] as const;
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(query.matches);
 
-/** Fon rejimida animatsiya to'xtasa ham kontent ko'rinishi uchun — faqat `y`, `opacity` yo'q. */
-export const fadeUpSafe = {
-  initial: { y: 20 },
-  animate: {
-    y: 0,
-    transition: { duration: 0.65, ease: easeOut },
-  },
-};
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
 
-export const scaleInSafe = {
-  initial: { scale: 0.97 },
-  animate: {
-    scale: 1,
-    transition: { duration: 0.7, ease: easeOut },
-  },
-};
-
-export const staggerContainer = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-};
+  return reduced;
+}

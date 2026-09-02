@@ -1,6 +1,5 @@
 'use client';
 
-import { motion, useAnimation, useReducedMotion } from 'framer-motion';
 import {
   BookOpen,
   CheckCheck,
@@ -10,14 +9,13 @@ import {
   Search,
   UserPlus,
 } from 'lucide-react';
-import { useEffect, type ComponentType } from 'react';
+import { type ComponentType } from 'react';
 
 import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { useT } from '@/i18n/useT';
 import type { Messages } from '@/i18n/messages/uz';
 import { cn } from '@/lib/cn';
-import { fadeUpSafe, scaleInSafe, staggerContainer } from '@/lib/motion';
 
 import { HeroUniversitiesBar } from './HeroUniversitiesBar';
 
@@ -59,27 +57,6 @@ const floatingCards = [
   },
 ] as const;
 
-/**
- * Fon rejimida (boshqa tabda) animatsiya to'xtaydi — qaytib kelganda
- * qayta ishga tushirilishi kerak, aks holda kartalar muzlab qoladi.
- */
-function useResumeMotionOnVisible(controls: ReturnType<typeof useAnimation>) {
-  useEffect(() => {
-    void controls.start('animate');
-
-    const resume = () => {
-      if (document.visibilityState === 'visible') void controls.start('animate');
-    };
-
-    document.addEventListener('visibilitychange', resume);
-    window.addEventListener('pageshow', resume);
-    return () => {
-      document.removeEventListener('visibilitychange', resume);
-      window.removeEventListener('pageshow', resume);
-    };
-  }, [controls]);
-}
-
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-zinc-950 text-white">
@@ -102,38 +79,40 @@ export function Hero() {
   );
 }
 
+/**
+ * Sarlavha, matn va tugmalar navbat bilan ko'tariladi.
+ *
+ * Navbat `animation-delay` bilan — Framer'ning `staggerChildren` i
+ * o'rniga. Uchta element uchun bu bir xil natija beradi va sahifaga
+ * kutubxona qo'shmaydi.
+ */
+const RISE_DELAYS = ['0ms', '100ms', '200ms'];
+
 function HeroContent() {
   const { m } = useT();
-  const controls = useAnimation();
-  useResumeMotionOnVisible(controls);
 
   return (
-    <motion.div
-      className="mx-auto max-w-[600px] text-center lg:mx-0 lg:max-w-[560px] lg:pr-4 lg:text-left"
-      variants={staggerContainer}
-      initial="initial"
-      animate={controls}
-    >
-      <motion.h1
-        className="text-[2rem] leading-[1.1] font-bold tracking-tight sm:text-[2.65rem] lg:text-[3.5rem] lg:leading-[1.06] xl:text-[3.85rem]"
-        variants={fadeUpSafe}
+    <div className="mx-auto max-w-[600px] text-center lg:mx-0 lg:max-w-[560px] lg:pr-4 lg:text-left">
+      <h1
+        className="hero-rise text-[2rem] leading-[1.1] font-bold tracking-tight sm:text-[2.65rem] lg:text-[3.5rem] lg:leading-[1.06] xl:text-[3.85rem]"
+        style={{ animationDelay: RISE_DELAYS[0] }}
       >
         {m.home.heroTitle}{' '}
         <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
           {m.home.heroTitleAccent}
         </span>
-      </motion.h1>
+      </h1>
 
-      <motion.p
-        className="mx-auto mt-6 max-w-[480px] text-base leading-relaxed text-zinc-400 sm:text-lg sm:leading-8 lg:mx-0"
-        variants={fadeUpSafe}
+      <p
+        className="hero-rise mx-auto mt-6 max-w-[480px] text-base leading-relaxed text-zinc-400 sm:text-lg sm:leading-8 lg:mx-0"
+        style={{ animationDelay: RISE_DELAYS[1] }}
       >
         {m.home.heroLead}
-      </motion.p>
+      </p>
 
-      <motion.div
-        className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start"
-        variants={fadeUpSafe}
+      <div
+        className="hero-rise mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start"
+        style={{ animationDelay: RISE_DELAYS[2] }}
       >
         <ButtonLink href="/materials" variant="emerald" size="lg" className="rounded-xl">
           <Search className="size-[18px]" />
@@ -148,23 +127,16 @@ function HeroContent() {
           <UserPlus className="size-[18px]" />
           {m.home.heroFindFreelancer}
         </ButtonLink>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
 function HeroVisual() {
   const { m } = useT();
-  const controls = useAnimation();
-  useResumeMotionOnVisible(controls);
 
   return (
-    <motion.div
-      className="relative mx-auto w-full max-w-[640px] lg:max-w-none"
-      variants={scaleInSafe}
-      initial="initial"
-      animate={controls}
-    >
+    <div className="hero-scale-in relative mx-auto w-full max-w-[640px] lg:max-w-none">
       <div className="relative mx-auto aspect-square max-h-[420px] w-full sm:max-h-[500px] lg:max-h-[620px] xl:max-h-[660px]">
         <HeroVisualBackground />
         <HeroCenterBadge />
@@ -179,7 +151,7 @@ function HeroVisual() {
           />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -188,14 +160,11 @@ function HeroVisual() {
  * Atrofdagi 4 karta shu nuqtaga nisbatan simmetrik joylashadi.
  */
 function HeroCenterBadge() {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      className="absolute top-1/2 left-1/2 z-10 grid -translate-x-1/2 -translate-y-1/2 place-items-center"
-      animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
-      transition={reduceMotion ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-    >
+    /* Markazlash `hero-float` ning O'ZIDA: animatsiya `transform` ni
+       yozadi va Tailwind'ning `-translate-*` sinflarini almashtirib
+       yuborardi. */
+    <div className="hero-float absolute top-1/2 left-1/2 z-10 grid place-items-center">
       <div className="relative grid size-32 place-items-center rounded-[1.375rem] border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-emerald-500/10 to-transparent shadow-[0_0_60px_rgba(16,185,129,0.25)] backdrop-blur-xl sm:size-40 lg:size-48">
         <GraduationCap
           className="size-12 text-emerald-300 sm:size-16 lg:size-20"
@@ -205,7 +174,7 @@ function HeroCenterBadge() {
           <CheckCheck className="size-5" />
         </span>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -236,42 +205,42 @@ function FloatingCard({
   className: string;
   index: number;
 }) {
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.div
-      className={cn(
-        'absolute z-20 hidden w-[152px] rounded-2xl border border-white/10 bg-white/[0.06] p-3 backdrop-blur-xl md:block lg:w-[164px] lg:p-3.5',
-        className,
-      )}
-      initial={{ y: 16, scale: 0.96 }}
-      animate={{ y: reduceMotion ? 0 : [0, -5, 0], scale: 1 }}
-      transition={{
-        scale: { duration: 0.5, delay: 0.25 + index * 0.1 },
-        y: reduceMotion
-          ? undefined
-          : {
-              duration: 4.5 + index * 0.4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: index * 0.35,
-            },
-      }}
+    /*
+      IKKI element, ikkita animatsiya: tashqarisi bir marta chiqadi,
+      ichkarisi tinimsiz suzadi. Ikkalasi ham `transform` ga yozadi va
+      bitta elementda ikkinchisi birinchisini butunlay almashtirardi.
+
+      Har kartaning davomiyligi va kechikishi bir-biridan farq qiladi —
+      to'rttasi bir maromda tebranganda ular bitta harakatlanuvchi blokka
+      o'xshab qolardi.
+    */
+    <div
+      className={cn('hero-card-in absolute z-20 hidden w-[152px] md:block lg:w-[164px]', className)}
+      style={{ animationDelay: `${250 + index * 100}ms` }}
     >
-      <div className="flex items-center gap-2.5">
-        <div
-          className={cn(
-            'grid size-9 shrink-0 place-items-center rounded-xl ring-1 ring-white/10',
-            accent,
-          )}
-        >
-          <Icon className="size-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-[12px] leading-tight font-semibold text-white">{title}</div>
-          <div className="mt-0.5 text-[10px] leading-snug text-zinc-400">{desc}</div>
+      <div
+        className="hero-card-float rounded-2xl border border-white/10 bg-white/[0.06] p-3 backdrop-blur-xl lg:p-3.5"
+        style={{
+          animationDuration: `${4.5 + index * 0.4}s`,
+          animationDelay: `${index * 0.35}s`,
+        }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div
+            className={cn(
+              'grid size-9 shrink-0 place-items-center rounded-xl ring-1 ring-white/10',
+              accent,
+            )}
+          >
+            <Icon className="size-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] leading-tight font-semibold text-white">{title}</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-zinc-400">{desc}</div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

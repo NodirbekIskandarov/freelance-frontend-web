@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -22,6 +21,7 @@ import { interpolate } from '@/i18n/interpolate';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
+import { usePrefersReducedMotion } from '@/lib/motion';
 
 type SlideId = 'upload' | 'earn';
 
@@ -155,23 +155,21 @@ const SLIDES: Record<SlideId, SlideConfig> = {
 const ORDER: SlideId[] = ['earn', 'upload'];
 
 /** Aylanuvchi punktir halqalar — illyustratsiya ortidagi bezak. */
-function OrbitRings({ orbit, still }: { orbit: string; still: boolean }) {
+function OrbitRings({ orbit }: { orbit: string }) {
   return (
-    <motion.div
+    <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 grid place-items-center"
-      animate={still ? undefined : { rotate: 360 }}
-      transition={still ? undefined : { duration: 32, repeat: Infinity, ease: 'linear' }}
+      className="promo-orbit pointer-events-none absolute inset-0 grid place-items-center"
     >
       <div className={cn('size-[92%] rounded-full border border-dashed opacity-50', orbit)} />
       <div
         className={cn('absolute size-[72%] rounded-full border border-dashed opacity-30', orbit)}
       />
-    </motion.div>
+    </div>
   );
 }
 
-function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting: number }) {
+function Slide({ id, awaiting }: { id: SlideId; awaiting: number }) {
   const { m } = useT();
   const config = SLIDES[id];
   const BadgeIcon = config.badgeIcon;
@@ -228,13 +226,22 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
 
       {/* Illyustratsiya o'rta ustunda — tor ekranda birinchi bo'lib yashiriladi. */}
       <div className="relative mx-auto hidden h-[220px] w-full max-w-[280px] items-end justify-center sm:h-[240px] lg:flex">
-        <OrbitRings orbit={config.orbit} still={still} />
+        <OrbitRings orbit={config.orbit} />
+        {/*
+          `priority` ATAYLAB YO'Q.
+          
+          Illyustratsiya `lg` dan pastda umuman ko'rinmaydi (yuqoridagi
+          `hidden lg:flex`), `priority` esa `<head>` ga preload qo'yadi va
+          uni VIEWPORTGA QARAMASDAN yuklaydi — ya'ni har bir telefon
+          tashrifi hech qachon chizilmaydigan rasm uchun to'lardi.
+          Kechiktirilgan yuklashda esa brauzer `display:none` elementni
+          umuman so'ramaydi.
+        */}
         <Image
           src={config.image}
           alt={config.imageAlt}
           width={320}
           height={320}
-          priority={id === ORDER[0]}
           className="drop- relative z-10 h-[88%] w-auto object-contain object-bottom"
         />
       </div>
@@ -283,7 +290,9 @@ function Slide({ id, still, awaiting }: { id: SlideId; still: boolean; awaiting:
  */
 export function MaterialsPromo({ awaitingVariants }: { awaitingVariants: number }) {
   const { t } = useT();
-  const reduceMotion = useReducedMotion();
+  /* Animatsiyalarni CSS o'zi o'chiradi; bu yerda kerak bo'lgani —
+     slaydlarning O'ZI ALMASHISHINI to'xtatish, uni CSS qila olmaydi. */
+  const reduceMotion = usePrefersReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -296,23 +305,19 @@ export function MaterialsPromo({ awaitingVariants }: { awaitingVariants: number 
 
   const current = ORDER[index]!;
   const config = SLIDES[current];
-  const still = Boolean(reduceMotion);
 
   return (
     <section
       className={cn('relative overflow-hidden rounded-2xl border transition-shadow', config.shell)}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={still ? false : { opacity: 0, y: 12 }}
-          animate={still ? undefined : { opacity: 1, y: 0 }}
-          exit={still ? undefined : { opacity: 0, y: -12 }}
-          transition={{ duration: 0.35 }}
-        >
-          <Slide id={current} still={still} awaiting={awaitingVariants} />
-        </motion.div>
-      </AnimatePresence>
+      {/* `key` — slayd almashganda element qaytadan yaratiladi va CSS
+          animatsiyasi o'zi boshidan ishga tushadi. Chiqib ketish
+          animatsiyasi YO'Q: uning uchun ikkala slaydni bir vaqtda daraxtda
+          ushlab turish kerak edi, foydasi esa bir necha yuz
+          millisekundlik bezak. */}
+      <div key={current} className="promo-slide-in">
+        <Slide id={current} awaiting={awaitingVariants} />
+      </div>
 
       <div className="flex items-center justify-center gap-1.5 pb-4">
         {ORDER.map((id, position) => (
