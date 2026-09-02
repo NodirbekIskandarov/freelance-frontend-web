@@ -3,6 +3,7 @@
 import {
   Bell,
   Briefcase,
+  Check,
   LifeBuoy,
   ShieldCheck,
   ShoppingBag,
@@ -12,30 +13,16 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Link } from '@/i18n/Link';
+import { useRef, useState } from 'react';
 
 import { cn } from '@/lib/cn';
-import type {
-  Notification,
-  NotificationCategory,
-  NotificationsQuery,
-} from '@/shared/types/notifications';
+import type { Notification, NotificationsQuery } from '@/shared/types/notifications';
 
+import { categoryStyles, fallbackStyle } from './categoryStyles';
 import { useDeleteNotificationMutation, useMarkNotificationReadMutation } from './notificationsApi';
 import { interpolate } from '@/i18n/interpolate';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
-
-const categoryStyles: Record<NotificationCategory, { icon: LucideIcon; tone: string }> = {
-  marketplace: { icon: ShoppingBag, tone: 'bg-blue-500/12 text-blue-600 dark:text-blue-400' },
-  freelance: { icon: Briefcase, tone: 'bg-violet-500/12 text-violet-600 dark:text-violet-400' },
-  wallet: { icon: Wallet, tone: 'bg-amber-500/12 text-amber-600 dark:text-amber-400' },
-  moderation: {
-    icon: ShieldCheck,
-    tone: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400',
-  },
-  support: { icon: LifeBuoy, tone: 'bg-cyan-500/12 text-cyan-600 dark:text-cyan-400' },
-  account: { icon: UserRound, tone: 'bg-muted text-muted-foreground' },
-};
 
 /**
  * `reference_type` → ilova ichidagi sahifa.
@@ -79,6 +66,13 @@ function formatWhen(value: string, messages: Messages): string {
     return interpolate(m.hoursAgo, { count: Math.round(diffMinutes / 60) });
   }
 
+  /*
+    Bir haftagacha — «3 kun oldin». Undan keyin aniq sana: «12 kun
+    oldin» degan gap odamga hech nima aytmaydi, u kalendarga qaraydi.
+  */
+  const diffDays = Math.round(diffMinutes / (60 * 24));
+  if (diffDays <= 7) return interpolate(m.daysAgo, { count: diffDays });
+
   return date.toLocaleString('ru-RU').slice(0, 16);
 }
 
@@ -95,7 +89,54 @@ export function NotificationRow({
   const { m } = useT();
   const [remove, removeState] = useDeleteNotificationMutation();
 
-  const style = categoryStyles[notification.category] ?? { icon: Bell, tone: 'bg-muted' };
+  /*
+    Surish — FAQAT «o'qildi», o'chirish emas.
+
+    Brif ikkalasini ham taklif qiladi, lekin o'chirishni qaytarish yo'li
+    yo'q: bexosdan surilgan barmoq xabarni butunlay yo'q qilardi va
+    odam nima yo'qolganini ham bilmasdi. O'qilgan deb belgilash esa
+    zararsiz — xato bo'lsa ham hech narsa yo'qolmaydi.
+
+    O'chirish o'z tugmasida qoladi.
+  */
+  const [offset, setOffset] = useState(0);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const SWIPE_THRESHOLD = 64;
+
+  function onPointerDown(event: React.PointerEvent) {
+    // Faqat barmoq: sichqoncha bilan surish tasodifan matn tanlashga
+    // aylanadi va u yerda tugmalar baribir yaqin.
+    if (event.pointerType !== 'touch' || notification.is_read) return;
+    dragStart.current = { x: event.clientX, y: event.clientY };
+  }
+
+  function onPointerMove(event: React.PointerEvent) {
+    if (!dragStart.current) return;
+
+    const dx = event.clientX - dragStart.current.x;
+    const dy = event.clientY - dragStart.current.y;
+
+    // Vertikal harakat — bu sahifani aylantirish, surish emas.
+    if (Math.abs(dy) > Math.abs(dx)) {
+      dragStart.current = null;
+      setOffset(0);
+      return;
+    }
+
+    // Faqat o'ngga: chapga surish brauzerning «orqaga» ishorasi bilan
+    // to'qnashadi.
+    setOffset(Math.max(0, Math.min(dx, 96)));
+  }
+
+  function onPointerEnd() {
+    if (offset >= SWIPE_THRESHOLD && !notification.is_read) {
+      void markRead({ id: notification.id, query });
+    }
+    dragStart.current = null;
+    setOffset(0);
+  }
+
+  const style = categoryStyles[notification.category] ?? fallbackStyle;
   const Icon = style.icon;
   const href = hrefFor(notification);
 
@@ -142,9 +183,18 @@ export function NotificationRow({
     </>
   );
 
+  /*
+    O'qilgan va o'qilmagan orasidagi farq SEZILARLI bo'lishi kerak.
+
+    Ilgari fon 4% yashil edi — qorong'i mavzuda uni umuman ajratib
+    bo'lmasdi va yagona belgi o'ngdagi kichkina nuqta bo'lib qolardi.
+    Endi uchta belgi birga ishlaydi: kuchliroq fon, chap chetdagi yashil
+    chiziq va nuqta. Ulardan bittasi ko'rinmay qolsa ham (rang ko'rish
+    xususiyati, chop etish) qolgani javob beradi.
+  */
   const className = cn(
-    'flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/60',
-    !notification.is_read && 'bg-emerald-500/[0.04]',
+    'flex w-full items-start gap-3 py-3 pr-4 pl-4 text-left transition-colors hover:bg-muted/60',
+    !notification.is_read && 'bg-emerald-500/[0.09] pl-3.5 border-l-[3px] border-emerald-500',
   );
 
   // O'qilgan deb belgilash bosishning YON TA'SIRI: alohida tugma qo'yilsa
@@ -154,16 +204,33 @@ export function NotificationRow({
   }
 
   return (
-    <div className="group relative">
-      {href ? (
-        <Link href={href} onClick={onOpen} className={className}>
-          {body}
-        </Link>
-      ) : (
-        <button type="button" onClick={onOpen} className={className}>
-          {body}
-        </button>
+    <div className="group relative overflow-hidden">
+      {/* Surilganda ortidan chiqadigan belgi — nima bo'layotganini
+          aytadi, aks holda qator sababsiz siljigandek ko'rinardi. */}
+      {offset > 0 && (
+        <span className="absolute inset-y-0 left-0 flex items-center gap-1.5 bg-emerald-500/15 px-4 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+          <Check className="size-4" />
+        </span>
       )}
+
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
+        style={{ transform: offset ? `translateX(${offset}px)` : undefined }}
+        className={cn('relative bg-card', offset === 0 && 'transition-transform')}
+      >
+        {href ? (
+          <Link href={href} onClick={onOpen} className={className}>
+            {body}
+          </Link>
+        ) : (
+          <button type="button" onClick={onOpen} className={className}>
+            {body}
+          </button>
+        )}
+      </div>
 
       <button
         type="button"

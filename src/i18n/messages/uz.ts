@@ -305,6 +305,11 @@ export const uz = {
     justNow: 'hozir',
     minutesAgo: '{count} daqiqa oldin',
     hoursAgo: '{count} soat oldin',
+    daysAgo: '{count} kun oldin',
+    groupCount: '{count} ta bildirishnoma',
+    groupExpand: 'Hammasini ochish',
+    groupCollapse: "Yig'ish",
+    swipeHint: "O'qildi deb belgilash uchun qatorni suring",
     catMarketplace: 'Xaridlar',
     catFreelance: 'Freelance',
     catWallet: 'Hamyon',
@@ -351,7 +356,7 @@ export const uz = {
   dispute: {
     title: "Xarid bo'yicha shikoyat",
     intro:
-      "Xariddan keyin {hours} soat ichida yuboriladi. Shikoyat kelgan zahoti muallifning pul ulushi «hold»da muzlatiladi — moderator qarori chiqmaguncha yechib olinmaydi.",
+      'Xariddan keyin {hours} soat ichida yuboriladi. Shikoyat kelgan zahoti muallifning pul ulushi «hold»da muzlatiladi — moderator qarori chiqmaguncha yechib olinmaydi.',
     timeLeft: 'Qolgan vaqt',
     windowClosed: 'Shikoyat muddati tugagan',
     reasonSection: 'Sabab',
@@ -387,7 +392,7 @@ export const uz = {
     evidenceDrop: 'Skrinshot yoki faylni tashlang',
     removeFile: 'Faylni olib tashlash',
     warning:
-      "Asossiz shikoyat rad etiladi. Ketma-ket {count} ta asossiz shikoyat — {days} kun shikoyat huquqi cheklanadi.",
+      'Asossiz shikoyat rad etiladi. Ketma-ket {count} ta asossiz shikoyat — {days} kun shikoyat huquqi cheklanadi.',
     submit: 'Shikoyatni yuborish',
     submitting: 'Yuborilmoqda…',
     sentTitle: 'Shikoyat yuborildi',
@@ -451,8 +456,7 @@ export const uz = {
     waiting: 'Kutilmoqda',
     stopped: 'to‘xtatilgan',
     disputed: 'Shikoyat',
-    note:
-      "Shikoyat bo'lgan summa qaror chiqmaguncha muzlab turadi. Shikoyat xaridor foydasiga hal bo'lsa — hold'dan yechiladi, aks holda muddati bilan o'tadi.",
+    note: "Shikoyat bo'lgan summa qaror chiqmaguncha muzlab turadi. Shikoyat xaridor foydasiga hal bo'lsa — hold'dan yechiladi, aks holda muddati bilan o'tadi.",
     total: 'Jami hold',
     opensIn: '{days} kun',
     opensToday: 'bugun',
@@ -463,14 +467,14 @@ export const uz = {
     paymentSection: "TO'LOV — ICHKI BALANS",
     myBalance: 'Mening balansim',
     balanceLine: "{balance} · to'lovdan keyin {left} qoladi",
-    notEnough: "{balance} · yetmaydi, yana {missing} kerak",
+    notEnough: '{balance} · yetmaydi, yana {missing} kerak',
     topUpSoon: "Balansni to'ldirish (Payme / Click) — tez orada ulanadi",
     priceRow: 'Yechim narxi',
     discountRow: 'Chegirma',
     totalRow: 'Jami',
     pay: "To'lash va yuklab olish",
     paying: "To'lanmoqda…",
-    cannotPay: "Balans yetarli emas",
+    cannotPay: 'Balans yetarli emas',
     author: 'Muallif: {name}',
     footnote:
       "Fayl darhol «Kutubxonam» bo'limiga tushadi va cheksiz marta yuklab olinadi. Fayl mos kelmasa 24 soat ichida shikoyat qilib pulni qaytarish mumkin.",
@@ -584,8 +588,7 @@ export const uz = {
     depositSoon:
       "Payme va Click hali ulanmagan — ustida ishlanmoqda. Shu vaqtgacha balansni qo'llab-quvvatlash orqali to'ldirish mumkin: naqd yoki o'tkazma qabul qilinadi va operator hisobingizga qo'shib qo'yadi.",
     depositSupport: "Qo'llab-quvvatlashga yozish",
-    depositEarn:
-      "Yechim yuklab ham ishlash mumkin: sotilganda ulushingiz shu balansga tushadi.",
+    depositEarn: 'Yechim yuklab ham ishlash mumkin: sotilganda ulushingiz shu balansga tushadi.',
     filterAll: 'Barchasi',
     filterIn: 'Kirim',
     filterOut: 'Chiqim',

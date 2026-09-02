@@ -10,6 +10,8 @@ import {
   type NotificationCategory,
 } from '@/shared/types/notifications';
 
+import { groupNotifications } from './groupNotifications';
+import { NotificationGroupCard } from './NotificationGroupCard';
 import { NotificationRow } from './NotificationRow';
 import {
   useGetNotificationsQuery,
@@ -39,51 +41,81 @@ export function NotificationList() {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        {(['all', ...NOTIFICATION_CATEGORIES] as const).map((item) => {
-          // Kategoriya sanoqlari faqat O'QILMAGANLARni beradi —
-          // nol bo'lsa raqam ko'rsatilmaydi, aks holda "0" shovqin qiladi.
-          const count = item === 'all' ? unread : (summary?.unread_by_category[item] ?? 0);
+      {/*
+        Bitta QATOR, o'ralmaydi.
 
-          return (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setCategory(item)}
-              aria-pressed={category === item}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
-                category === item
-                  ? 'bg-emerald-600 text-white'
-                  : 'border border-border bg-background text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {item === 'all' ? m.common.all : notificationCategoryLabel(item, m)}
-              {count > 0 && (
-                <span
-                  className={cn(
-                    'rounded-full px-1.5 text-[10px] leading-4 font-bold',
-                    category === item ? 'bg-white/25' : 'bg-emerald-500/15 text-emerald-600',
-                  )}
-                >
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
+        Ilgari `flex-wrap` edi va oltita pill telefonda uch qatorga
+        bo'linib, ekranning uchdan birini egallardi — ro'yxatning o'zi
+        esa pastga surilib ketardi. Endi ular gorizontal suriladi.
+
+        `-mx-4 px-4`: pillar konteyner chetigacha borib to'xtamaydi,
+        chetdan «yana bor» degan ishora qoladi.
+      */}
+      <div className="-mx-4 overflow-x-auto px-4 [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max items-center gap-2">
+          {(['all', ...NOTIFICATION_CATEGORIES] as const).map((item) => {
+            // Kategoriya sanoqlari faqat O'QILMAGANLARni beradi —
+            // nol bo'lsa raqam ko'rsatilmaydi, aks holda "0" shovqin qiladi.
+            const count = item === 'all' ? unread : (summary?.unread_by_category[item] ?? 0);
+            const active = category === item;
+
+            return (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setCategory(item)}
+                aria-pressed={active}
+                className={cn(
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors',
+                  active
+                    ? 'bg-emerald-500 text-emerald-950'
+                    : 'border border-border bg-background text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {item === 'all' ? m.common.all : notificationCategoryLabel(item, m)}
+                {count > 0 && (
+                  <span
+                    className={cn(
+                      'rounded-full px-1.5 text-[10px] leading-4 font-bold',
+                      active ? 'bg-emerald-950/15' : 'bg-emerald-500/15 text-emerald-600',
+                    )}
+                  >
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <label className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={unreadOnly}
-            onChange={(event) => setUnreadOnly(event.target.checked)}
-            className="size-4 accent-emerald-600"
-          />
+        {/* Kalit ko'rinishidagi checkbox: holat bir qarashda ko'rinadi,
+            kvadratcha esa yoqilgan-yoqilmaganini yaqindan qarashni
+            talab qilardi. */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={unreadOnly}
+          onClick={() => setUnreadOnly((value) => !value)}
+          className="inline-flex items-center gap-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <span
+            aria-hidden
+            className={cn(
+              'relative h-5 w-9 shrink-0 rounded-full transition-colors',
+              unreadOnly ? 'bg-emerald-500' : 'bg-muted',
+            )}
+          >
+            <span
+              className={cn(
+                'absolute top-0.5 size-4 rounded-full bg-background shadow-sm transition-[left]',
+                unreadOnly ? 'left-[1.125rem]' : 'left-0.5',
+              )}
+            />
+          </span>
           {m.notifications.unreadOnly}
-        </label>
+        </button>
 
         {unread > 0 && (
           <button
@@ -109,10 +141,16 @@ export function NotificationList() {
           <p className="mt-1 text-sm text-muted-foreground">{m.notifications.emptyHint}</p>
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border/60 bg-background dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900/70">
-          {data.results.map((item) => (
-            <li key={item.id}>
-              <NotificationRow notification={item} query={query} />
+        <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border/60 bg-card">
+          {/* Bir xil turdagi ketma-ket xabarlar bitta kartaga yig'iladi —
+              sabab `groupNotifications` da. */}
+          {groupNotifications(data.results).map((entry) => (
+            <li key={entry.key}>
+              {entry.kind === 'single' ? (
+                <NotificationRow notification={entry.item} query={query} />
+              ) : (
+                <NotificationGroupCard group={entry.group} query={query} />
+              )}
             </li>
           ))}
         </ul>
