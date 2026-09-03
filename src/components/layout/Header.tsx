@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { ButtonLink } from '@/components/ui/Button';
 import { PUBLIC_NAV_ITEMS, type PublicNavItem } from '@/config/nav';
 import { useI18n } from '@/i18n/I18nProvider';
+import { Link } from '@/i18n/Link';
 import { localizeHref, stripLocale, type Locale } from '@/i18n/config';
 import type { Messages } from '@/i18n/messages/uz';
 import { cn } from '@/lib/cn';
@@ -61,22 +62,39 @@ function NavLink({
     );
   }
 
+  const className = cn(
+    'inline-flex items-center rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
+    active
+      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+      : 'text-muted-foreground hover:text-foreground',
+    mobile && 'w-full px-3 py-2.5',
+  );
+
+  /*
+   * Langar havolasi (`/#xizmatlar`) oddiy `<a>` bo'lib qoladi: `next/link`
+   * bilan sahifa ichidagi langarga o'tish ishlamasdi.
+   */
+  if (item.href.startsWith('/#')) {
+    return (
+      <a href={localizeHref(item.href, locale)} onClick={onNavigate} className={className}>
+        {label}
+      </a>
+    );
+  }
+
+  /*
+   * Qolgan yo'llar — `next/link`.
+   *
+   * Ilgari bular ham `<a>` edi va har menyu bosilishi BUTUN ilovani
+   * qaytadan yuklardi: Redux do'koni qayta tug'ilib, `SessionBootstrap`
+   * yana `GET /profile/` yuborardi, qo'ng'iroq esa yana xabar sanog'ini
+   * va WebSocket chiptasini so'rardi. To'rtta menyu bosilishida
+   * o'lchangan: 5 ta `/profile/`, 5 ta `summary/`, 12 ta `ws-ticket/`.
+   */
   return (
-    <a
-      /* `<a>` ataylab: menyudagi ba'zi yo'llar langarli (`/#xizmatlar`)
-         va ular `next/link` bilan sahifani to'liq yangilamasdi. */
-      href={localizeHref(item.href, locale)}
-      onClick={onNavigate}
-      className={cn(
-        'inline-flex items-center rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
-        active
-          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-          : 'text-muted-foreground hover:text-foreground',
-        mobile && 'w-full px-3 py-2.5',
-      )}
-    >
+    <Link href={item.href} onClick={onNavigate} className={className}>
       {label}
-    </a>
+    </Link>
   );
 }
 
