@@ -1107,6 +1107,8 @@ export const ru: Messages = {
     show: 'Показать',
     hide: 'Скрыть',
     cannotShow: 'Ваш браузер не смог отобразить PDF здесь.',
+    loading: 'Документ открывается…',
+    cannotShowDoc: 'Не удалось открыть документ здесь.',
     openInNewTab: 'Открыть в новой вкладке',
   },
 

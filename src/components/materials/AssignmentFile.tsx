@@ -5,24 +5,39 @@ import { useState } from 'react';
 
 import { useT } from '@/i18n/useT';
 
+import { DocxPreview } from './DocxPreview';
+
 /**
  * Topshiriq sharti — variantlar ustidagi fayl.
  *
- * PDF sahifaning O'ZIDA ochiladi, lekin FAQAT so'ralganda: talaba
+ * Fayl sahifaning O'ZIDA ochiladi, lekin FAQAT so'ralganda: talaba
  * shartni o'qimasdan qaysi variantni tanlashini bilmaydi, ammo o'sha
  * shartni allaqachon biladigan odam uchun ochiq turgan ko'rsatgich
  * variantlar to'rini ekrandan pastga surib yuborardi — va u aynan shu
  * sahifaga kelgan maqsad.
  *
- * Qolgan formatlar (zip, docx, xlsx) brauzerda ko'rsatilmaydi — ular
- * uchun faqat yuklab olish qoladi, chunki "ochish" tugmasi bosilganda
- * baribir yuklab olish oynasi chiqardi.
+ * PDF va rasmni brauzerning o'zi chizadi, `.docx` esa [DocxPreview] da
+ * HTML'ga aylantiriladi. Qolgan formatlar (zip, xlsx, eski `.doc`) uchun
+ * ko'rsatgich yo'q — ular uchun faqat yuklab olish qoladi, chunki
+ * "ochish" tugmasi bosilganda baribir yuklab olish oynasi chiqardi.
  */
-function isPdf(url: string): boolean {
+type FileKind = 'pdf' | 'docx' | 'image' | 'other';
+
+function extensionOf(url: string): string {
   // So'rov parametrlari (MinIO imzolangan havolasi) kengaytmadan keyin
-  // keladi — ularni kesib tashlaymiz, aks holda hech bir fayl PDF
-  // bo'lib ko'rinmasdi.
-  return /\.pdf$/i.test(new URL(url, 'http://x').pathname);
+  // keladi — ularni kesib tashlaymiz, aks holda hech bir fayl tanilmasdi.
+  const path = new URL(url, 'http://x').pathname;
+  return (path.split('.').pop() ?? '').toLowerCase();
+}
+
+function kindOf(url: string): FileKind {
+  const extension = extensionOf(url);
+
+  if (extension === 'pdf') return 'pdf';
+  if (extension === 'docx') return 'docx';
+  if (['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'].includes(extension)) return 'image';
+
+  return 'other';
 }
 
 function fileNameOf(url: string): string {
@@ -36,19 +51,25 @@ export function AssignmentFile({ url }: { url: string }) {
 
   if (!url) return null;
 
-  const pdf = isPdf(url);
+  const kind = kindOf(url);
   const name = fileNameOf(url);
+  const canShow = kind !== 'other';
 
   return (
     <section className="mt-4 rounded-xl border border-border/70 bg-card">
       <div className="flex flex-wrap items-center gap-2 px-3.5 py-3">
-        <FileText className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        {/* Tor ekranda sarlavha o'z qatorini oladi va tugmalar tagiga
+            tushadi: bitta qatorga tiqilganda fayl nomi ikki harfgacha
+            qisqarardi. */}
+        <div className="flex min-w-0 flex-1 basis-full items-center gap-2 sm:basis-0">
+          <FileText className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
 
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold text-foreground">{m.assignmentFile.title}</p>
-          <p className="truncate text-[11px] text-muted-foreground" title={name}>
-            {name}
-          </p>
+          <div className="min-w-0">
+            <p className="text-[13px] font-semibold text-foreground">{m.assignmentFile.title}</p>
+            <p className="truncate text-[11px] text-muted-foreground" title={name}>
+              {name}
+            </p>
+          </div>
         </div>
 
         {/*
@@ -66,7 +87,7 @@ export function AssignmentFile({ url }: { url: string }) {
           {m.assignmentFile.download}
         </a>
 
-        {pdf && (
+        {canShow && (
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
@@ -77,32 +98,49 @@ export function AssignmentFile({ url }: { url: string }) {
         )}
       </div>
 
-      {pdf && open && (
+      {canShow && open && (
         <div className="border-t border-border/60 p-2">
-          {/*
-            `<object>`, `<iframe>` emas: PDF ko'rsatgichi yo'q brauzerda
-            `<object>` ichidagi zaxira mazmunni chizadi va odam bo'sh
-            oq to'rtburchak o'rniga havolani ko'radi.
-          */}
-          <object
-            data={url}
-            type="application/pdf"
-            className="h-[60vh] max-h-[560px] w-full rounded-lg"
-            aria-label={m.assignmentFile.title}
-          >
-            <p className="px-3 py-6 text-center text-xs text-muted-foreground">
-              {m.assignmentFile.cannotShow}{' '}
-              <a
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-              >
-                {m.assignmentFile.openInNewTab}
-                <ExternalLink className="size-3" />
-              </a>
-            </p>
-          </object>
+          {kind === 'pdf' && (
+            /*
+              `<object>`, `<iframe>` emas: PDF ko'rsatgichi yo'q brauzerda
+              `<object>` ichidagi zaxira mazmunni chizadi va odam bo'sh
+              oq to'rtburchak o'rniga havolani ko'radi.
+            */
+            <object
+              data={url}
+              type="application/pdf"
+              className="h-[60vh] max-h-[560px] w-full rounded-lg"
+              aria-label={m.assignmentFile.title}
+            >
+              <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+                {m.assignmentFile.cannotShow}{' '}
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  {m.assignmentFile.openInNewTab}
+                  <ExternalLink className="size-3" />
+                </a>
+              </p>
+            </object>
+          )}
+
+          {/* `key` — boshqa topshiriqqa o'tilganda ko'rsatgich yangi
+              fayldan boshlasin, eski hujjatni ushlab qolmasin. */}
+          {kind === 'docx' && <DocxPreview key={url} url={url} label={name} />}
+
+          {kind === 'image' && (
+            // Backend rasm domenlari oldindan noma'lum, shuning uchun
+            // `next/image` emas, oddiy `<img>`.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={url}
+              alt={name}
+              className="mx-auto max-h-[560px] w-auto max-w-full rounded-lg"
+            />
+          )}
         </div>
       )}
     </section>

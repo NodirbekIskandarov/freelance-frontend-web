@@ -1105,6 +1105,8 @@ export const uz = {
     show: "Ko'rsatish",
     hide: 'Yashirish',
     cannotShow: "Brauzeringiz PDF'ni bu yerda ko'rsata olmadi.",
+    loading: 'Hujjat ochilmoqda…',
+    cannotShowDoc: "Hujjatni bu yerda ochib bo'lmadi.",
     openInNewTab: 'Yangi oynada ochish',
   },
 
