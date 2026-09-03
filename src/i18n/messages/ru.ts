@@ -1168,11 +1168,10 @@ export const ru: Messages = {
     institutesListed: '{count} в списке',
     alphabetical: 'А…Я',
     instituteMissing: 'Моего вуза нет — оставить заявку',
-    subjectMissing: 'Не нашли предмет?',
+    subjectMissing: 'Нужного предмета нет в списке?',
     subjectMissingReward: 'Если заявку одобрят, на ваш счёт поступит {amount}.',
-    subjectMissingBonus:
-      'Отправьте предмет, которого нет в списке — после проверки добавим его в каталог.',
-    addSubject: 'Добавить предмет',
+    subjectMissingBonus: 'Оставьте заявку — модератор проверит и добавит предмет в каталог.',
+    addSubject: 'Заявка на предмет',
     instituteSubjects: '{count} предметов',
     noInstitutes: 'Вуз не найден',
 

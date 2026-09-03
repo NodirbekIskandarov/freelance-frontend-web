@@ -199,13 +199,23 @@ export function SubjectRequestCard({
     <div className={cn('min-w-0', className)}>
       <section className="rounded-2xl border border-border/70 bg-card p-3.5">
         <p className="text-sm font-semibold text-foreground">{m.materials.subjectMissing}</p>
+        {/*
+          Tushuntirish HAR DOIM ko'rinadi, mukofot esa QO'SHIMCHA qator.
+
+          Ilgari mukofot bo'lganda u tushuntirishni almashtirardi va
+          kartada faqat «hisobingizga X tushadi» qolardi — nima qilish
+          kerakligi umuman aytilmasdi.
+        */}
         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-          {subjectRequestReward > 0
-            ? t((x) => x.materials.subjectMissingReward, {
-                amount: money.som(subjectRequestReward),
-              })
-            : m.materials.subjectMissingBonus}
+          {m.materials.subjectMissingBonus}
         </p>
+        {subjectRequestReward > 0 && (
+          <p className="mt-1 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-400">
+            {t((x) => x.materials.subjectMissingReward, {
+              amount: money.som(subjectRequestReward),
+            })}
+          </p>
+        )}
 
         <button
           type="button"
