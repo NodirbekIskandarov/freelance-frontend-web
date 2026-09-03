@@ -395,37 +395,56 @@ export function MaterialsBrowser({
       )}
 
       {/*
-        Uchta bola, ikkita ustun.
+        Ikki ustun: chapda institutlar, o'ngda fanlar.
 
-        Telefonda ular DOM tartibida chiqadi: institutlar → fanlar →
-        «Fan topilmadimi?». Ariza kartasi ataylab oxirida — ilgari u
-        ro'yxat bilan fanlar orasida turib, har bir tashrifchini kerakli
-        narsagacha yana bir ekran aylantirishga majbur qilardi, holbuki u
-        kerak bo'ladigan payt ro'yxatda hech nima topilmagandan KEYIN.
-
-        `lg` dan boshlab esa kartaning o'rni aniq ko'rsatiladi: chap
-        ustunning ikkinchi qatori, ya'ni institutlar ro'yxati ostida.
-        Fanlar ustuni ikkala qatorni egallaydi.
+        Telefonda ular DOM tartibida emas, `order` bo'yicha chiqadi:
+        institutlar → fanlar → «Fan topilmadimi?». Ariza kartasi ataylab
+        oxirida — ilgari u ro'yxat bilan fanlar orasida turib, har bir
+        tashrifchini kerakli narsagacha yana bir ekran aylantirishga
+        majbur qilardi, holbuki u kerak bo'ladigan payt ro'yxatda hech
+        nima topilmagandan KEYIN.
       */}
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start">
-        <InstituteList
-          className="lg:sticky lg:top-20 lg:col-start-1 lg:row-start-1"
-          institutes={institutes.map((group) => ({
-            university: group.university,
-            slug: group.slug,
-            subjectCount: group.subjects.length,
-          }))}
-          selectedId={selected?.university.id ?? null}
-          onSelect={selectInstitute}
-          alphabetical={filters.sort === 'name'}
-          onToggleAlphabetical={() =>
-            applyFilters({ sort: filters.sort === 'name' ? 'material' : 'name' })
-          }
-          onRequestUniversity={() => setUniversityModal(true)}
-        />
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+        {/*
+          Chap ustun — BITTA yopishgan blok.
+
+          Ilgari institutlar ro'yxati va ariza kartasi ikkita alohida
+          katak edi va yopishgan ro'yxat aylantirilganda kartaning
+          ustiga chiqib ketardi. Endi ular bitta ustun ichida: bir-birini
+          bosib o'tishi mumkin emas, chunki ular yonma-yon emas, ketma-ket.
+
+          Telefonda esa `display: contents` — o'ram yo'qoladi va ikkala
+          karta tashqi to'rning bevosita bolasi bo'lib qoladi, ya'ni
+          `order` bilan ariza kartasini fanlar ro'yxatidan KEYINGA
+          tushirish mumkin.
+        */}
+        <div className="contents lg:sticky lg:top-20 lg:flex lg:flex-col lg:gap-3">
+          <InstituteList
+            className="order-1 lg:order-none"
+            institutes={institutes.map((group) => ({
+              university: group.university,
+              slug: group.slug,
+              subjectCount: group.subjects.length,
+            }))}
+            selectedId={selected?.university.id ?? null}
+            onSelect={selectInstitute}
+            alphabetical={filters.sort === 'name'}
+            onToggleAlphabetical={() =>
+              applyFilters({ sort: filters.sort === 'name' ? 'material' : 'name' })
+            }
+            onRequestUniversity={() => setUniversityModal(true)}
+          />
+
+          <SubjectRequestCard
+            className="order-3 lg:order-none"
+            onRequestSubject={() => setSubjectModal(true)}
+            canRequestSubject={Boolean(selected)}
+            subjectRequestReward={stats.subject_request_reward}
+          />
+        </div>
 
         {selected ? (
-          <section className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <section className="order-2 min-w-0 lg:order-none">
             <UniversityHeader group={selected} />
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 sm:mt-4">
@@ -488,16 +507,9 @@ export function MaterialsBrowser({
           <EmptyState
             title={m.materials.nothingFound}
             text={m.filters.noResults}
-            className="lg:col-start-2 lg:row-span-2 lg:row-start-1"
+            className="order-2 lg:order-none"
           />
         )}
-
-        <SubjectRequestCard
-          className="lg:col-start-1 lg:row-start-2"
-          onRequestSubject={() => setSubjectModal(true)}
-          canRequestSubject={Boolean(selected)}
-          subjectRequestReward={stats.subject_request_reward}
-        />
       </div>
 
       <UniversityRequestModal open={universityModal} onClose={() => setUniversityModal(false)} />
