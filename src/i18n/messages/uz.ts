@@ -587,6 +587,7 @@ export const uz = {
   },
 
   loginMethods: {
+    codeSentTo: '{target} raqamiga yuborilgan kodni kiriting.',
     title: 'Kirish usullari',
     lead: "Hisobingizga bir nechta yo'l bilan kirishingiz mumkin. Har birini qo'shishda tasdiqlash so'raladi, oxirgi qolganini esa uzib bo'lmaydi.",
     linkPhone: "Telefon raqamni bog'lash",

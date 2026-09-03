@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { GoogleCredentialButton, isGoogleConfigured } from '@/features/auth/GoogleCredentialButton';
 import { OtpInput } from '@/features/auth/OtpInput';
 import { PhoneField } from '@/features/auth/PhoneField';
+import { isCompletePhone, toApiPhone } from '@/features/auth/phone';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { getApiErrorMessage } from '@/shared/api/errors';
@@ -52,7 +53,7 @@ function LinkModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { m } = useT();
+  const { t, m } = useT();
   const [identifier, setIdentifier] = useState('');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
@@ -66,6 +67,19 @@ function LinkModal({
   const isPhone = kind === 'phone';
   const startState = isPhone ? startPhoneState : startEmailState;
   const confirmState = isPhone ? confirmPhoneState : confirmEmailState;
+
+  /*
+   * `PhoneField` maydonda faqat MILLIY qismni ushlaydi (`901234567`) —
+   * `+998` alohida qutida turadi va yozilmaydi. Backend esa to'liq
+   * `+998901234567` kutadi.
+   *
+   * Shu qator YO'Q edi va telefon bog'lash umuman ishlamasdi: server
+   * har safar «Phone number must be in the format +998XXXXXXXXX» deb
+   * qaytarardi. Kirish, ro'yxatdan o'tish va parolni tiklash formalari
+   * `toApiPhone` ni allaqachon chaqirardi — faqat shu ekran unutilgan edi.
+   */
+  const apiIdentifier = isPhone ? toApiPhone(identifier) : identifier.trim();
+  const identifierReady = isPhone ? isCompletePhone(identifier) : identifier.trim().length > 4;
 
   function close() {
     setIdentifier('');
@@ -82,8 +96,8 @@ function LinkModal({
   async function handleSend() {
     try {
       const result = isPhone
-        ? await startPhone({ phone: identifier.trim() }).unwrap()
-        : await startEmail({ email: identifier.trim() }).unwrap();
+        ? await startPhone({ phone: apiIdentifier }).unwrap()
+        : await startEmail({ email: apiIdentifier }).unwrap();
 
       setSent(true);
       /*
@@ -101,9 +115,9 @@ function LinkModal({
   async function handleConfirm() {
     try {
       if (isPhone) {
-        await confirmPhone({ phone: identifier.trim(), code }).unwrap();
+        await confirmPhone({ phone: apiIdentifier, code }).unwrap();
       } else {
-        await confirmEmail({ email: identifier.trim(), code }).unwrap();
+        await confirmEmail({ email: apiIdentifier, code }).unwrap();
       }
     } catch {
       return;
@@ -119,10 +133,11 @@ function LinkModal({
       open={open}
       onClose={close}
       title={isPhone ? m.loginMethods.linkPhone : m.loginMethods.linkEmail}
+      /* Ikkala matn ham qat'iy o'zbekcha yozilgan edi va rus tilida ham
+         o'zbekcha chiqardi. Yuborilgan qiymat TO'LIQ ko'rsatiladi: odam
+         kodni qaysi raqamda kutishini bilishi kerak. */
       description={
-        sent
-          ? `${identifier} manziliga yuborilgan kodni kiriting.`
-          : "Tasdiqlagandan keyin bu usul bilan ham kirishingiz mumkin bo'ladi."
+        sent ? t((x) => x.loginMethods.codeSentTo, { target: apiIdentifier }) : m.loginMethods.lead
       }
       footer={
         <>
@@ -140,7 +155,7 @@ function LinkModal({
           ) : (
             <Button
               variant="emerald"
-              disabled={startState.isLoading || identifier.trim().length < 4}
+              disabled={startState.isLoading || !identifierReady}
               onClick={() => void handleSend()}
             >
               {startState.isLoading ? m.loginMethods.sending : m.loginMethods.sendCode}

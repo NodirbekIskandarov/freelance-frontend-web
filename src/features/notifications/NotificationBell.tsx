@@ -101,7 +101,7 @@ export function NotificationBell() {
             )}
           </div>
 
-          <div className="max-h-[60vh] overflow-y-auto">
+          <div className="scrollbar-slim max-h-[60vh] overflow-y-auto">
             {isLoading ? (
               <div className="flex flex-col gap-2 p-3">
                 {Array.from({ length: 4 }, (_, index) => (

@@ -384,7 +384,7 @@ export function SubjectTasks({
               </p>
             </div>
 
-            <div className="max-h-[420px] min-h-0 flex-1 space-y-1 overflow-y-auto p-2 sm:p-2.5">
+            <div className="scrollbar-slim max-h-[420px] min-h-0 flex-1 space-y-1 overflow-y-auto p-2 sm:p-2.5">
               {filtered.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center">
                   <p className="text-sm font-medium text-foreground">

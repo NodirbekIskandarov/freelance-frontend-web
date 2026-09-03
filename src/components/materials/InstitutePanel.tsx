@@ -88,7 +88,12 @@ export function InstituteList({
               // Telefonda gorizontal lenta: `snap` bilan surilganda karta
               // yarmi ko'rinib to'xtamaydi, oxiridagi bo'sh joy esa lenta
               // tugaganini ko'rsatadi.
-              'flex snap-x snap-mandatory [scrollbar-width:thin] gap-2 overflow-x-auto p-2 pr-6',
+              //
+              // `scrollbar-slim`, `[scrollbar-width:thin]` EMAS: ikkinchisi
+              // faqat Firefox'ni bilardi va Chrome'da brauzerning o'z
+              // yo'g'on, oq chizig'i qorong'i panelda turib qolardi.
+              // Utilita ikkala dvigatelni ham qamraydi.
+              'scrollbar-slim flex snap-x snap-mandatory gap-2 overflow-x-auto p-2 pr-6',
               'lg:max-h-[26rem] lg:snap-none lg:flex-col lg:gap-1 lg:overflow-x-visible lg:overflow-y-auto lg:pr-2',
             )}
           >
