@@ -79,15 +79,15 @@ export default async function LandingPage({ params }: PageProps<'/[locale]'>) {
         }
       />
       <CatalogueNow highlights={highlights} />
-      <ServicesOverview />
+      <ServicesOverview solutionCount={highlights.stats.solutions} />
       <HowItWorks />
       <Guarantee windowLabel={windowLabel} authorLabel={authorLabel} />
 
       {/* Mukofotlar sozlamadan keladi — shartlar kelmasa bo'lim
           umuman chizilmaydi, chunki uning yarmi raqamlardan iborat. */}
-      {terms && <SellerCta terms={terms} awaitingVariants={highlights.stats.awaiting_variants} />}
+      <SellerCta awaitingVariants={highlights.stats.awaiting_variants} />
 
-      <Testimonials highlights={highlights} />
+      <Testimonials />
       <LandingBottomGrid />
     </>
   );

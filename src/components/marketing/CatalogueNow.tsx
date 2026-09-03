@@ -1,8 +1,11 @@
 'use client';
 
+import type { CSSProperties } from 'react';
+
 import { Container } from '@/components/ui/Container';
 import { Link } from '@/i18n/Link';
 import { useT } from '@/i18n/useT';
+import { gradientFor, initialsOf } from '@/lib/catalogueVisuals';
 import { cn } from '@/lib/cn';
 import { formatCount } from '@/lib/format';
 import { toSlug, toSlugId } from '@/lib/slug';
@@ -16,9 +19,16 @@ import type { LandingHighlights } from '@/server/landing/highlights';
  * sanoq — javobsiz talab: u boshqa tomonga, yechim yozadigan odamga
  * qilingan taklif.
  */
+/** Yorliqlar lentaga aylanadigan eng kam son. */
+const CATEGORY_MIN_CHIPS = 6;
+
+/** Bitta yorliq ko'z oldidan o'tib ketadigan vaqt. */
+const CATEGORY_SECONDS = 3;
+
 export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) {
   const { t, m } = useT();
   const { stats } = highlights;
+  const rolling = highlights.categories.length >= CATEGORY_MIN_CHIPS;
 
   const tiles = [
     { value: stats.universities, label: m.home.statInstitutes, tone: 'text-foreground' },
@@ -81,6 +91,7 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
                 href={`/materials/${toSlug(university.short_name || university.name)}`}
                 className="flex items-center gap-3 px-3.5 py-2.5 transition-colors hover:bg-muted/50"
               >
+                <UniversityMark university={university} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-foreground">
                     {university.short_name || university.name}
@@ -157,25 +168,109 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
               </Link>
             </div>
 
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {highlights.categories.map((category) => (
-                <li key={category.id}>
-                  <Link
-                    href="/materials"
-                    className="inline-flex h-9 items-center gap-2 rounded-xl border border-border/70 bg-card px-3.5 text-sm font-medium text-foreground transition-colors hover:border-emerald-500/40"
-                  >
-                    {category.name}
-                    <span className="text-xs text-muted-foreground tabular-nums">
-                      {formatCount(category.subject_count)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/*
+              Yorliqlar O'ZI aylanadi.
+
+              Ular bitta qatorga sig'maydi va o'ralganda bo'lim ikki-uch
+              qatorga cho'zilardi; aylantirish paneli bilan qoldirilsa esa
+              oxirgi yo'nalishlar o'ng chetda ko'rinmay qolardi. Ustiga
+              borilganda to'xtaydi — bosmoqchi bo'lgan yorliqni quvish
+              kerak bo'lmasin.
+            */}
+            {rolling ? (
+              <div
+                className="marquee mt-3"
+                style={
+                  {
+                    '--marquee-gap': '0.5rem',
+                    '--marquee-duration': `${highlights.categories.length * CATEGORY_SECONDS}s`,
+                  } as CSSProperties
+                }
+              >
+                {/* Ikkala nusxa BITTA yo'lakda — alohida ro'yxatlar
+                    ustma-ust tushib, lenta ikki qatorga aylanardi. */}
+                <ul className="marquee-track">
+                  {highlights.categories.map((category) => (
+                    <CategoryChip key={category.id} category={category} />
+                  ))}
+                  {highlights.categories.map((category) => (
+                    <CategoryChip key={`clone-${category.id}`} category={category} clone />
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {highlights.categories.map((category) => (
+                  <CategoryChip key={category.id} category={category} />
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </Container>
     </section>
+  );
+}
+
+/**
+ * Institut belgisi: logotip, bo'lmasa qisqartma rangli kvadratda.
+ *
+ * `next/image` EMAS: logotip boshqa domendan keladi va uni optimizatsiya
+ * qilish uchun o'sha domenni konfiguratsiyaga yozish kerak bo'lardi —
+ * 36 pikselli rasm uchun bu ortiqcha bog'lanish. O'lcham qat'iy, ya'ni
+ * rasm kech kelsa ham qator sakramaydi.
+ */
+function UniversityMark({ university }: { university: LandingHighlights['universities'][number] }) {
+  const label = university.short_name || university.name;
+
+  if (university.logo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- yuqoridagi izohga qarang
+      <img
+        src={university.logo}
+        alt=""
+        width={36}
+        height={36}
+        loading="lazy"
+        decoding="async"
+        className="size-9 shrink-0 rounded-xl bg-muted object-contain"
+      />
+    );
+  }
+
+  return (
+    <span
+      className={cn(
+        'grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br px-1 text-[10px] leading-none font-bold text-white',
+        gradientFor(university.id),
+      )}
+    >
+      {label.length <= 6 ? label : initialsOf(label)}
+    </span>
+  );
+}
+
+function CategoryChip({
+  category,
+  clone = false,
+}: {
+  category: LandingHighlights['categories'][number];
+  /** Halqaning ikkinchi nusxasi — skrinriderdan va tab navbatidan tashqarida. */
+  clone?: boolean;
+}) {
+  return (
+    <li className="shrink-0" aria-hidden={clone || undefined} inert={clone || undefined}>
+      <Link
+        href="/materials"
+        tabIndex={clone ? -1 : undefined}
+        className="inline-flex h-9 items-center gap-2 rounded-xl border border-border/70 bg-card px-3.5 text-sm font-medium whitespace-nowrap text-foreground transition-colors hover:border-emerald-500/40"
+      >
+        {category.name}
+        <span className="text-xs text-muted-foreground tabular-nums">
+          {formatCount(category.subject_count)}
+        </span>
+      </Link>
+    </li>
   );
 }
 

@@ -25,6 +25,8 @@ export interface LandingUniversity {
   short_name: string;
   code: string;
   city: string;
+  /** To'liq manzil; bo'sh satr — logotip yuklanmagan. */
+  logo: string;
   subject_count: number;
   solution_count: number;
 }

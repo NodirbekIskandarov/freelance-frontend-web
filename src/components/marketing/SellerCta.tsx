@@ -1,52 +1,54 @@
 'use client';
 
-import { ArrowUpRight, Building2, FilePlus2, Upload } from 'lucide-react';
+import { ArrowUpRight, FilePlus2, Upload, Users } from 'lucide-react';
 
 import { ButtonLink } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
 import { formatCount } from '@/lib/format';
-import { useMoney } from '@/lib/useMoney';
-import type { SupportTerms } from '@/shared/types/support';
 
 /**
- * Ikkinchi tomonga — yechim yozadigan odamga — qilingan taklif.
+ * Sotuvchiga taklif — HOZIRCHA VERSTKA.
  *
- * O'ngdagi qatorlar SOZLAMADAN keladi (`/support/terms/`): mukofot
- * miqdori operator qo'yadigan qiymat va uni sahifaga yozib qo'yish
- * sayt hech kim yoqmagan pulni va'da qilishiga olib borardi. Mukofot
- * o'chirilgan bo'lsa qator umuman chizilmaydi.
+ * O'ngdagi qatorlarning miqdorlari shu yerda turadi, API'dan
+ * kelmaydi. Ikkitasi umuman modellashtirilmagan: platforma ulushi har
+ * yechimga moderator tomonidan alohida qo'yiladi (qat'iy foiz yo'q), va
+ * do'st taklif qilish uchun mukofot tizimi hali yozilmagan.
+ *
+ * DIQQAT: bu raqamlar foydalanuvchiga berilgan pul va'dasi. Ular
+ * ataylab bitta joyda — ulanish payti kelganda o'zgartiriladigan joy
+ * shu, sahifa bo'ylab tarqalgan o'nlab satr emas.
  */
-export function SellerCta({
-  terms,
-  awaitingVariants,
-}: {
-  terms: SupportTerms;
-  awaitingVariants: number;
-}) {
-  const { t, m } = useT();
-  const money = useMoney();
+const REWARD_ROWS = [
+  {
+    icon: ArrowUpRight,
+    title: (m: Messages) => m.home.rewardSelling,
+    note: (m: Messages) => m.home.rewardSellingNote,
+    amount: (m: Messages) => m.home.rewardSellingShare,
+  },
+  {
+    icon: FilePlus2,
+    title: (m: Messages) => m.home.rewardSubject,
+    note: (m: Messages) => m.home.rewardAfterApproval,
+    amount: (m: Messages) => m.home.rewardSubjectAmount,
+  },
+  {
+    icon: Upload,
+    title: (m: Messages) => m.home.rewardAssignment,
+    note: (m: Messages) => m.home.rewardWithFile,
+    amount: (m: Messages) => m.home.rewardAssignmentAmount,
+  },
+  {
+    icon: Users,
+    title: (m: Messages) => m.home.rewardReferral,
+    note: (m: Messages) => m.home.rewardReferralNote,
+    amount: (m: Messages) => m.home.rewardReferralAmount,
+  },
+] as const;
 
-  const rewards = [
-    {
-      icon: FilePlus2,
-      title: m.home.rewardSubject,
-      note: m.home.rewardAfterApproval,
-      amount: terms.subject_request_reward,
-    },
-    {
-      icon: Upload,
-      title: m.home.rewardAssignment,
-      note: m.home.rewardWithFile,
-      amount: terms.assignment_request_reward,
-    },
-    {
-      icon: Building2,
-      title: m.home.rewardUniversity,
-      note: m.home.rewardAfterApproval,
-      amount: terms.university_request_reward,
-    },
-  ].filter((reward) => reward.amount > 0);
+export function SellerCta({ awaitingVariants }: { awaitingVariants: number }) {
+  const { t, m } = useT();
 
   return (
     <section className="py-10 sm:py-14">
@@ -84,36 +86,22 @@ export function SellerCta({
             </div>
 
             <ul className="space-y-2.5">
-              <li className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-500">
-                  <ArrowUpRight className="size-4" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-foreground">
-                    {m.home.rewardSelling}
-                  </span>
-                  <span className="block text-[11px] text-muted-foreground">
-                    {m.home.rewardSellingNote}
-                  </span>
-                </span>
-              </li>
-
-              {rewards.map((reward) => (
+              {REWARD_ROWS.map((row) => (
                 <li
-                  key={reward.title}
+                  key={row.title(m)}
                   className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
-                    <reward.icon className="size-4" />
+                    <row.icon className="size-4" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold text-foreground">
-                      {reward.title}
+                      {row.title(m)}
                     </span>
-                    <span className="block text-[11px] text-muted-foreground">{reward.note}</span>
+                    <span className="block text-[11px] text-muted-foreground">{row.note(m)}</span>
                   </span>
                   <span className="shrink-0 text-sm font-bold text-amber-600 tabular-nums dark:text-amber-400">
-                    {money.som(reward.amount)}
+                    {row.amount(m)}
                   </span>
                 </li>
               ))}

@@ -12,12 +12,11 @@ import {
   Star,
   type LucideIcon,
 } from 'lucide-react';
-import { useState, type ComponentType, type FormEvent } from 'react';
+import { type ComponentType, type CSSProperties } from 'react';
 
 import { Container } from '@/components/ui/Container';
 import { Link } from '@/i18n/Link';
 import type { Messages } from '@/i18n/messages/uz';
-import { useLocaleRouter } from '@/i18n/useLocaleRouter';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { formatCount } from '@/lib/format';
@@ -77,7 +76,7 @@ export function Hero({
 
       <Container className="relative z-10 pt-10 pb-10 sm:pt-14 sm:pb-12 lg:pt-16">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 xl:gap-16">
-          <HeroContent guaranteeLabel={guaranteeLabel} />
+          <HeroContent highlights={highlights} guaranteeLabel={guaranteeLabel} />
           <HeroVisual highlights={highlights} />
         </div>
 
@@ -91,23 +90,14 @@ export function Hero({
 
 const RISE_DELAYS = ['0ms', '100ms', '200ms'];
 
-function HeroContent({ guaranteeLabel }: { guaranteeLabel: string }) {
-  const { t, m } = useT();
-  const router = useLocaleRouter();
-  const [query, setQuery] = useState('');
-
-  /*
-   * Qidiruv katalogga OLIB BORADI, bu yerda javob bermaydi.
-   *
-   * Bosh sahifada natijalarni chizish uchun butun katalogni yuklash
-   * kerak bo'lardi — ya'ni hech qachon qidirmaydigan odam ham uni
-   * yuklab olardi. Katalog sahifasi esa qidiruvni allaqachon biladi.
-   */
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    const trimmed = query.trim();
-    router.push(trimmed ? `/materials?q=${encodeURIComponent(trimmed)}` : '/materials');
-  }
+function HeroContent({
+  highlights,
+  guaranteeLabel,
+}: {
+  highlights: LandingHighlights;
+  guaranteeLabel: string;
+}) {
+  const { m } = useT();
 
   const promises: { icon: LucideIcon; label: string }[] = [
     { icon: ShieldCheck, label: m.home.promiseModerated },
@@ -134,32 +124,9 @@ function HeroContent({ guaranteeLabel }: { guaranteeLabel: string }) {
         {m.home.heroLead}
       </p>
 
-      <form
-        onSubmit={submit}
-        className="hero-rise mt-7 flex flex-col gap-2.5 sm:flex-row"
-        style={{ animationDelay: RISE_DELAYS[2] }}
-      >
-        <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-zinc-500" />
-          <label className="sr-only" htmlFor="hero-search">
-            {m.home.heroSearchLabel}
-          </label>
-          <input
-            id="hero-search"
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={m.home.heroSearchPlaceholder}
-            className="h-12 w-full rounded-xl border border-white/12 bg-white/[0.04] pr-4 pl-11 text-sm text-white transition-colors outline-none placeholder:text-zinc-500 focus-visible:border-emerald-400/50 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
-          />
-        </div>
-        <button
-          type="submit"
-          className="inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500 px-6 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-400"
-        >
-          {m.home.heroSearch}
-        </button>
-      </form>
+      <div className="hero-rise mt-7" style={{ animationDelay: RISE_DELAYS[2] }}>
+        <SearchShowcase highlights={highlights} />
+      </div>
 
       <ul className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 lg:justify-start">
         {promises.map((promise) => (
@@ -173,11 +140,106 @@ function HeroContent({ guaranteeLabel }: { guaranteeLabel: string }) {
       </ul>
 
       <p className="mt-4 text-xs text-zinc-500">
-        {t((x) => x.home.heroOrFreelancer, { link: '' })}{' '}
+        {m.home.heroOrFreelancer}{' '}
         <Link href="/freelance" className="font-medium text-emerald-400 hover:underline">
           {m.home.heroFindFreelancer}
         </Link>
       </p>
+    </div>
+  );
+}
+
+/**
+ * Qidiruvning KO'RINISHI — ishlaydigan qidiruv emas.
+ *
+ * Bu blok reklama: u platforma nima qilishini bir qarashda ko'rsatadi —
+ * qidirasiz, yechimlar chiqadi. Shuning uchun maydonga matn kiritilmaydi
+ * va u fokus olmaydi: yozib bo'ladigan, lekin hech nima qilmaydigan
+ * maydon reklamadan ko'ra ko'proq nosozlikka o'xshaydi. Qidiruvning
+ * o'zi katalog sahifasida.
+ *
+ * Ro'yxatdagi qatorlar esa O'YLAB TOPILGAN emas — backenddan kelgan eng
+ * ko'p sotilgan fanlar. Bosh sahifada namuna sifatida soxta narx va
+ * reyting chizish saytning birinchi ekranida yolg'on raqam ko'rsatish
+ * bo'lardi.
+ */
+function SearchShowcase({ highlights }: { highlights: LandingHighlights }) {
+  const { t, m } = useT();
+  const rows = highlights.subjects.slice(0, 3);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
+      {/* Butun blok bezak: skrinriderga o'qilmaydi va bosilmaydi.
+          Yagona haqiqiy amal — pastdagi havola. */}
+      <div aria-hidden className="pointer-events-none p-2.5 select-none">
+        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/60 py-2.5 pr-2 pl-3.5">
+          <Search className="size-4 shrink-0 text-zinc-500" />
+          <span className="min-w-0 flex-1 truncate text-left text-sm text-zinc-500">
+            {m.home.heroSearchPlaceholder}
+          </span>
+          <span className="shrink-0 rounded-lg bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-emerald-950">
+            {m.home.heroSearch}
+          </span>
+        </div>
+
+        {rows.length > 0 && (
+          <div className="mt-2.5">
+            <p className="px-1 pb-1.5 text-[10px] font-semibold tracking-wider text-zinc-500 uppercase">
+              {m.home.topSubjects}
+            </p>
+
+            <ul className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.08] bg-zinc-900/40">
+              {rows.map((subject) => (
+                <li key={subject.id} className="flex items-center gap-3 px-3 py-2.5">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-300">
+                    <CheckCheck className="size-3.5" />
+                  </span>
+                  <span className="min-w-0 flex-1 text-left">
+                    <span className="block truncate text-[13px] font-semibold text-white">
+                      {subject.name}
+                    </span>
+                    <span className="block truncate text-[11px] text-zinc-500">
+                      {[
+                        subject.university_short_name,
+                        subject.course
+                          ? t((x) => x.materials.course, { course: subject.course })
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-right text-[11px] tabular-nums">
+                    <span className="block font-semibold text-emerald-300">
+                      {t((x) => x.home.instituteSolutions, {
+                        count: formatCount(subject.solution_count),
+                      })}
+                    </span>
+                    <span className="block text-zinc-500">
+                      {t((x) => x.home.subjectSales, {
+                        count: formatCount(subject.sale_count),
+                      })}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <Link
+        href="/materials"
+        className="flex items-center justify-between gap-2 border-t border-white/[0.08] px-3.5 py-2.5 text-[11px] transition-colors hover:bg-white/[0.03]"
+      >
+        <span className="truncate text-zinc-500">
+          {t((x) => x.home.startFromInstituteNote, {
+            institutes: formatCount(highlights.stats.universities),
+            subjects: formatCount(highlights.stats.subjects),
+          })}
+        </span>
+        <span className="shrink-0 font-semibold text-emerald-400">{m.home.allMaterials} →</span>
+      </Link>
     </div>
   );
 }
@@ -321,15 +383,82 @@ function FloatingCard({
 }
 
 /**
+ * Lenta aylanishi uchun kerak bo'ladigan eng kam karta soni.
+ *
+ * To'rttadan kam bo'lsa ikki nusxa ham ekran kengligini to'ldirmaydi va
+ * halqada ko'zga tashlanadigan bo'sh joy paydo bo'lardi — bunday holatda
+ * lenta oddiy qatorga aylanadi.
+ */
+const MARQUEE_MIN_CARDS = 4;
+
+/** Bitta karta ko'z oldidan o'tib ketadigan vaqt. */
+const SECONDS_PER_CARD = 6;
+
+function InstituteCard({
+  university,
+  clone = false,
+}: {
+  university: LandingHighlights['universities'][number];
+  /**
+   * Halqaning ikkinchi nusxasimi.
+   *
+   * Nusxa skrinriderdan yashiriladi (aks holda har institut ikki marta
+   * o'qilardi) va uning havolalari tab navbatidan chiqariladi: ko'rinmas
+   * takror havolaga fokus tushishi klaviatura bilan yurgan odam uchun
+   * yo'q joyga borish bo'lardi.
+   */
+  clone?: boolean;
+}) {
+  const { t } = useT();
+
+  return (
+    <li className="w-[15rem] shrink-0" aria-hidden={clone || undefined} inert={clone || undefined}>
+      <Link
+        href={`/materials/${toSlug(university.short_name || university.name)}`}
+        tabIndex={clone ? -1 : undefined}
+        className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 transition-colors hover:border-emerald-400/40"
+      >
+        <span className="text-sm font-semibold text-white">
+          {university.short_name || university.name}
+        </span>
+        <span className="mt-1 line-clamp-2 flex-1 text-[11px] leading-relaxed text-zinc-400">
+          {university.name}
+        </span>
+        <span className="mt-3 flex items-center justify-between text-[11px] tabular-nums">
+          <span className="text-zinc-500">
+            {t((x) => x.home.instituteSubjects, {
+              count: formatCount(university.subject_count),
+            })}
+          </span>
+          <span className="font-semibold text-emerald-300">
+            {t((x) => x.home.instituteSolutions, {
+              count: formatCount(university.solution_count),
+            })}
+          </span>
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+/**
  * «Institutingizdan boshlang» — bosh sahifadan katalogga eng qisqa yo'l.
  *
  * Ro'yxat materiali ko'p institutdan boshlanadi: bosh sahifada tanlov
  * qilayotgan odam qayerda ko'proq narsa borligini bilmaydi.
+ *
+ * Lenta O'ZI aylanadi. Ilgari u aylantirish paneli bilan turardi va
+ * birinchi beshtadan keyingi institutlar ekranning o'ng chetida qolib
+ * ketardi — ularni ko'rish uchun panelni surish kerakligini bilish
+ * kerak edi. Ustiga borilganda (yoki barmoq tekkanda) to'xtaydi.
  */
 function InstituteStrip({ highlights }: { highlights: LandingHighlights }) {
   const { t, m } = useT();
+  const universities = highlights.universities;
 
-  if (highlights.universities.length === 0) return null;
+  if (universities.length === 0) return null;
+
+  const rolling = universities.length >= MARQUEE_MIN_CARDS;
 
   return (
     <div>
@@ -348,35 +477,37 @@ function InstituteStrip({ highlights }: { highlights: LandingHighlights }) {
         </Link>
       </div>
 
-      <ul className="mt-3 flex snap-x snap-mandatory [scrollbar-width:thin] gap-2.5 overflow-x-auto pb-1">
-        {highlights.universities.map((university) => (
-          <li key={university.id} className="w-[15rem] shrink-0 snap-start">
-            <Link
-              href={`/materials/${toSlug(university.short_name || university.name)}`}
-              className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 transition-colors hover:border-emerald-400/40"
-            >
-              <span className="text-sm font-semibold text-white">
-                {university.short_name || university.name}
-              </span>
-              <span className="mt-1 line-clamp-2 flex-1 text-[11px] leading-relaxed text-zinc-400">
-                {university.name}
-              </span>
-              <span className="mt-3 flex items-center justify-between text-[11px] tabular-nums">
-                <span className="text-zinc-500">
-                  {t((x) => x.home.instituteSubjects, {
-                    count: formatCount(university.subject_count),
-                  })}
-                </span>
-                <span className="font-semibold text-emerald-300">
-                  {t((x) => x.home.instituteSolutions, {
-                    count: formatCount(university.solution_count),
-                  })}
-                </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {rolling ? (
+        <div
+          className="marquee mt-3"
+          style={
+            {
+              '--marquee-gap': '0.625rem',
+              // Tezlik karta soniga bog'liq emas: har bir karta ko'z
+              // oldidan bir xil vaqtda o'tadi, ro'yxat qanchalik uzun
+              // bo'lmasin.
+              '--marquee-duration': `${universities.length * SECONDS_PER_CARD}s`,
+            } as CSSProperties
+          }
+        >
+          {/* Ikkala nusxa BITTA yo'lakda: alohida ro'yxatlarga bo'linsa
+              ular ustma-ust tushib, lenta ikki qatorga aylanardi. */}
+          <ul className="marquee-track">
+            {universities.map((university) => (
+              <InstituteCard key={university.id} university={university} />
+            ))}
+            {universities.map((university) => (
+              <InstituteCard key={`clone-${university.id}`} university={university} clone />
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <ul className="mt-3 flex flex-wrap gap-2.5">
+          {universities.map((university) => (
+            <InstituteCard key={university.id} university={university} />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
