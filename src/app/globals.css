@@ -626,3 +626,63 @@
     animation: none;
   }
 }
+
+/*
+ * Cheksiz aylanadigan lenta (marquee).
+ *
+ * Ro'yxat IKKI MARTA chiziladi va yo'lak o'z kengligining yarmiga
+ * suriladi — shunda ikkinchi nusxa birinchisining o'rniga aynan tushadi
+ * va halqa uzilmaydi. Yarmiga QO'SHIMCHA yarim oraliq ham qo'shiladi:
+ * nusxalar orasida ham xuddi shunday oraliq bor va usiz har aylanishda
+ * bir necha piksellik sakrash ko'rinardi.
+ *
+ * Matematikasi kartalar kengligiga bog'liq emas — faqat oraliqqa —
+ * shuning uchun ro'yxatdagi kartalar har xil kenglikda bo'lsa ham
+ * ishlayveradi.
+ */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - var(--marquee-gap) / 2));
+  }
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: var(--marquee-gap);
+  animation: marquee-scroll var(--marquee-duration) linear infinite;
+}
+
+/*
+ * Ustiga borilganda TO'XTAYDI.
+ *
+ * Bosmoqchi bo'lgan kartaning ko'z oldidan siljib ketishi — havolani
+ * quvish demak. `:focus-within` klaviatura uchun, `:active` esa sensorli
+ * ekran uchun: u yerda `hover` yo'q va barmoq tekkanda lenta to'xtashi
+ * kerak.
+ */
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track,
+.marquee:active .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Harakat o'chirilganda lenta qotib qoladi — qolgan kartalarga
+     yetib borishning yagona yo'li qo'lda aylantirish. */
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+}
