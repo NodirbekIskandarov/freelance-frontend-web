@@ -134,3 +134,18 @@ export function formatDateTime(value: string | null | undefined): string {
   const part = partsOf(date, DATE_TIME_OPTIONS);
   return `${part.day}.${part.month}.${part.year}, ${part.hour}:${part.minute}`;
 }
+
+/**
+ * `+998901234567` → `+998 90 123 45 67`.
+ *
+ * Ko'rsatish uchun — saqlash va `tel:` havolasi uchun raqam har doim
+ * probelsiz shaklda qoladi. Ilgari ajratilgan ko'rinish footerga qo'lda
+ * yozib qo'yilgan edi va konfiguratsiyadagi raqam o'zgarsa sayt ikkita
+ * boshqa-boshqa raqam ko'rsatardi.
+ */
+export function formatPhone(phone: string): string {
+  const match = /^\+998(\d{2})(\d{3})(\d{2})(\d{2})$/.exec(phone.replace(/\s/g, ''));
+  if (!match) return phone;
+
+  return `+998 ${match[1]} ${match[2]} ${match[3]} ${match[4]}`;
+}

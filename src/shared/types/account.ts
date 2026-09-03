@@ -230,6 +230,13 @@ export function appealStatusLabel(status: AppealStatus, messages: Messages): str
   return labels[status];
 }
 
+/** Murojaatga biriktirilgan skrinshot yoki fayl. */
+export interface AppealAttachment {
+  id: string;
+  file: string;
+  created_at: string;
+}
+
 export interface Appeal {
   id: string;
   reference: string;
@@ -239,6 +246,7 @@ export interface Appeal {
   status: AppealStatus;
   reply: string;
   replied_at: string | null;
+  attachments: AppealAttachment[];
   created_at: string;
 }
 
@@ -246,4 +254,6 @@ export interface AppealCreateRequest {
   topic?: AppealTopic;
   subject: string;
   message: string;
+  /** Skrinshotlar — `FormData` bilan yuboriladi. */
+  attachments?: File[];
 }

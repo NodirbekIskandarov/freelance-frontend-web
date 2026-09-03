@@ -132,7 +132,26 @@ export const accountApi = baseApi.injectEndpoints({
     }),
 
     createAppeal: build.mutation<Appeal, AppealCreateRequest>({
-      query: (body) => ({ url: '/me/appeals/', method: 'POST', body }),
+      /*
+       * Fayl biriktirilgan bo'lsa `FormData`, aks holda oddiy JSON.
+       *
+       * Har doim `FormData` yuborib bo'lmaydi: undagi hamma narsa matnga
+       * aylanadi. `fetchBaseQuery` `FormData` ni ko'rsa `Content-Type` ni
+       * o'zi qo'ymaydi — chegara (boundary) brauzer tomonidan qo'shiladi.
+       */
+      query: ({ attachments, ...rest }) => {
+        if (!attachments?.length) {
+          return { url: '/me/appeals/', method: 'POST', body: rest };
+        }
+
+        const form = new FormData();
+        for (const [key, value] of Object.entries(rest)) {
+          if (value !== undefined) form.append(key, String(value));
+        }
+        for (const file of attachments) form.append('attachments', file);
+
+        return { url: '/me/appeals/', method: 'POST', body: form };
+      },
       invalidatesTags: ['Appeal'],
     }),
   }),

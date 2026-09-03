@@ -3,6 +3,7 @@ import { Link } from '@/i18n/Link';
 import type { ReactNode } from 'react';
 
 import { siteConfig } from '@/config/site';
+import { formatPhone } from '@/lib/format';
 import { getMessages } from '@/i18n/messages';
 import { interpolate } from '@/i18n/interpolate';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/i18n/config';
@@ -133,7 +134,7 @@ export async function Footer({ locale: raw }: { locale: string }) {
 
           <FooterCol title={m.contact}>
             <ContactItem icon={Phone} href={`tel:${siteConfig.contact.phone}`}>
-              +998 90 123 45 67
+              {formatPhone(siteConfig.contact.phone)}
             </ContactItem>
             <ContactItem icon={Mail} href={`mailto:${siteConfig.contact.email}`}>
               {siteConfig.contact.email}

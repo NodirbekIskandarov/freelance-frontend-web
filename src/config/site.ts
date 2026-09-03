@@ -26,4 +26,17 @@ export const siteConfig = {
     email: 'support@yopamiz.uz',
     address: "Toshkent, O'zbekiston",
   },
+  /**
+   * Yordam kanallari — bitta joyda.
+   *
+   * Ish vaqti API'da yo'q (u operator jadvalining o'zi, mahsulot qoidasi
+   * emas), shuning uchun front tomonda turadi. Bitta konstantada:
+   * jadval o'zgarsa sayt bo'ylab bir necha joyda qidirish kerak
+   * bo'lmasin.
+   */
+  support: {
+    telegram: 'https://t.me/yopamiz_support',
+    telegramHandle: '@yopamiz_support',
+    hours: '09:00–23:00',
+  },
 } as const;
