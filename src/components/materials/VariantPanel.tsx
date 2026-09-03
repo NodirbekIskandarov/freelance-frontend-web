@@ -18,6 +18,7 @@ import {
 } from '@/features/solutions/solutionsApi';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
+import { formatBytes } from '@/lib/format';
 import { useDates } from '@/lib/useDates';
 import { useMoney } from '@/lib/useMoney';
 import { getApiErrorMessage } from '@/shared/api/errors';
@@ -245,11 +246,23 @@ export function VariantPanel({
 
                 {/*
                   Yorliqlarda faqat backend beradigan narsa turadi.
-                  Maketdagi «DOCX» va «9 bet» YO'Q: `PublicSolution` da na
-                  fayl turi, na sahifalar soni bor va ularni chizish
-                  o'ylab topish bo'lardi.
+                  Fayl turi va hajmi — xaridorning to'lashdan OLDIN
+                  o'lchaydigan narsasi: «bu PDFmi yoki tahrirlasa
+                  bo'ladigan Wordmi, telefonda ochiladimi». Ikkalasi ham
+                  bo'sh bo'lishi mumkin (eski yozuv yoki kengaytmasiz
+                  fayl) — o'shanda yorliq umuman chizilmaydi.
                 */}
                 <div className="mt-2 flex flex-wrap gap-1">
+                  {solution.file_format && (
+                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                      {solution.file_format}
+                    </span>
+                  )}
+                  {solution.file_size > 0 && (
+                    <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
+                      {formatBytes(solution.file_size)}
+                    </span>
+                  )}
                   <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                     {dates.date(solution.created_at)}
                   </span>

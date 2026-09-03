@@ -1,12 +1,13 @@
 'use client';
 
-import { CircleCheck, Plus, Wallet } from 'lucide-react';
+import { CircleCheck, FileText, Plus, Wallet } from 'lucide-react';
 
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useGetWalletQuery } from '@/features/account/accountApi';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
+import { formatBytes } from '@/lib/format';
 import { useMoney } from '@/lib/useMoney';
 import { getApiErrorMessage } from '@/shared/api/errors';
 import type { PublicSolution } from '@/shared/types/catalogue';
@@ -79,6 +80,11 @@ export function PurchaseModal({
   const heading = [assignmentTitle, variantLabel].filter(Boolean).join(' · ');
   const place = [subjectName, universityShortName].filter(Boolean).join(' · ');
 
+  // Fayl haqidagi ikki dalil to'lovdan OLDIN turishi kerak: odam nimani
+  // ochishini (PDFmi, DOCXmi) va nima yuklab olishini bilib to'laydi.
+  // Ikkalasi ham bo'sh bo'lishi mumkin — eski yozuvlarda hajm saqlanmagan.
+  const fileSize = formatBytes(solution.file_size);
+
   return (
     <Modal
       open={open}
@@ -125,7 +131,12 @@ export function PurchaseModal({
           {/* Nima sotib olinayotgani — oynada bittagina karta bo'lsa ham,
               odam qaysi variantni bosganini adashtirishi mumkin. */}
           <div className="flex gap-3 border-b border-border/70 pb-4">
-            <div className="size-14 shrink-0 rounded-lg border border-border/70 bg-muted/40" />
+            {/* Bo'sh kulrang kvadrat o'rniga fayl turi: rasm yo'q, lekin
+                shu joy baribir «nima sotib olinayapti» degan savolga
+                javob beradi. Kengaytma noma'lum bo'lsa — oddiy ikonka. */}
+            <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-border/70 bg-muted/40 text-[11px] font-bold tracking-wide text-muted-foreground">
+              {solution.file_format || <FileText className="size-5" aria-hidden />}
+            </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{heading}</p>
               {place && <p className="mt-0.5 truncate text-xs text-muted-foreground">{place}</p>}
@@ -133,6 +144,7 @@ export function PurchaseModal({
                 {t((x) => x.purchase.author, { name: solution.uploader.full_name || '—' })}
                 {' · ★ '}
                 {Number(solution.average_rating).toFixed(1)}
+                {fileSize && ` · ${fileSize}`}
               </p>
             </div>
           </div>
@@ -198,7 +210,9 @@ export function PurchaseModal({
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{m.purchase.priceRow}</span>
-              <span className="font-medium text-foreground">{money.decimalSom(solution.price)}</span>
+              <span className="font-medium text-foreground">
+                {money.decimalSom(solution.price)}
+              </span>
             </div>
 
             <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3">

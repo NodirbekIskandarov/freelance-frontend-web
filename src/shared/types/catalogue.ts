@@ -191,6 +191,10 @@ export interface PublicSolution {
   average_rating: string;
   review_count: number;
   sold_count: number;
+  /** Fayl kengaytmasi katta harfda (`PDF`, `DOCX`). Bo'sh — noma'lum. */
+  file_format: string;
+  /** Fayl hajmi baytda. `0` — eski yozuv, hajmi saqlanmagan. */
+  file_size: number;
   uploader: PublicUploader;
   created_at: string;
 }

@@ -149,3 +149,21 @@ export function formatPhone(phone: string): string {
 
   return `+998 ${match[1]} ${match[2]} ${match[3]} ${match[4]}`;
 }
+
+/**
+ * 2 516 582 → «2.4 MB», 640 000 → «625 KB».
+ *
+ * Aniqlik ATAYLAB past: bu raqam «yuklab olishga arziydimi, telefonda
+ * ochiladimi» degan savolga javob beradi, buxgalteriya hisobiga emas.
+ * Megabaytda bir kasr, kilobaytda esa umuman kasr yo'q — «625.4 KB»
+ * o'qishga xalaqit beradi, hech nima qo'shmaydi.
+ */
+export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+
+  const kilobytes = bytes / 1024;
+  if (kilobytes < 1024) return `${Math.round(kilobytes)} KB`;
+
+  return `${(kilobytes / 1024).toFixed(1)} MB`;
+}
