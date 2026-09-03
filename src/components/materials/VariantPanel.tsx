@@ -36,6 +36,17 @@ import {
 } from './variantStatus';
 
 /**
+ * Javob kelguncha turadigan tugma o'rni — yozuvsiz.
+ *
+ * Balandligi haqiqiy tugmanikiday: holat aniqlangach panel siljimasin.
+ */
+function ActionPlaceholder({ className }: { className?: string }) {
+  return (
+    <div aria-hidden className={cn('h-9 w-full animate-pulse rounded-lg bg-muted', className)} />
+  );
+}
+
+/**
  * Tanlangan variant paneli — sahifaning o'ng ustuni.
  *
  * Yechimlar serverdan OLDINDAN keladi (`solutionsByVariant`): sahifa ISR
@@ -149,6 +160,21 @@ export function VariantPanel({
    */
   const ownershipReady =
     authHydrated && (!isAuthenticated || (!library.isLoading && !myUploads.isLoading));
+
+  /*
+   * Shu sabab yana ikki joyda.
+   *
+   * «So'rov qoldirish» tugmasi bosilgan-bosilmaganini `myRequests` aytadi:
+   * javob kelguncha u «So'rov qoldirish» bo'lib turar, keyin «So'rov
+   * yuborildi»ga almashardi — allaqachon so'ragan odam tugmani yana
+   * bosishga ulgurardi.
+   *
+   * Panel osti esa `myUploads` ga bog'liq: chegaraga yetgan odamga avval
+   * yuklash tugmasi ko'rsatilib, keyin «chegaraga yetildi» yozuvi
+   * chiqardi.
+   */
+  const requestReady = authHydrated && (!isAuthenticated || !myRequests.isLoading);
+  const uploadsReady = authHydrated && (!isAuthenticated || !myUploads.isLoading);
 
   /*
    * Katalogda allaqachon ko'rinib turgan yechim «yuborganlarim»
@@ -290,24 +316,29 @@ export function VariantPanel({
               {m.variants.notUploaded}
             </p>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full border-amber-500/50 text-amber-700 hover:bg-amber-500/10 dark:text-amber-300"
-              disabled={requestState.isLoading || alreadyRequested}
-              onClick={() => {
-                void requestVariant(variant.id)
-                  .unwrap()
-                  .then(() => onRequested(variant.id))
-                  .catch(() => undefined);
-              }}
-            >
-              {requestState.isLoading
-                ? m.variants.sending
-                : alreadyRequested
-                  ? m.variants.requestSent
-                  : m.variants.leaveRequest}
-            </Button>
+            {!requestReady ? (
+              /* Amber quti ichida turgani uchun rangi ham shu qutiniki. */
+              <ActionPlaceholder className="bg-amber-500/15" />
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="solution-action-in w-full border-amber-500/50 text-amber-700 hover:bg-amber-500/10 dark:text-amber-300"
+                disabled={requestState.isLoading || alreadyRequested}
+                onClick={() => {
+                  void requestVariant(variant.id)
+                    .unwrap()
+                    .then(() => onRequested(variant.id))
+                    .catch(() => undefined);
+                }}
+              >
+                {requestState.isLoading
+                  ? m.variants.sending
+                  : alreadyRequested
+                    ? m.variants.requestSent
+                    : m.variants.leaveRequest}
+              </Button>
+            )}
 
             {requestState.error && !alreadyRequested && (
               <p role="alert" className="text-[11px] text-destructive">
@@ -377,14 +408,18 @@ export function VariantPanel({
             <Lock className="mt-px size-3 shrink-0" />
             {m.variants.uploadsClosed}
           </p>
+        ) : !uploadsReady ? (
+          <ActionPlaceholder />
         ) : uploadsLeft === 0 ? (
           /* Chegaraga yetildi. Tugmani ko'rsatib, keyin serverdan xato
              qaytarish o'rniga sababi shu yerda aytiladi. */
-          <p className="text-[11px] leading-snug text-muted-foreground">
+          <p className="solution-action-in text-[11px] leading-snug text-muted-foreground">
             {t((x) => x.variants.uploadLimitReached, { max: MAX_UPLOADS_PER_VARIANT })}
           </p>
         ) : (
-          <>
+          /* Tugma va uning ostidagi izoh BIRGA ochiladi: izohdagi son ham
+             o'sha javobdan keladi. */
+          <div className="solution-action-in">
             <Button
               variant="emerald"
               size="sm"
@@ -400,7 +435,7 @@ export function VariantPanel({
                 : t((x) => x.variants.uploadLimitHint, { max: MAX_UPLOADS_PER_VARIANT })}{' '}
               {m.variants.moderationNote}
             </p>
-          </>
+          </div>
         )}
       </footer>
 
