@@ -160,7 +160,7 @@ const COL = {
      qolgan ustunlar yig'indisi sig'magan ekranda nomni nolgacha
      qisqartirib, qatorda faqat ikonka qoldirardi. */
   name: 'min-w-[6.5rem] flex-1',
-  direction: 'hidden w-24 shrink-0 xl:block 2xl:w-32',
+  category: 'hidden w-24 shrink-0 xl:block 2xl:w-32',
   /* Ikkala yorliq («2-kurs», «6-semestr») BIR QATORGA sig'adigan kenglik:
      torroq bo'lsa ular ikkinchi qatorga tushib, butun jadval qatorini
      ikki barobar balandlashtirardi. */
@@ -189,7 +189,7 @@ export function SubjectTable({
         {/* Ikonka ustuni sarlavhasiz — uning tepasida yozadigan so'z yo'q. */}
         <span aria-hidden className="w-9 shrink-0" />
         <span className={cn(COL.name, 'truncate')}>{m.materials.colSubject}</span>
-        <span className={cn(COL.direction, 'truncate')}>{m.materials.colDirection}</span>
+        <span className={cn(COL.category, 'truncate')}>{m.materials.colCategory}</span>
         <span className={cn(COL.course, 'truncate lg:block')}>{m.materials.colCourse}</span>
         <span className={cn(COL.assignments, 'truncate')}>{m.materials.colAssignments}</span>
         <span className={cn(COL.variants, 'truncate')}>{m.materials.colVariants}</span>
@@ -234,8 +234,8 @@ export function SubjectTable({
                   </span>
                 </span>
 
-                <span className={cn(COL.direction, 'truncate text-xs text-muted-foreground')}>
-                  {subject.direction_name || '—'}
+                <span className={cn(COL.category, 'truncate text-xs text-muted-foreground')}>
+                  {subject.category_name || '—'}
                 </span>
 
                 <span className={COL.course}>

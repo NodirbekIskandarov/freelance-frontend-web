@@ -12,7 +12,7 @@ import { getApiErrorMessage } from '@/shared/api/errors';
 import { useAppSelector } from '@/store/hooks';
 import { selectIsAuthenticated } from '@/store/slices/authSlice';
 
-import { useSubmitSubjectRequestMutation } from './requestsApi';
+import { useGetSubjectCategoriesQuery, useSubmitSubjectRequestMutation } from './requestsApi';
 
 /** Backend chegaralari: kurs 1-6, semestr 1-8. */
 const COURSE_OPTIONS = [1, 2, 3, 4, 5, 6].map((n) => ({
@@ -58,7 +58,21 @@ export function SubjectRequestModal({
   const { t, m } = useT();
   const [submit, { isLoading, error, reset }] = useSubmitSubjectRequestMutation();
 
+  /*
+   * Toifalar faqat forma ochilganda so'raladi va uzoq keshlanadi —
+   * ro'yxat kuniga bir marta ham o'zgarmaydi.
+   *
+   * Tanlov IXTIYORIY: talaba fanning nomini biladi, uni qaysi sohaga
+   * qo'yishni esa har doim ham emas. Moderator tasdiqlashda tuzatadi.
+   */
+  const { data: categoryPage } = useGetSubjectCategoriesQuery(undefined, { skip: !open });
+  const categoryOptions = [
+    { value: '', label: m.requests.categoryUnknown },
+    ...(categoryPage?.results ?? []).map((item) => ({ value: item.id, label: item.name })),
+  ];
+
   const [name, setName] = useState('');
+  const [category, setCategory] = useState('');
   const [course, setCourse] = useState('1');
   const [semester, setSemester] = useState('1');
   const [note, setNote] = useState('');
@@ -77,6 +91,7 @@ export function SubjectRequestModal({
       await submit({
         university: universityId,
         name: name.trim(),
+        ...(category ? { category } : {}),
         course: Number(course),
         semester: Number(semester),
         ...(note.trim() ? { note: note.trim() } : {}),
@@ -86,6 +101,7 @@ export function SubjectRequestModal({
     }
 
     setName('');
+    setCategory('');
     setCourse('1');
     setSemester('1');
     setNote('');
@@ -148,6 +164,19 @@ export function SubjectRequestModal({
               placeholder={m.requests.subjectNamePlaceholder}
               className={cn(fieldClass, 'h-11')}
             />
+          </div>
+
+          <div>
+            <FieldLabel htmlFor="subject-request-category">{m.requests.category}</FieldLabel>
+            <Select
+              id="subject-request-category"
+              aria-label={m.requests.category}
+              value={category}
+              onChange={setCategory}
+              searchable={categoryOptions.length > 8}
+              options={categoryOptions}
+            />
+            <p className="mt-1.5 text-xs text-muted-foreground">{m.requests.categoryHint}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

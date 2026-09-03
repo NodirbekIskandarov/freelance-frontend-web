@@ -137,18 +137,18 @@ export function SubjectMiniCard({
       </h3>
 
       {/*
-        Kurs, semestr va yo'nalish — alohida yorliqlar, bitta uzun qator
+        Kurs, semestr va toifa — alohida yorliqlar, bitta uzun qator
         emas.
 
         Ilgari ular «1-kurs · 2-semestr · Sun'iy intellekt» bo'lib bitta
         qatorga sig'dirilardi va tor kartada oxiri kesilib ketardi:
-        yo'nalish ko'rinmasdi, ba'zan semestr ham. Yorliqlar esa keyingi
+        toifa ko'rinmasdi, ba'zan semestr ham. Yorliqlar esa keyingi
         qatorga o'tadi.
 
         «Ko'rish →» OLIB TASHLANDI: kartaning o'zi havola va har kartada
         takrorlangan bir xil yozuv faqat balandlik egallardi.
       */}
-      {(subject.course || subject.semester || subject.direction_name) && (
+      {(subject.course || subject.semester || subject.category_name) && (
         <div className="mt-2.5 flex flex-wrap gap-1 border-t border-border/50 pt-2.5">
           {subject.course && (
             <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
@@ -160,12 +160,12 @@ export function SubjectMiniCard({
               {subject.semester}-semestr
             </span>
           )}
-          {subject.direction_name && (
+          {subject.category_name && (
             <span
-              title={subject.direction_name}
+              title={subject.category_name}
               className="max-w-full truncate rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
             >
-              {subject.direction_name}
+              {subject.category_name}
             </span>
           )}
         </div>

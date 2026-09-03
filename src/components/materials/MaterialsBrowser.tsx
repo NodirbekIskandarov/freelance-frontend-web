@@ -173,8 +173,8 @@ export function MaterialsBrowser({
   /*
    * IKKI bosqichli filtr.
    *
-   * `narrowed` — yo'nalishdan TASHQARI hamma filtr qo'llangan holat.
-   * Chiplar ustidagi sonlar aynan shundan olinadi: agar ular yo'nalish
+   * `narrowed` — toifadan TASHQARI hamma filtr qo'llangan holat.
+   * Chiplar ustidagi sonlar aynan shundan olinadi: agar ular toifa
    * tanlangandan keyingi ro'yxatdan hisoblansa, tanlanmagan har bir chip
    * doim «0» ko'rsatib turardi va ularni bosishning ma'nosi qolmasdi.
    */
@@ -215,8 +215,8 @@ export function MaterialsBrowser({
     for (const group of narrowed) {
       for (const subject of group.subjects) {
         total += 1;
-        if (subject.direction_name) {
-          counts.set(subject.direction_name, (counts.get(subject.direction_name) ?? 0) + 1);
+        if (subject.category_name) {
+          counts.set(subject.category_name, (counts.get(subject.category_name) ?? 0) + 1);
         }
       }
     }
@@ -234,16 +234,16 @@ export function MaterialsBrowser({
       filters.search.trim() !== '' ||
       filters.course !== 'all' ||
       filters.semester !== 'all' ||
-      filters.direction !== 'all';
+      filters.category !== 'all';
 
     return (
       narrowed
         .map((group) => ({
           ...group,
           subjects:
-            filters.direction === 'all'
+            filters.category === 'all'
               ? group.subjects
-              : group.subjects.filter((subject) => subject.direction_name === filters.direction),
+              : group.subjects.filter((subject) => subject.category_name === filters.category),
         }))
         /*
          * Filtr qo'llanganda fansiz institut ko'rsatilmaydi: uni tanlagan
@@ -253,7 +253,7 @@ export function MaterialsBrowser({
         .filter((group) => !isNarrowed || group.subjects.length > 0)
         .sort((a, b) => compareGroups(a, b, filters.sort))
     );
-  }, [filters.course, filters.direction, filters.search, filters.semester, filters.sort, narrowed]);
+  }, [filters.course, filters.category, filters.search, filters.semester, filters.sort, narrowed]);
 
   /*
    * Tanlangan institut render paytida aniqlanadi.
@@ -343,21 +343,21 @@ export function MaterialsBrowser({
       </div>
 
       {/*
-        Yo'nalish chiplari — backend yo'nalish bermasa umuman chizilmaydi.
-        Yonidagi son «bu yo'nalishda nechta fan bor» degan savolga
-        bosishdan OLDIN javob beradi.
+        Toifa chiplari — backend toifa bermasa umuman chizilmaydi.
+        Yonidagi son «bu toifada nechta fan bor» degan savolga bosishdan
+        OLDIN javob beradi.
       */}
       {chips.length > 1 && (
         <div className="-mx-4 mt-3 [scrollbar-width:none] overflow-x-auto px-4 py-1 [-ms-overflow-style:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
           <div className="flex min-w-max gap-2">
             {chips.map((chip) => {
-              const active = filters.direction === chip.value;
+              const active = filters.category === chip.value;
 
               return (
                 <button
                   key={chip.value}
                   type="button"
-                  onClick={() => applyFilters({ direction: chip.value })}
+                  onClick={() => applyFilters({ category: chip.value })}
                   aria-pressed={active}
                   className={cn(
                     'inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors',

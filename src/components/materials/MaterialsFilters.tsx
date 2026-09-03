@@ -35,7 +35,7 @@ export interface MaterialsFilterState {
   search: string;
   course: string;
   semester: string;
-  direction: string;
+  category: string;
   sort: MaterialsSort;
 }
 
@@ -43,7 +43,7 @@ export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
   search: '',
   course: 'all',
   semester: 'all',
-  direction: 'all',
+  category: 'all',
   sort: 'material',
 };
 
@@ -83,7 +83,7 @@ export function MaterialsFilters({
     filters.search !== '' ||
     filters.course !== 'all' ||
     filters.semester !== 'all' ||
-    filters.direction !== 'all' ||
+    filters.category !== 'all' ||
     filters.sort !== DEFAULT_MATERIALS_FILTERS.sort;
 
   return (

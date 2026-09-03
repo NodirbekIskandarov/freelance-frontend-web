@@ -656,6 +656,9 @@ export const ru: Messages = {
   },
 
   requests: {
+    category: 'Категория предмета',
+    categoryUnknown: 'Не знаю — выберет модератор',
+    categoryHint: 'Необязательно. Не знаете — оставьте, модератор поправит.',
     assignmentTitle: 'Загрузить задание',
     assignmentDesc:
       'После подтверждения администратором задание попадёт в каталог. Возможен бонус.',
@@ -1129,9 +1132,9 @@ export const ru: Messages = {
     semester: 'Семестр',
     allSemesters: 'Все семестры',
     semesterValue: '{value} семестр',
-    direction: 'Направление',
-    allDirections: 'Все направления',
-    directionPlaceholder: 'Название направления...',
+    category: 'Категория',
+    allCategories: 'Все категории',
+    categoryPlaceholder: 'Название категории...',
     clear: 'Сбросить',
     findOrRequest: 'Найдите предмет в списке или оставьте заявку через баннер выше.',
     subjectNotFound: 'Предмет не найден',
@@ -1184,7 +1187,7 @@ export const ru: Messages = {
     sortBySolutions: 'Больше решений',
     sortByNeed: 'Нужны решения',
     colSubject: 'Предмет',
-    colDirection: 'Направление',
+    colCategory: 'Категория',
     colCourse: 'Курс / семестр',
     colAssignments: 'Заданий',
     colVariants: 'Вариантов',

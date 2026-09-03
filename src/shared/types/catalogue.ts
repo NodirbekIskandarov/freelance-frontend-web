@@ -56,8 +56,9 @@ export interface Subject {
   id: string;
   university: string;
   university_name: string;
-  direction: string | null;
-  direction_name: string;
+  /** Fanning TOIFASI — global tasnif, universitetning yo'nalishi emas. */
+  category: string | null;
+  category_name: string;
   name: string;
   name_uz: string | null;
   name_ru: string | null;
@@ -192,4 +193,17 @@ export interface PublicSolution {
   sold_count: number;
   uploader: PublicUploader;
   created_at: string;
+}
+
+/**
+ * Fan toifasi — global tasnif.
+ *
+ * Universitetning yo'nalishi EMAS: yo'nalish bitta fakultetga tegishli,
+ * toifa esa qayerda o'qitilishidan qat'i nazar bir xil.
+ */
+export interface SubjectCategory {
+  id: string;
+  name: string;
+  slug: string;
+  position: number;
 }

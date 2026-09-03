@@ -238,7 +238,7 @@ export function SubjectTasks({
     // Institut — non ushlab turgan ma'lumot edi; uning sahifasi olib
     // tashlangach u shu yerga ko'chdi.
     universityShortName,
-    subject.direction_name,
+    subject.category_name,
     subject.course ? t((x) => x.materials.course, { course: subject.course! }) : '',
     subject.semester ? t((x) => x.materials.semesterValue, { value: subject.semester }) : '',
     t((x) => x.materials.taskCount, { count: tasks.length }),

@@ -1,4 +1,4 @@
-import type { ApiPaginated } from '@/shared/types/catalogue';
+import type { ApiPaginated, SubjectCategory } from '@/shared/types/catalogue';
 import type {
   MyAssignmentRequest,
   MyRequestsQuery,
@@ -19,6 +19,8 @@ import { baseApi } from '@/store/api';
  */
 
 export interface SubjectRequestInput {
+  /** Fan toifasi — ixtiyoriy: talaba fanni biladi, tasnifni har doim ham emas. */
+  category?: string;
   university: string;
   name: string;
   course?: number;
@@ -64,6 +66,18 @@ export const requestsApi = baseApi.injectEndpoints({
     submitSubjectRequest: build.mutation<RequestResult, SubjectRequestInput>({
       query: (body) => ({ url: '/subject-requests/', method: 'POST', body }),
       invalidatesTags: [{ type: 'MyRequest', id: 'SUBJECT' }],
+    }),
+
+    /**
+     * Fan toifalari — ariza formasidagi tanlagich uchun.
+     *
+     * Ochiq endpoint: ro'yxat hech kimga tegishli emas va kirmagan odam
+     * ham formani ko'rishi mumkin. Kesh uzoq saqlanadi — toifalar kuniga
+     * bir marta ham o'zgarmaydi.
+     */
+    getSubjectCategories: build.query<ApiPaginated<SubjectCategory>, void>({
+      query: () => ({ url: '/subject-categories/', params: { page_size: 100 } }),
+      keepUnusedDataFor: 600,
     }),
 
     submitAssignmentRequest: build.mutation<RequestResult, AssignmentRequestInput>({
@@ -152,6 +166,7 @@ export const {
   useGetMyAssignmentRequestsQuery,
   useGetMySolutionRequestsQuery,
   useSubmitSubjectRequestMutation,
+  useGetSubjectCategoriesQuery,
   useSubmitAssignmentRequestMutation,
   useRequestVariantSolutionMutation,
   useRequestAssignmentSolutionMutation,

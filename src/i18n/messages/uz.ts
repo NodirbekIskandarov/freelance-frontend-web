@@ -657,6 +657,9 @@ export const uz = {
   },
 
   requests: {
+    category: 'Fan toifasi',
+    categoryUnknown: 'Bilmayman — moderator tanlaydi',
+    categoryHint: "Ixtiyoriy. Bilmasangiz qoldiring — moderator to'g'rilaydi.",
     assignmentTitle: 'Topshiriqni yuklash',
     assignmentDesc:
       "Ariza admin tasdiqlagach ro'yxatga qo'shiladi. Bonus olish imkoniyati ham bor.",
@@ -1127,9 +1130,9 @@ export const uz = {
     semester: 'Semestr',
     allSemesters: 'Barcha semestrlar',
     semesterValue: '{value}-semestr',
-    direction: "Yo'nalish",
-    allDirections: "Barcha yo'nalishlar",
-    directionPlaceholder: "Yo'nalish nomi...",
+    category: 'Toifa',
+    allCategories: 'Barcha toifalar',
+    categoryPlaceholder: 'Toifa nomi...',
     clear: 'Tozalash',
     findOrRequest: "Ro'yxatdan fan toping yoki yuqoridagi banner orqali ariza qoldiring.",
     subjectNotFound: 'Fan topilmadi',
@@ -1188,7 +1191,7 @@ export const uz = {
     sortBySolutions: "Yechim ko'p",
     sortByNeed: 'Yechim kerak',
     colSubject: 'Fan',
-    colDirection: "Yo'nalish",
+    colCategory: 'Toifa',
     colCourse: 'Kurs / semestr',
     colAssignments: 'Topshiriq',
     colVariants: 'Variantlar',
