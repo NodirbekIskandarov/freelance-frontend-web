@@ -53,6 +53,7 @@ export function Select({
   const [query, setQuery] = useState('');
   const [anchor, setAnchor] = useState<{ top: number; left: number; width: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const selected = options.find((option) => option.value === value);
@@ -88,10 +89,19 @@ export function Select({
     /*
      * Ro'yxat `position: fixed` bilan chiziladi, ya'ni sahifa yoki modal
      * ichi aylantirilsa u tugmadan ajralib qolardi. Qayta hisoblash
-     * o'rniga yopamiz: ro'yxat ochiq turganda aylantirish — bu odatda
-     * "boshqa narsaga o'tyapman" degani.
+     * o'rniga yopamiz: ro'yxat ochiq turganda TASHQARIDA aylantirish —
+     * bu odatda "boshqa narsaga o'tyapman" degani.
+     *
+     * RO'YXATNING O'ZI bundan mustasno. `capture` bilan tinglash hujjatdagi
+     * har qanday aylantirishni, jumladan ro'yxatning ichidagisini ham
+     * ushlardi: uzun ro'yxatni (masalan o'n ikkita semestr) pastga
+     * surmoqchi bo'lgan odam ro'yxatni yopib qo'yardi va tanlay olmasdi.
      */
-    function onScroll() {
+    function onScroll(event: Event) {
+      if (menuRef.current?.contains(event.target as Node)) return;
+      setMenuOpen(false);
+    }
+    function onResize() {
       setMenuOpen(false);
     }
 
@@ -99,13 +109,13 @@ export function Select({
     document.addEventListener('keydown', onKeyDown);
     // `capture` — ichki aylantiriladigan konteynerlar ham hisobga olinadi.
     window.addEventListener('scroll', onScroll, true);
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
 
     return () => {
       document.removeEventListener('mousedown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('scroll', onScroll, true);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', onResize);
     };
   }, [open]);
 
@@ -169,6 +179,7 @@ export function Select({
 
       {open && anchor ? (
         <div
+          ref={menuRef}
           className="fixed z-200 w-max max-w-[min(20rem,80vw)] overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground ring-1 ring-black/5"
           style={{ top: anchor.top, left: anchor.left, minWidth: anchor.width }}
         >
@@ -207,7 +218,16 @@ export function Select({
               Hech narsa topilmadi
             </p>
           ) : (
-            <ul id={listId} role="listbox" className="scrollbar-slim max-h-60 overflow-auto py-1">
+            <ul
+              id={listId}
+              role="listbox"
+              /* `overscroll-contain` — ro'yxat oxiriga yetganda qolgan
+                 aylantirish SAHIFAGA o'tib ketmasin. O'tsa, sahifaning
+                 `scroll` hodisasi chiqadi va u ro'yxatdan tashqarida
+                 sodir bo'lgani uchun menyuni yopardi: odam pastga
+                 surishni tugatmasdan ro'yxat yo'q bo'lardi. */
+              className="scrollbar-slim max-h-60 overflow-auto overscroll-contain py-1"
+            >
               {visibleOptions.map((option) => {
                 const active = option.value === value;
 

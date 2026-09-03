@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/Select';
 import { SubjectRequestModal } from '@/features/requests/SubjectRequestModal';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
+import { compareNames } from '@/lib/compareNames';
 import type { University } from '@/shared/types/catalogue';
 
 import { CatalogueCtaBanner } from './CatalogueCtaBanner';
@@ -69,7 +70,7 @@ export function UniversitySubjects({
     for (const subject of subjects) {
       if (subject.direction_name) names.add(subject.direction_name);
     }
-    return [...names].sort((a, b) => a.localeCompare(b, 'uz'));
+    return [...names].sort(compareNames);
   }, [subjects]);
 
   const filtered = useMemo(() => {

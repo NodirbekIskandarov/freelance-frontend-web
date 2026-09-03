@@ -47,7 +47,6 @@ interface SlideConfig {
   ctaIcon: LucideIcon;
   ctaHref: string;
   /** Ikkinchi darajali havola — asosiy tugmadan BOSHQA joyga. */
-  secondaryHref: string;
   image: string;
   imageAlt: string;
   features: Feature[];
@@ -69,7 +68,6 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     cta: (m) => m.promo.uploadCta,
     ctaIcon: CloudUpload,
     ctaHref: '/requests',
-    secondaryHref: '/faq',
     image: '/materials/promo/upload-character.png',
     imageAlt: '',
     features: [
@@ -114,7 +112,6 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     cta: (m) => m.promo.earnCta,
     ctaIcon: ArrowUpRight,
     ctaHref: '/freelance/apply',
-    secondaryHref: '/faq',
     image: '/materials/promo/earn-character.png',
     imageAlt: '',
     features: [
@@ -176,7 +173,7 @@ function Slide({ id, awaiting }: { id: SlideId; awaiting: number }) {
   const CtaIcon = config.ctaIcon;
 
   return (
-    <div className="grid items-center gap-5 p-4 sm:gap-6 sm:p-7 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:gap-8 lg:p-9">
+    <div className="grid items-center gap-4 p-4 sm:gap-5 sm:p-5 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:gap-6 lg:p-6">
       <div className="min-w-0">
         <span
           className={cn(
@@ -188,19 +185,18 @@ function Slide({ id, awaiting }: { id: SlideId; awaiting: number }) {
           {config.badge(m)}
         </span>
 
-        <h2 className="mt-4 text-2xl leading-tight font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="mt-3 text-xl leading-tight font-bold tracking-tight text-foreground sm:text-2xl">
           {config.titleLead(m)} <span className={config.accent}>{config.titleAccent(m)}</span>
         </h2>
 
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {config.subtitle(m, awaiting)}
         </p>
 
-        {/* Telefonda ikkalasi BIR QATORDA: ustma-ust qo'yilganda ular
-            banner balandligiga yuz piksel qo'shardi, holbuki bannerdan
-            keyin darhol katalog boshlanishi kerak. Shuning uchun tor
-            ekranda matn ham, ichki bo'shliq ham kichrayadi. */}
-        <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-5 sm:gap-2.5">
+        {/* Bitta tugma. «Qanday ishlaydi?» OLIB TASHLANDI: u savol-javobga
+            olib borardi va bannerdan chiqarib yuborardi — holbuki banner
+            bitta ish qilishga chaqiradi, tanlov taklif qilishga emas. */}
+        <div className="mt-3 sm:mt-4">
           <Link
             href={config.ctaHref}
             className={cn(
@@ -211,21 +207,11 @@ function Slide({ id, awaiting }: { id: SlideId; awaiting: number }) {
             <CtaIcon className="size-4" />
             {config.cta(m)}
           </Link>
-
-          {/* Ikkinchi tugma boshqa savolga javob beradi — «bu qanday
-              ishlaydi?». Asosiy tugma bilan bir joyga olib borsa, u
-              shunchaki takrorlangan tugma bo'lardi. */}
-          <Link
-            href={config.secondaryHref}
-            className="inline-flex h-10 items-center rounded-xl border border-foreground/15 px-3.5 text-[13px] font-medium text-foreground transition-colors hover:bg-foreground/5 sm:h-11 sm:px-4 sm:text-sm"
-          >
-            {m.promo.secondaryCta}
-          </Link>
         </div>
       </div>
 
       {/* Illyustratsiya o'rta ustunda — tor ekranda birinchi bo'lib yashiriladi. */}
-      <div className="relative mx-auto hidden h-[220px] w-full max-w-[280px] items-end justify-center sm:h-[240px] lg:flex">
+      <div className="relative mx-auto hidden h-[170px] w-full max-w-[230px] items-end justify-center lg:flex">
         <OrbitRings orbit={config.orbit} />
         {/*
           `priority` ATAYLAB YO'Q.
@@ -310,16 +296,41 @@ export function MaterialsPromo({ awaitingVariants }: { awaitingVariants: number 
     <section
       className={cn('relative overflow-hidden rounded-2xl border transition-shadow', config.shell)}
     >
-      {/* `key` — slayd almashganda element qaytadan yaratiladi va CSS
-          animatsiyasi o'zi boshidan ishga tushadi. Chiqib ketish
-          animatsiyasi YO'Q: uning uchun ikkala slaydni bir vaqtda daraxtda
-          ushlab turish kerak edi, foydasi esa bir necha yuz
-          millisekundlik bezak. */}
-      <div key={current} className="promo-slide-in">
-        <Slide id={current} awaiting={awaitingVariants} />
+      {/*
+        IKKALA slayd ham bitta grid katagida turadi va faqat faoli
+        ko'rinadi.
+
+        Sabab — BALANDLIK. Ilgari faqat faol slayd chizilardi va matnlar
+        har xil uzunlikda bo'lgani uchun («Aniq izlayotgan topshiriqni
+        topa olmadingizmi?» uch qator, «Javobsiz topshiriqlarni bajaring
+        va daromad qiling!» ikki qator) banner har olti soniyada bo'yiga
+        sakrab turardi va ostidagi butun katalog siljirdi.
+
+        `invisible` (`visibility: hidden`), `hidden` EMAS: yashiringan
+        slayd joyni egallashda davom etadi, ya'ni katak ikkalasidan
+        balandrog'iga tenglashadi va o'lcham umuman o'zgarmaydi. Qat'iy
+        `min-height` yozish ham mumkin edi, lekin u ruscha matn uzunroq
+        bo'lganda yoki matn tahrirlanganda darrov yolg'on bo'lib qolardi.
+
+        Almashish endi surилиб emas, xiralashib o'tadi — bir katakda
+        turgan ikki element uchun tabiiy harakat shu.
+      */}
+      <div className="grid">
+        {ORDER.map((id) => (
+          <div
+            key={id}
+            aria-hidden={id !== current}
+            className={cn(
+              'transition-opacity duration-300 [grid-area:1/1] motion-reduce:transition-none',
+              id === current ? 'opacity-100' : 'pointer-events-none invisible opacity-0',
+            )}
+          >
+            <Slide id={id} awaiting={awaitingVariants} />
+          </div>
+        ))}
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 pb-4">
+      <div className="flex items-center justify-center gap-1.5 pb-3">
         {ORDER.map((id, position) => (
           <button
             key={id}

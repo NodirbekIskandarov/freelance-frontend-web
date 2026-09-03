@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { compareNames } from '@/lib/compareNames';
+
 import type { ApiPaginated } from '@/shared/types/catalogue';
 import type { ExchangeReview } from '@/shared/types/exchange';
 import type { PublicFreelancer } from '@/shared/types/publicFreelance';
@@ -67,5 +69,5 @@ export async function getFreelancerCities(): Promise<{ city: string; count: numb
 
   return [...counts.entries()]
     .map(([city, count]) => ({ city, count }))
-    .sort((a, b) => a.city.localeCompare(b.city, 'uz'));
+    .sort((a, b) => compareNames(a.city, b.city));
 }

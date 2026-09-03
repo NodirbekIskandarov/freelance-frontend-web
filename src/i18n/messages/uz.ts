@@ -258,7 +258,6 @@ export const uz = {
       "Hozir {count} ta variantda yechim yo'q, ammo talab bor. Birinchi bo'lib yuklang va sotuvdan daromad oling.",
     earnSubtitleEmpty: "Bilimingizni baham ko'ring va uni daromad manbaiga aylantiring.",
     earnCta: 'Daromad qilishni boshlash',
-    secondaryCta: 'Qanday ishlaydi?',
     earnFeature1: "Ko'proq bajaring",
     earnFeature1Desc: 'Javobsiz topshiriqlarni toping va yeching.',
     earnFeature2: 'Daromad qiling',

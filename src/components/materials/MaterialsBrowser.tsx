@@ -9,6 +9,7 @@ import { UniversityRequestModal } from '@/features/requests/UniversityRequestMod
 import { useT } from '@/i18n/useT';
 import { DirectionIcon } from '@/lib/catalogueVisuals';
 import { cn } from '@/lib/cn';
+import { compareNames } from '@/lib/compareNames';
 import { formatCount } from '@/lib/format';
 import type { CatalogueStats, University } from '@/shared/types/catalogue';
 
@@ -60,9 +61,9 @@ function compareGroups(a: CatalogueGroup, b: CatalogueGroup, sort: MaterialsFilt
   const left = weight(a);
   const right = weight(b);
   const byName = () =>
-    (a.university.short_name || a.university.name).localeCompare(
+    compareNames(
+      a.university.short_name || a.university.name,
       b.university.short_name || b.university.name,
-      'uz',
     );
 
   switch (sort) {
@@ -90,7 +91,7 @@ function openVariants(subject: SubjectWithCount) {
 }
 
 function compareSubjects(a: SubjectWithCount, b: SubjectWithCount, sort: SubjectSort) {
-  const byName = () => a.name.localeCompare(b.name, 'uz');
+  const byName = () => compareNames(a.name, b.name);
 
   switch (sort) {
     case 'name':
@@ -210,7 +211,7 @@ export function MaterialsBrowser({
     return [
       { value: 'all', label: m.common.all, count: total },
       ...[...counts.entries()]
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'uz'))
+        .sort((a, b) => b[1] - a[1] || compareNames(a[0], b[0]))
         .map(([label, count]) => ({ value: label, label, count })),
     ];
   }, [m.common.all, narrowed]);
