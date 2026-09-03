@@ -236,6 +236,76 @@ export const ru: Messages = {
     cardDrawingDesc: 'AutoCAD, архитектура',
     cardDiploma: 'Дипломные работы',
     cardDiplomaDesc: 'Все направления',
+    heroSearchLabel: 'Предмет, вуз или задание',
+    heroSearchPlaceholder: 'Например: философия 1-задание',
+    promiseRefund: 'Возврат денег в течение {window}',
+    promiseModerated: 'Решения проходят модерацию',
+    promiseLibrary: 'Хранится в библиотеке бессрочно',
+    heroOrFreelancer: 'Или поручите задание специалисту —',
+    heroFeaturedLabel: 'Самый покупаемый предмет',
+    heroFeaturedCounts: '{solutions} решений · {sales} продаж',
+
+    startFromInstitute: 'Начните со своего вуза',
+    startFromInstituteNote: '{institutes} вузов · {subjects} предметов в базе',
+    allInstitutes: 'Все вузы',
+    instituteSubjects: '{count} предметов',
+    instituteSolutions: '{count} решений',
+
+    catalogueNowLead: 'Цифры берутся из каталога в реальном времени',
+    statAwaiting: 'ждут решения',
+    topSubjects: 'Самые покупаемые предметы',
+    allMaterials: 'Готовые материалы',
+    subjectSales: '{count} продаж',
+    popularCategories: 'Популярные направления',
+    allCategories: 'Все направления',
+
+    guaranteeBadge: 'Безопасность покупки',
+    guaranteeTitle: 'Деньги вернутся, если решение не подошло',
+    guaranteeLead:
+      'Каждое решение проходит модерацию. Оплата не уходит автору сразу — она {window} лежит на гарантийном счёте.',
+    guaranteeTerms: 'Условия гарантии',
+    guaranteeGeneric: 'Возврат в течение гарантийного срока',
+    guaranteeModeration: 'Каждое решение проверяется',
+    guaranteeModerationText:
+      'Модератор открывает файл и подтверждает, что он соответствует номеру варианта и условию.',
+    guaranteeHold: 'Деньги на гарантийном счёте',
+    guaranteeHoldText:
+      'Сумма продажи не уходит автору сразу — она удерживается {window} и всё это время может быть возвращена.',
+    guaranteeWindow: 'Окно жалобы — {window}',
+    guaranteeWindowText:
+      'Вы подаёте жалобу с причиной и доказательством, автору даётся {hours} на ответ, затем решает модератор.',
+    guaranteeRating: 'Рейтинг автора открыт',
+    guaranteeRatingText:
+      'Число продаж, оценка и отзывы видны на странице решения — вы знаете, у кого покупаете.',
+
+    sellerBadge: 'Вторая сторона: продавец',
+    sellerTitle: 'Продавайте свои решения',
+    sellerTitleAccent: 'и зарабатывайте',
+    sellerLead:
+      'Сейчас на {count} вариантов есть спрос, но нет решения. Вы загружаете, проходите модерацию — и одно решение продаётся неограниченное число раз.',
+    sellerLeadEmpty:
+      'Загружаете решение на свободный вариант, проходите модерацию — и оно продаётся неограниченное число раз.',
+    sellerAction: 'Загрузить решение',
+    sellerRules: 'Правила выплат',
+    rewardSelling: 'Продажа решения',
+    rewardSellingNote: 'С каждой продажи, без ограничений',
+    rewardSubject: 'Новый предмет',
+    rewardAssignment: 'Загрузка задания',
+    rewardUniversity: 'Добавление вуза',
+    rewardAfterApproval: 'После одобрения',
+    rewardWithFile: 'С файлом условия',
+
+    reviewsTitle: 'Что говорят студенты',
+    reviewsLead: 'Отзыв может оставить только покупатель.',
+    reviewsCount: '{count} оценок',
+    reviewVerified: 'Покупка подтверждена',
+    reviewAnonymous: 'Студент',
+    signupTitle: 'Нужно сдать сегодня?',
+    signupLead: 'Зарегистрируйтесь и начните поиск — если решения нет, оставите запрос на вариант.',
+    signupAction: 'Начать бесплатно',
+    signupPerk1: 'Регистрация бесплатна',
+    signupPerk2: 'Карту привязывать не нужно',
+    signupPerk3: 'Библиотека хранится бессрочно',
   },
 
   promo: {

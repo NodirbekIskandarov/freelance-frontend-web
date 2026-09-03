@@ -125,7 +125,20 @@ export function MaterialsBrowser({
   stats: CatalogueStats;
 }) {
   const { t, m } = useT();
-  const [filters, setFilters] = useState<MaterialsFilterState>(DEFAULT_MATERIALS_FILTERS);
+  /*
+   * Qidiruv MANZILDA, qolgan filtrlar holatda.
+   *
+   * Ikki sabab. Bosh sahifadagi qidiruv shu yerga olib keladi
+   * (`/materials?q=…`) — usiz odam yozgan so'z yo'l davomida yo'qolib,
+   * katalog boshidan ochilardi. Ikkinchidan, topilgan ro'yxatni
+   * ulashish mumkin bo'ladi.
+   *
+   * Faqat qidiruv: kurs, semestr va tartib manzilni uzaytiradi-yu,
+   * ularni ulashadigan odam yo'q.
+   */
+  const [search, setSearch] = useUrlState('q', '');
+  const [rest, setRest] = useState<Omit<MaterialsFilterState, 'search'>>(DEFAULT_MATERIALS_FILTERS);
+  const filters: MaterialsFilterState = { ...rest, search };
   const [subjectSort, setSubjectSort] = useState<SubjectSort>('solutions');
   const [view, setView] = useState<View>('table');
   /*
@@ -273,7 +286,9 @@ export function MaterialsBrowser({
   const visible = subjects.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function applyFilters(patch: Partial<MaterialsFilterState>) {
-    setFilters((current) => ({ ...current, ...patch }));
+    const { search: nextSearch, ...others } = patch;
+    if (nextSearch !== undefined) setSearch(nextSearch);
+    if (Object.keys(others).length > 0) setRest((current) => ({ ...current, ...others }));
     setPage(1);
   }
 
@@ -336,7 +351,8 @@ export function MaterialsBrowser({
           semesters={semesterOptions}
           onChange={applyFilters}
           onReset={() => {
-            setFilters(DEFAULT_MATERIALS_FILTERS);
+            setSearch('');
+            setRest(DEFAULT_MATERIALS_FILTERS);
             setPage(1);
           }}
         />

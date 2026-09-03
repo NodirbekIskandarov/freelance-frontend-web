@@ -236,6 +236,83 @@ export const uz = {
     cardDrawingDesc: 'AutoCAD, Arxitektura',
     cardDiploma: 'Diplom ishlari',
     cardDiplomaDesc: "Barcha yo'nalishlar",
+    // — Bosh sahifa: qidiruv va va'dalar —
+    heroSearchLabel: 'Fan, institut yoki topshiriq',
+    heroSearchPlaceholder: 'Masalan: falsafa 1-topshiriq',
+    promiseRefund: '{window} ichida pul qaytariladi',
+    promiseModerated: "Moderatsiyadan o'tgan yechimlar",
+    promiseLibrary: 'Kutubxonada muddatsiz saqlanadi',
+    heroOrFreelancer: 'Yoki topshiriqni mutaxassisga bering —',
+    heroFeaturedLabel: "Eng ko'p sotilgan fan",
+    heroFeaturedCounts: '{solutions} yechim · {sales} sotuv',
+
+    // — Institutlar lentasi —
+    startFromInstitute: 'Institutingizdan boshlang',
+    startFromInstituteNote: '{institutes} institut · {subjects} fan bazada',
+    allInstitutes: 'Barcha institutlar',
+    instituteSubjects: '{count} fan',
+    instituteSolutions: '{count} yechim',
+
+    // — Katalogda hozir —
+    catalogueNowLead: 'Raqamlar katalogdan real vaqtda olinadi',
+    statAwaiting: 'yechim kutilmoqda',
+    topSubjects: "Ko'p sotilgan fanlar",
+    allMaterials: 'Tayyor materiallar',
+    subjectSales: '{count} sotuv',
+    popularCategories: "Mashhur yo'nalishlar",
+    allCategories: "Barcha yo'nalishlar",
+
+    // — Kafolat —
+    guaranteeBadge: 'Xarid xavfsizligi',
+    guaranteeTitle: 'Pulingiz yechim mos kelmasa qaytadi',
+    guaranteeLead:
+      "Har bir yechim moderatordan o'tadi. To'lovingiz muallifga darhol o'tmaydi — u {window} kafolat hisobida turadi.",
+    guaranteeTerms: 'Kafolat shartlari',
+    guaranteeGeneric: 'Kafolat muddati ichida pul qaytariladi',
+    guaranteeModeration: 'Har bir yechim tekshiriladi',
+    guaranteeModerationText:
+      "Moderator faylni ochib ko'radi va variant raqami hamda shartga mosligini tasdiqlaydi.",
+    guaranteeHold: 'Pul kafolat hisobida',
+    guaranteeHoldText:
+      "Sotuv summasi muallifga darhol o'tmaydi — {window} ushlab turiladi va shu vaqt ichida qaytarilishi mumkin.",
+    guaranteeWindow: '{window} shikoyat oynasi',
+    guaranteeWindowText:
+      'Sabab va dalil bilan shikoyat qilasiz, muallifga {hours} javob berish vaqti beriladi, keyin moderator qaror qiladi.',
+    guaranteeRating: 'Muallif reytingi ochiq',
+    guaranteeRatingText:
+      'Sotuv soni, baho va sharhlar yechim sahifasida turadi — kimdan olayotganingizni bilasiz.',
+
+    // — Sotuvchiga taklif —
+    sellerBadge: 'Ikkinchi tomon: sotuvchi',
+    sellerTitle: "O'z yechimingizni sotib",
+    sellerTitleAccent: 'daromad qiling',
+    sellerLead:
+      "Hozir {count} ta variantda talab bor, lekin yechim yo'q. Yuklaysiz, moderatsiyadan o'tadi va bitta yechim cheksiz marta sotiladi.",
+    sellerLeadEmpty:
+      "Bo'sh variantlarga yechim yuklaysiz, moderatsiyadan o'tadi va bitta yechim cheksiz marta sotiladi.",
+    sellerAction: 'Yechim yuklash',
+    sellerRules: 'Daromad qoidalari',
+    rewardSelling: 'Yechim sotilishi',
+    rewardSellingNote: 'Har bir sotuvdan, cheksiz marta',
+    rewardSubject: "Yangi fan qo'shish",
+    rewardAssignment: 'Topshiriq yuklash',
+    rewardUniversity: "Institut qo'shish",
+    rewardAfterApproval: 'Tasdiqlangandan keyin',
+    rewardWithFile: 'Shart fayli bilan',
+
+    // — Sharhlar —
+    reviewsTitle: 'Talabalar nima deydi',
+    reviewsLead: 'Faqat sotib olganlar sharh yoza oladi.',
+    reviewsCount: '{count} baho',
+    reviewVerified: 'Xarid tasdiqlangan',
+    reviewAnonymous: 'Talaba',
+    signupTitle: 'Bugun topshirish kerakmi?',
+    signupLead:
+      "Ro'yxatdan o'tib qidiruvni boshlang — yechim topilmasa, variantga so'rov qoldirasiz.",
+    signupAction: 'Bepul boshlash',
+    signupPerk1: "Ro'yxatdan o'tish bepul",
+    signupPerk2: "Karta bog'lash shart emas",
+    signupPerk3: 'Kutubxona muddatsiz saqlanadi',
   },
 
   promo: {

@@ -15,6 +15,8 @@ export interface LandingStats {
   assignments: number;
   variants: number;
   solutions: number;
+  /** Talab bor, lekin hali yechim yo'q variantlar. */
+  awaiting_variants: number;
 }
 
 export interface LandingUniversity {
@@ -38,16 +40,58 @@ export interface LandingSubject {
   solution_count: number;
 }
 
+/** Fan toifasi — «Mashhur yo'nalishlar» yorlig'i. */
+export interface LandingCategory {
+  id: string;
+  name: string;
+  slug: string;
+  subject_count: number;
+}
+
+/**
+ * Bosh sahifada keltiriladigan sharh.
+ *
+ * `author` — ism va familiyaning bosh harfi: sharh ochiq internetda
+ * turadi va familiyani e'lon qilish uchun sabab emas.
+ */
+export interface LandingReview {
+  id: string;
+  rating: number;
+  comment: string;
+  author: string;
+  university: string;
+  course: number | null;
+}
+
+export interface LandingRating {
+  /** Hech kim baho qo'ymagan bo'lsa `null` — «0.0» emas. */
+  average: number | null;
+  count: number;
+}
+
 export interface LandingHighlights {
   stats: LandingStats;
   universities: LandingUniversity[];
   subjects: LandingSubject[];
+  categories: LandingCategory[];
+  reviews: LandingReview[];
+  rating: LandingRating;
 }
 
 const EMPTY: LandingHighlights = {
-  stats: { universities: 0, subjects: 0, assignments: 0, variants: 0, solutions: 0 },
+  stats: {
+    universities: 0,
+    subjects: 0,
+    assignments: 0,
+    variants: 0,
+    solutions: 0,
+    awaiting_variants: 0,
+  },
   universities: [],
   subjects: [],
+  categories: [],
+  reviews: [],
+  rating: { average: null, count: 0 },
 };
 
 /**

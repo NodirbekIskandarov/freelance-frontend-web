@@ -14,3 +14,19 @@ import { request } from './catalogue/client';
 export async function getSupportTerms(): Promise<SupportTerms> {
   return request<SupportTerms>('/support/terms/');
 }
+
+/**
+ * Xuddi shu shartlar, lekin YIQILMAYDIGAN holda.
+ *
+ * Yordam sahifasi bu ma'lumotsiz ma'nosiz — u yerda xato ko'rinishi
+ * KERAK. Bosh sahifa esa shartlarsiz ham to'liq ishlaydi: mukofot
+ * qatorlari chizilmaydi, kafolat matni umumiy shaklda qoladi. Butun
+ * bosh sahifani bitta yordamchi so'rov tufayli yiqitish mumkin emas.
+ */
+export async function getSupportTermsSafe(): Promise<SupportTerms | null> {
+  try {
+    return await getSupportTerms();
+  } catch {
+    return null;
+  }
+}
