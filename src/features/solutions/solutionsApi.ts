@@ -51,6 +51,27 @@ export const solutionsApi = baseApi.injectEndpoints({
       invalidatesTags: ['MySolution'],
     }),
 
+    /**
+     * Variantning sotuvdagi yechimlari — TIRIK ro'yxat.
+     *
+     * Fan sahifasi ISR bilan statik chiziladi va yechimlar ro'yxati o'sha
+     * chizish paytidagi holatni ko'rsatadi. Moderator yangi yechimni
+     * sotuvga chiqarganda u sahifada besh daqiqagacha ko'rinmasdi —
+     * sotuvchi esa kabinetida «Sotuvda» yozuvini ko'rib turardi.
+     *
+     * Server ro'yxati o'chirilmaydi: u qidiruv tizimlari uchun HTML'da
+     * qoladi va birinchi chizishni to'ldiradi. Bu so'rov faqat TANLANGAN
+     * variant uchun ketadi va kelganda ro'yxatning ustidan yoziladi.
+     */
+    getVariantSolutions: build.query<ApiPaginated<PublicSolution>, string>({
+      // `page_size` katta: variantdagi yechimlar o'nlab bo'lmaydi, sahifalash
+      // esa ro'yxatni jimgina qirqib qo'yardi.
+      query: (variantId) => ({
+        url: `/variants/${variantId}/solutions/`,
+        params: { page_size: 100 },
+      }),
+    }),
+
     /** Katalogdagi ochiq tafsilot — faqat e'lon qilingan yechimlar. */
     getPublicSolution: build.query<PublicSolution, string>({
       query: (id) => ({ url: `/solutions/${id}/` }),
@@ -75,6 +96,7 @@ export const solutionsApi = baseApi.injectEndpoints({
 export const {
   useGetMySolutionsQuery,
   useUploadSolutionMutation,
+  useGetVariantSolutionsQuery,
   useGetPublicSolutionQuery,
   usePurchaseSolutionMutation,
   useReportSolutionMutation,

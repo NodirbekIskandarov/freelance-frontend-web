@@ -595,3 +595,34 @@
     animation: none;
   }
 }
+
+/*
+ * Yechim tugmasi — egalik aniqlangach yumshoq paydo bo'ladi.
+ *
+ * Tugma uch holatda bo'ladi: sotib olish, yuklab olish (sotib olingan) va
+ * yuklab olish (o'zi yuklagan). Qaysi biri ekani FAQAT mijozda ma'lum:
+ * sahifa statik chiziladi va hammaga bir xil ketadi. Shu sabab ilgari
+ * sahifa har ochilganda avval «Sotib olish» chizilib, kutubxona javobi
+ * kelgach «Yuklab olish»ga sakrardi — ko'zga tashlanadigan almashuv.
+ *
+ * Endi javob kelguncha tugmaning O'RNI turadi, yozuvsiz; kelgach esa
+ * kerakli holat shu yerda ochiladi.
+ */
+@keyframes solution-action-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.solution-action-in {
+  animation: solution-action-in 300ms ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solution-action-in {
+    animation: none;
+  }
+}

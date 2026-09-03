@@ -12,7 +12,10 @@ import {
 } from '@/features/requests/requestsApi';
 import { PurchaseModal } from '@/features/solutions/PurchaseModal';
 import { SolutionUploadModal } from '@/features/solutions/SolutionUploadModal';
-import { useGetMySolutionsQuery } from '@/features/solutions/solutionsApi';
+import {
+  useGetMySolutionsQuery,
+  useGetVariantSolutionsQuery,
+} from '@/features/solutions/solutionsApi';
 import { useT } from '@/i18n/useT';
 import { cn } from '@/lib/cn';
 import { useDates } from '@/lib/useDates';
@@ -21,7 +24,7 @@ import { getApiErrorMessage } from '@/shared/api/errors';
 import type { PublicSolution } from '@/shared/types/catalogue';
 import { solutionStatusLabel } from '@/shared/types/solutions';
 import { useAppSelector } from '@/store/hooks';
-import { selectIsAuthenticated } from '@/store/slices/authSlice';
+import { selectAuthHydrated, selectIsAuthenticated } from '@/store/slices/authSlice';
 
 import {
   BADGE,
@@ -64,6 +67,7 @@ export function VariantPanel({
   const money = useMoney();
   const dates = useDates();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authHydrated = useAppSelector(selectAuthHydrated);
 
   const [requestVariant, requestState] = useRequestVariantSolutionMutation();
   const [boughtIds, setBoughtIds] = useState<string[]>([]);
@@ -71,8 +75,22 @@ export function VariantPanel({
   const [uploadOpen, setUploadOpen] = useState(false);
 
   const justRequested = requestedIds.includes(variant.id);
-  const status = statusOf(variant, justRequested);
   const requestCount = requestCountOf(variant, justRequested);
+
+  /*
+   * Sotuvdagi yechimlar — serverdan kelgani BOSHLANG'ICH qiymat, tirigi esa
+   * shu so'rovdan. Faqat tanlangan variant uchun so'raladi va RTK Query uni
+   * keshlab qo'yadi, ya'ni variantga qayta bosilganda so'rov takrorlanmaydi.
+   */
+  const live = useGetVariantSolutionsQuery(variant.id);
+  const shown = live.data?.results ?? solutions;
+
+  /* Holat ham tirik ro'yxatdan: statik sanoq nolni ko'rsatib turgan
+     variantda yechim paydo bo'lgan bo'lishi mumkin. */
+  const status = statusOf(
+    live.data ? { ...variant, solutionCount: shown.length } : variant,
+    justRequested,
+  );
 
   /*
    * Foydalanuvchining shu TOPSHIRIQQA yuborgan yechimlari — bitta so'rovda.
@@ -117,11 +135,27 @@ export function VariantPanel({
   const myUploadById = new Map(allMyUploads.map((item) => [item.id, item]));
 
   /*
+   * Tugma qaysi holatda ekani MA'LUM bo'ldimi.
+   *
+   * «Sotib olish» va «Yuklab olish» orasidagi tanlov kutubxona va o'z
+   * yuklamalari javobiga bog'liq, ular esa sahifa chizilgandan keyin
+   * keladi. Ilgari shu oraliqda «Sotib olish» chizilib turardi va javob
+   * kelgach yozuv almashib ketardi — sotib olgan odam bir lahza yana
+   * pul so'ralayotgandek ko'rardi.
+   *
+   * Mehmon uchun kutish yo'q: uning uchun javob boshdanoq «Sotib olish».
+   * `authHydrated` esa tokenning `localStorage`dan o'qilishini kutadi —
+   * usiz tizimga kirgan odam ham bir lahza mehmon bo'lib ko'rinardi.
+   */
+  const ownershipReady =
+    authHydrated && (!isAuthenticated || (!library.isLoading && !myUploads.isLoading));
+
+  /*
    * Katalogda allaqachon ko'rinib turgan yechim «yuborganlarim»
    * ro'yxatida takrorlanmaydi: tor panelda bir xil sarlavha ikki marta
    * chiqishi xatodek ko'rinardi.
    */
-  const catalogueIds = new Set(solutions.map((item) => item.id));
+  const catalogueIds = new Set(shown.map((item) => item.id));
   const minePending = mine.filter((item) => !catalogueIds.has(item.id));
 
   return (
@@ -133,7 +167,7 @@ export function VariantPanel({
           </p>
           <p className="mt-0.5 text-[11px] text-muted-foreground">
             {status === 'available'
-              ? t((x) => x.variants.availableCount, { count: solutions.length })
+              ? t((x) => x.variants.availableCount, { count: shown.length })
               : status === 'requested'
                 ? t((x) => x.variants.requestCount, { count: requestCount })
                 : m.variants.notReady}
@@ -153,7 +187,7 @@ export function VariantPanel({
       <div className="p-3 sm:p-4">
         {status === 'available' ? (
           <ul className="space-y-2.5">
-            {solutions.map((solution) => (
+            {shown.map((solution) => (
               <li
                 key={solution.id}
                 className="rounded-xl border border-border/70 bg-background/40 p-3"
@@ -203,23 +237,34 @@ export function VariantPanel({
                 {/* Uch holat: o'zi yuklagan, sotib olgan, hali olmagan.
                     `boughtIds` — shu seansda sotib olinganlari: kutubxona
                     ro'yxati keshdan yangilanguncha tugma darrov o'zgarsin. */}
-                {myUploadById.has(solution.id) ? (
+                {!ownershipReady ? (
+                  /* Javob kelguncha tugmaning o'rni turadi — yozuvsiz.
+                     Balandligi tugmanikiga teng, shunda holat aniqlangach
+                     karta siljimaydi. */
+                  <div
+                    aria-hidden
+                    className="mt-2.5 h-9 w-full animate-pulse rounded-lg bg-muted"
+                  />
+                ) : myUploadById.has(solution.id) ? (
                   <a
                     href={myUploadById.get(solution.id)!.file}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2.5 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                    className="solution-action-in mt-2.5 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     <Download className="size-3.5" />
                     {m.variants.download}
                   </a>
                 ) : boughtIds.includes(solution.id) || ownedIds.has(solution.id) ? (
-                  <OwnedSolutionButton solutionId={solution.id} className="mt-2.5 w-full" />
+                  <OwnedSolutionButton
+                    solutionId={solution.id}
+                    className="solution-action-in mt-2.5 w-full"
+                  />
                 ) : (
                   <Button
                     variant="emerald"
                     size="sm"
-                    className="mt-2.5 w-full"
+                    className="solution-action-in mt-2.5 w-full"
                     /* Pul haqiqiy balansdan ketadi — bosish bilan darhol
                        yechilmaydi, avval oyna nima qancha turishini va
                        balansda qancha borligini ko'rsatadi. */
