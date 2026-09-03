@@ -53,7 +53,7 @@ export default async function MaterialsPage({ params }: PageProps<'/[locale]'>) 
         name: group.university.name,
         alternateName: group.university.short_name,
         address: group.university.city,
-        url: `/materials/${group.slug}`,
+        url: `/materials?institut=${group.university.id}`,
       },
     })),
   };

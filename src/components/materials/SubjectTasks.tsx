@@ -235,6 +235,9 @@ export function SubjectTasks({
   }
 
   const subjectMeta = [
+    // Institut — non ushlab turgan ma'lumot edi; uning sahifasi olib
+    // tashlangach u shu yerga ko'chdi.
+    universityShortName,
     subject.direction_name,
     subject.course ? t((x) => x.materials.course, { course: subject.course! }) : '',
     subject.semester ? t((x) => x.materials.semesterValue, { value: subject.semester }) : '',
@@ -270,7 +273,9 @@ export function SubjectTasks({
         <CatalogueCtaBanner
           mode="assignment-request"
           universityShortName={universityShortName}
-          universityHref={`/materials/${universitySlug}`}
+          /* Institut sahifasi yo'q — «Fan ro'yxatda yo'q?» katalogga olib
+             boradi va fan arizasi oynasi ham o'sha ekranda. */
+          universityHref="/materials"
           onAction={() => setRequestOpen(true)}
         />
       </div>

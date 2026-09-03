@@ -255,7 +255,11 @@ export async function getAssignmentTree(subjectId: string): Promise<AssignmentNo
  * generatsiya qilinmagan (yoki aksincha) sahifalar paydo bo'lardi.
  */
 export interface CataloguePaths {
-  universities: { universitySlug: string }[];
+  /*
+   * Institut yo'llari YO'Q: `/materials/[universitySlug]` sahifasi olib
+   * tashlandi. Institut manzilda faqat fan yo'lining bir qismi sifatida
+   * qoladi.
+   */
   subjects: { universitySlug: string; subjectSlug: string }[];
   assignments: { universitySlug: string; subjectSlug: string; assignmentSlug: string }[];
 }
@@ -277,12 +281,10 @@ export async function getAllCataloguePaths(): Promise<CataloguePaths> {
   const subjectsByUniversity = groupBy(allSubjects, (subject) => subject.university);
   const assignmentsBySubject = groupBy(allAssignments, (assignment) => assignment.subject);
 
-  const paths: CataloguePaths = { universities: [], subjects: [], assignments: [] };
+  const paths: CataloguePaths = { subjects: [], assignments: [] };
 
   for (const university of universities) {
     const uniSlug = universitySlug(university);
-    paths.universities.push({ universitySlug: uniSlug });
-
     const subjects = subjectsByUniversity.get(university.id) ?? [];
 
     for (const subject of subjects) {

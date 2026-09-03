@@ -76,7 +76,9 @@ export function LandingHighlights({ highlights }: { highlights: Highlights }) {
               {universities.map((university) => (
                 <li key={university.id}>
                   <Link
-                    href={`/materials/${toSlug(university.short_name || university.name)}`}
+                    /* Institut sahifasi olib tashlandi; katalogda o'sha
+                       institut oldindan tanlangan holda ochiladi. */
+                    href={`/materials?institut=${university.id}`}
                     className="flex h-full flex-col rounded-xl border border-border/60 bg-background p-4 transition-colors hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70"
                   >
                     <span className="text-sm font-bold text-foreground">

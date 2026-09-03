@@ -57,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
      * manzillarni ro'yxatga yozib qo'yardi.
      */
     setRequestLocale(locale);
-    const { universities, subjects, assignments } = await getAllCataloguePaths();
+    const { subjects, assignments } = await getAllCataloguePaths();
 
     for (const item of STATIC_PATHS) {
       routes.push(
@@ -68,14 +68,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       );
     }
 
-    for (const item of universities) {
-      routes.push(
-        entry(`/materials/${item.universitySlug}`, locale, {
-          changeFrequency: 'weekly',
-          priority: 0.8,
-        }),
-      );
-    }
+    /*
+     * Institut sahifalari SITEMAPDA YO'Q — ular olib tashlandi.
+     * Katalogdan to'g'ridan-to'g'ri fanga o'tiladi, ya'ni indekslanadigan
+     * sahifalar `/materials` va fan sahifalari.
+     */
 
     for (const item of subjects) {
       routes.push(

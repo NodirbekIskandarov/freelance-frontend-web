@@ -3,6 +3,8 @@
 import { LayoutGrid, Rows3, SearchX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { useUrlState } from '@/lib/useUrlState';
+
 import { Pagination } from '@/components/ui/Pagination';
 import { SubjectRequestModal } from '@/features/requests/SubjectRequestModal';
 import { UniversityRequestModal } from '@/features/requests/UniversityRequestModal';
@@ -126,7 +128,18 @@ export function MaterialsBrowser({
   const [filters, setFilters] = useState<MaterialsFilterState>(DEFAULT_MATERIALS_FILTERS);
   const [subjectSort, setSubjectSort] = useState<SubjectSort>('solutions');
   const [view, setView] = useState<View>('table');
-  const [pickedId, setPickedId] = useState<string | null>(null);
+  /*
+   * Tanlangan institut MANZILDA.
+   *
+   * Ilgari u faqat komponent holatida edi va shu sababli institutga
+   * havola qilishning yagona yo'li alohida `/materials/tatu` sahifasi
+   * bo'lgan. O'sha sahifa olib tashlangach, havolalar shu yerga —
+   * `?institut=` bilan — keladi. Yon foydasi: katalog ko'rinishini
+   * ulashib bo'ladi va sahifa yangilanganda tanlov saqlanadi.
+   */
+  const [pickedId, setPickedId] = useUrlState('institut', '', {
+    isValid: (value) => groups.some((group) => group.university.id === value),
+  });
   const [page, setPage] = useState(1);
   const [universityModal, setUniversityModal] = useState(false);
   const [subjectModal, setSubjectModal] = useState(false);

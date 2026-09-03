@@ -134,10 +134,15 @@ export default async function SubjectPage(
   const uniSlug = universitySlug;
   const subjSlug = toSlugId(subject.name, subject.id);
 
+  /*
+   * Institut noni YO'Q: uning sahifasi olib tashlandi va havola
+   * qiladigan joy qolmadi. Institut nomi yo'qolmaydi — u fan sarlavhasi
+   * ostidagi qatorga o'tdi, ya'ni navigatsiya emas, kontekst bo'lib
+   * qoldi.
+   */
   const crumbs = [
     { name: m.breadcrumbHome, path: '/' },
     { name: m.breadcrumbMaterials, path: '/materials' },
-    { name: university.short_name, path: `/materials/${uniSlug}` },
     { name: subject.name, path: `/materials/${uniSlug}/${subjSlug}` },
   ];
 
