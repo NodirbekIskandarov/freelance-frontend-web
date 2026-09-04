@@ -89,8 +89,8 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     ],
     shell:
       'border-emerald-500/20 bg-gradient-to-br from-emerald-50/90 via-background to-emerald-50/50 dark:from-emerald-950/30 dark:via-zinc-950 dark:to-emerald-950/20',
-    accent: 'text-emerald-600 dark:text-emerald-400',
-    badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
+    accent: 'text-brand',
+    badgeBg: 'bg-emerald-500/10 text-brand',
     orbit: 'border-emerald-500/25',
     // Qora yorliq: oq matn bu yashillar ustida 3.77:1 va 2.15:1
     // berardi, ya'ni ikkalasi ham o'qish chegarasidan past. Sayt
@@ -133,7 +133,7 @@ const SLIDES: Record<SlideId, SlideConfig> = {
     ],
     shell:
       'border-amber-500/20 bg-gradient-to-br from-amber-50/90 via-background to-orange-50/50 dark:from-amber-950/25 dark:via-zinc-950 dark:to-orange-950/15',
-    accent: 'text-amber-600 dark:text-amber-400',
+    accent: 'text-warning',
     badgeBg: 'bg-amber-500/10 text-amber-800 dark:text-amber-300',
     orbit: 'border-amber-500/25',
     button: 'bg-amber-500 text-amber-950 hover:bg-amber-400',

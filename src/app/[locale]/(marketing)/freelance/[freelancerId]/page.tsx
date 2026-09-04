@@ -107,7 +107,7 @@ export default async function FreelancerProfilePage(
 
       <Breadcrumbs items={crumbs} />
 
-      <header className="mt-6 flex flex-wrap items-start gap-5 rounded-2xl border border-border/60 bg-background p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900/70">
+      <header className="mt-6 flex flex-wrap items-start gap-5 rounded-2xl border border-border bg-background p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900/70">
         {freelancer.avatar ? (
           // Backend rasm domenlari oldindan noma'lum — `next/image` emas.
           // eslint-disable-next-line @next/next/no-img-element
@@ -126,7 +126,7 @@ export default async function FreelancerProfilePage(
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             {freelancer.full_name || 'Freelancer'}
           </h1>
-          <p className="mt-1 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+          <p className="mt-1 text-sm font-semibold text-brand">
             {direction}
           </p>
 
@@ -163,7 +163,7 @@ export default async function FreelancerProfilePage(
               {freelancer.skills.map((skill) => (
                 <li
                   key={skill}
-                  className="rounded-md border border-border/70 bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                  className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
                 >
                   {skill}
                 </li>

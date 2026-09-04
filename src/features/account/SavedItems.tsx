@@ -87,9 +87,9 @@ function SavedSolutions() {
       {data.results.map((item) => (
         <article
           key={item.id}
-          className="flex items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+          className="flex items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-brand">
             <FileText className="size-5" />
           </span>
 
@@ -141,9 +141,9 @@ function SavedFreelancers() {
       {data.results.map((item) => (
         <article
           key={item.id}
-          className="flex items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+          className="flex items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-brand">
             <UserRound className="size-5" />
           </span>
 

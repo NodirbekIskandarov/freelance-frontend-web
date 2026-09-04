@@ -47,13 +47,13 @@ export function FreelancerEarnings() {
           label="Balans"
           value={money.decimalSom(wallet.balance)}
           icon={Wallet}
-          tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
+          tone="bg-emerald-500/12 text-brand"
         />
         <StatCard
           label={m.freelancerCabinet.pendingWithdrawal}
           value={money.decimalSom(wallet.totals.pending_withdrawal)}
           icon={Clock}
-          tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
+          tone="bg-amber-500/12 text-warning"
         />
         <StatCard
           label={m.freelancerCabinet.earnedTotal}
@@ -67,7 +67,7 @@ export function FreelancerEarnings() {
         {m.freelancerCabinet.commissionNote}{' '}
         <Link
           href="/wallet"
-          className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+          className="font-medium text-brand hover:underline"
         >
           Hamyon
         </Link>{' '}
@@ -86,7 +86,7 @@ export function FreelancerEarnings() {
             {sales.results.map((entry) => (
               <article
                 key={entry.id}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-medium text-foreground">
@@ -98,7 +98,7 @@ export function FreelancerEarnings() {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                  <div className="text-sm font-semibold text-brand">
                     +{money.decimalSom(entry.amount)}
                   </div>
                   <div className="text-[11px] text-muted-foreground">

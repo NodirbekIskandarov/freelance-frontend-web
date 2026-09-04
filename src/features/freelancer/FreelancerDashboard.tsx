@@ -55,7 +55,7 @@ export function FreelancerDashboard() {
           label={m.freelancerCabinet.doneJobs}
           value={String(done.data?.count ?? 0)}
           icon={CircleCheck}
-          tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
+          tone="bg-emerald-500/12 text-brand"
         />
         <StatCard
           label={m.freelancerCabinet.pendingOffers}
@@ -67,7 +67,7 @@ export function FreelancerDashboard() {
           label="Balans"
           value={money.decimalSom(wallet.data?.balance ?? null)}
           icon={Wallet}
-          tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
+          tone="bg-amber-500/12 text-warning"
         />
       </section>
 
@@ -76,7 +76,7 @@ export function FreelancerDashboard() {
           <h2 className="text-lg font-bold text-foreground">{m.ui.recentJobs}</h2>
           <Link
             href="/freelancer/orders"
-            className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            className="text-sm font-medium text-brand hover:underline"
           >
             {m.common.all}
           </Link>
@@ -88,7 +88,7 @@ export function FreelancerDashboard() {
             <p className="mt-1 text-sm text-muted-foreground">
               <Link
                 href="/freelancer/board"
-                className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                className="font-medium text-brand hover:underline"
               >
                 {m.freelancerCabinet.openTasks}
               </Link>{' '}
@@ -100,7 +100,7 @@ export function FreelancerDashboard() {
             {recent.data.results.map((job) => (
               <article
                 key={job.id}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-foreground">{job.title}</h3>

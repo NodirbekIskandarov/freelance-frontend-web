@@ -164,7 +164,7 @@ export function Select({
         aria-controls={open ? listId : undefined}
         onClick={() => !disabled && setMenuOpen(!open)}
         className={cn(
-          'flex h-11 w-full min-w-[8rem] items-center justify-between gap-2 rounded-xl border border-border/70 bg-background px-3 text-left text-sm text-foreground transition-colors outline-none hover:border-emerald-500/30 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20 disabled:opacity-50 dark:border-white/12 dark:bg-[#0a100d] dark:text-white',
+          'flex h-11 w-full min-w-[8rem] items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 text-left text-sm text-foreground transition-colors outline-none hover:border-emerald-500/30 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20 disabled:opacity-50 dark:border-white/12 dark:bg-[#0a100d] dark:text-white',
           triggerClassName,
         )}
       >
@@ -180,11 +180,11 @@ export function Select({
       {open && anchor ? (
         <div
           ref={menuRef}
-          className="fixed z-200 w-max max-w-[min(20rem,80vw)] overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground ring-1 ring-black/5"
+          className="fixed z-200 w-max max-w-[min(20rem,80vw)] overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground ring-1 ring-black/5"
           style={{ top: anchor.top, left: anchor.left, minWidth: anchor.width }}
         >
           {searchable ? (
-            <div className="border-b border-border/70 p-2">
+            <div className="border-b border-border p-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -206,7 +206,7 @@ export function Select({
                       setMenuOpen(false);
                     }
                   }}
-                  className="h-9 w-full rounded-lg border border-border/70 bg-background pr-2 pl-8 text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-emerald-500/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
+                  className="h-9 w-full rounded-lg border border-border bg-background pr-2 pl-8 text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-emerald-500/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
                 />
               </div>
             </div>
@@ -246,7 +246,7 @@ export function Select({
                       }}
                     >
                       <Check
-                        className={cn('size-4 shrink-0 text-emerald-500', !active && 'opacity-0')}
+                        className={cn('size-4 shrink-0 text-brand', !active && 'opacity-0')}
                       />
                       <span className="truncate">{option.label}</span>
                     </button>

@@ -37,12 +37,14 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
     {
       value: stats.solutions,
       label: m.home.statSolutions,
-      tone: 'text-emerald-600 dark:text-emerald-400',
+      tone: 'text-brand',
     },
     {
       value: stats.awaiting_variants,
       label: m.home.statAwaiting,
-      tone: 'text-amber-600 dark:text-amber-400',
+      /* Sariq FAQAT kutilayotgan ish uchun. Yonidagi yorliq ham
+         «yechim kutilmoqda» deb yozadi — ma'no rangda yolg'iz qolmaydi. */
+      tone: 'text-warning',
     },
   ];
 
@@ -66,7 +68,7 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
             {tiles.map((tile) => (
               <div
                 key={tile.label}
-                className="rounded-xl border border-border/70 bg-card px-3 py-2 text-center sm:min-w-[6rem]"
+                className="rounded-xl border border-border bg-card px-3 py-2 text-center sm:min-w-[6rem]"
               >
                 <dd className={cn('text-lg font-bold tabular-nums', tile.tone)}>
                   {formatCount(tile.value)}
@@ -106,7 +108,7 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
                       count: formatCount(university.subject_count),
                     })}
                   </span>
-                  <span className="block font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="block font-semibold text-brand">
                     {t((x) => x.home.instituteSolutions, {
                       count: formatCount(university.solution_count),
                     })}
@@ -142,7 +144,7 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
                   </span>
                 </span>
                 <span className="shrink-0 text-right text-[11px] tabular-nums">
-                  <span className="block font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="block font-semibold text-brand">
                     {t((x) => x.home.instituteSolutions, {
                       count: formatCount(subject.solution_count),
                     })}
@@ -162,7 +164,7 @@ export function CatalogueNow({ highlights }: { highlights: LandingHighlights }) 
               <p className="text-sm font-semibold text-foreground">{m.home.popularCategories}</p>
               <Link
                 href="/materials"
-                className="text-xs font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
+                className="text-xs font-semibold text-brand hover:underline"
               >
                 {m.home.allCategories} →
               </Link>
@@ -241,7 +243,7 @@ function UniversityMark({ university }: { university: LandingHighlights['univers
   return (
     <span
       className={cn(
-        'grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br px-1 text-[10px] leading-none font-bold text-white',
+        'grid size-9 shrink-0 place-items-center rounded-xl border px-1 text-[10px] leading-none font-bold',
         gradientFor(university.id),
       )}
     >
@@ -263,7 +265,7 @@ function CategoryChip({
       <Link
         href="/materials"
         tabIndex={clone ? -1 : undefined}
-        className="inline-flex h-9 items-center gap-2 rounded-xl border border-border/70 bg-card px-3.5 text-sm font-medium whitespace-nowrap text-foreground transition-colors hover:border-emerald-500/40"
+        className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-card px-3.5 text-sm font-medium whitespace-nowrap text-foreground transition-colors hover:border-emerald-500/40"
       >
         {category.name}
         <span className="text-xs text-muted-foreground tabular-nums">
@@ -286,12 +288,12 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
-      <header className="flex items-center justify-between gap-2 border-b border-border/60 px-3.5 py-2.5">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card">
+      <header className="flex items-center justify-between gap-2 border-b border-border px-3.5 py-2.5">
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         <Link
           href={href}
-          className="text-xs font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
+          className="text-xs font-semibold text-brand hover:underline"
         >
           {linkLabel} →
         </Link>

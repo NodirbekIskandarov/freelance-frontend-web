@@ -59,7 +59,7 @@ function ToggleChip({
         'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
         active
           ? 'bg-emerald-600 text-white'
-          : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400',
+          : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-brand dark:hover:text-emerald-400',
       )}
     >
       {icon}
@@ -124,7 +124,7 @@ export function FreelancerDirectory({
         onSubmit={(event) => event.preventDefault()}
         className="flex items-center gap-2 rounded-xl border border-border bg-background p-1 pl-3.5 focus-within:border-emerald-500/50"
       >
-        <Search className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <Search className="size-4 shrink-0 text-brand" />
         <input
           type="search"
           value={query}
@@ -144,11 +144,11 @@ export function FreelancerDirectory({
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3.5 sm:px-5">
           <div className="flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+            <span className="grid size-9 place-items-center rounded-xl bg-emerald-500/12 text-brand">
               <Users className="size-4" />
             </span>
             <p className="text-sm text-muted-foreground">
-              <strong className="text-2xl font-bold text-emerald-700 tabular-nums dark:text-emerald-400">
+              <strong className="text-2xl font-bold text-brand tabular-nums">
                 {filtered.length}
               </strong>{' '}
               ta freelancer topildi
@@ -160,8 +160,8 @@ export function FreelancerDirectory({
 
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-xs text-muted-foreground">
-              <CircleCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-              <strong className="font-bold text-emerald-700 dark:text-emerald-400">
+              <CircleCheck className="size-3.5 text-brand" />
+              <strong className="font-bold text-brand">
                 {availableCount}
               </strong>
               ta bo&apos;sh
@@ -193,7 +193,7 @@ export function FreelancerDirectory({
                     'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                     sortId === option.id
                       ? 'bg-emerald-600 text-white'
-                      : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400',
+                      : 'border border-border bg-background text-muted-foreground hover:border-emerald-500/40 hover:text-brand dark:hover:text-emerald-400',
                   )}
                 >
                   {option.label(m)}
@@ -203,7 +203,7 @@ export function FreelancerDirectory({
 
             <div className="flex flex-wrap items-center gap-2">
               <label className="flex min-w-[170px] flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 sm:flex-none">
-                <GraduationCap className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <GraduationCap className="size-3.5 shrink-0 text-brand" />
                 <span className="sr-only">Shahar</span>
                 <select
                   value={filters.city}
@@ -220,7 +220,7 @@ export function FreelancerDirectory({
               </label>
 
               <label className="flex min-w-[160px] flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 sm:flex-none">
-                <SlidersHorizontal className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <SlidersHorizontal className="size-3.5 shrink-0 text-brand" />
                 <span className="sr-only">{m.freelancerCabinet.direction}</span>
                 <select
                   value={filters.direction}

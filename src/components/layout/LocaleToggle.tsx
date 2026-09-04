@@ -86,7 +86,7 @@ export function LocaleToggle({ compact = false }: { compact?: boolean }) {
           className={cn(
             'rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors',
             locale === item
-              ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+              ? 'bg-emerald-500/12 text-brand'
               : 'text-muted-foreground hover:text-foreground',
           )}
         >

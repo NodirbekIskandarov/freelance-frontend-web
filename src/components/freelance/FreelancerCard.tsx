@@ -57,8 +57,8 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
       className={cn(
         'group flex h-full flex-col rounded-2xl border p-4 transition-all',
         isBusy
-          ? 'border-border/60 bg-muted/30'
-          : 'hover: border-border/60 bg-background hover:-translate-y-0.5 hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70',
+          ? 'border-border bg-muted/30'
+          : 'hover: border-border bg-background hover:-translate-y-0.5 hover:border-emerald-500/40 dark:border-zinc-800 dark:bg-zinc-900/70',
       )}
     >
       <div className="flex items-start gap-3">
@@ -119,14 +119,14 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
             'rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1',
             isBusy
               ? 'bg-orange-50 text-orange-700 ring-orange-200/90 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/25'
-              : 'bg-emerald-50 text-emerald-700 ring-emerald-200/90 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/25',
+              : 'bg-emerald-50 text-brand ring-emerald-200/90 dark:bg-emerald-500/10 dark:ring-emerald-500/25',
           )}
         >
           {availabilityLabel(freelancer.availability, m)}
         </span>
       </div>
 
-      <p className="mt-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+      <p className="mt-3 text-sm font-semibold text-brand">
         {workDirectionLabel(freelancer.direction, m) ?? freelancer.direction}
       </p>
 
@@ -135,7 +135,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
           {freelancer.skills.slice(0, 3).map((skill) => (
             <li
               key={skill}
-              className="rounded-md border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+              className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
             >
               {skill}
             </li>
@@ -151,10 +151,19 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
           </dt>
           <dd className="text-xs font-bold text-foreground">{freelancer.completed_jobs}</dd>
         </div>
-        <div className="border-l border-emerald-500/15">
+        <div className="border-l border-border">
           <dt className="text-[10px] text-muted-foreground">Narx</dt>
-          <dd className="text-[11px] leading-tight font-bold text-emerald-700 dark:text-emerald-400">
-            {/* Narx berilmagan bo'lsa kelishuv asosida ishlaydi. */}
+          {/*
+            Narx bitta rangda (`--price`), «Kelishuv» esa NEYTRAL: u narx
+            emas, narxning yo'qligi. Ilgari ikkalasi ham brend yashilida
+            edi va «Kelishuv» summa bo'lib o'qilardi.
+          */}
+          <dd
+            className={cn(
+              'text-[11px] leading-tight font-bold',
+              freelancer.price_from ? 'text-price' : 'text-muted-foreground',
+            )}
+          >
             {freelancer.price_from ? money.som(Number(freelancer.price_from)) : 'Kelishuv'}
           </dd>
         </div>
@@ -163,7 +172,7 @@ export function FreelancerCard({ freelancer }: { freelancer: PublicFreelancer })
       <div className="mt-auto flex gap-2 pt-3">
         <Link
           href={`/freelance/${freelancer.id}`}
-          className="inline-flex h-8 flex-1 items-center justify-center rounded-lg border border-border text-xs font-semibold text-foreground transition-colors hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400"
+          className="inline-flex h-8 flex-1 items-center justify-center rounded-lg border border-border text-xs font-semibold text-foreground transition-colors hover:border-emerald-500/40 hover:text-brand dark:hover:text-emerald-400"
         >
           Profil
         </Link>

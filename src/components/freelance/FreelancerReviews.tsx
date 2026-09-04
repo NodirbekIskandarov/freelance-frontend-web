@@ -48,7 +48,7 @@ export function FreelancerReviews({ reviews }: { reviews: ExchangeReview[] }) {
       {reviews.map((review) => (
         <li
           key={review.id}
-          className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+          className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
         >
           <div className="flex flex-wrap items-center gap-3">
             {review.client_avatar ? (

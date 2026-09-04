@@ -56,7 +56,7 @@ export function VariantChips({
   ];
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-sm font-semibold text-foreground">
           {m.variants.title}{' '}
@@ -92,7 +92,7 @@ export function VariantChips({
       </div>
 
       {shown.length === 0 ? (
-        <p className="mt-4 rounded-xl border border-dashed border-border/70 px-4 py-8 text-center text-sm text-muted-foreground">
+        <p className="mt-4 rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
           {m.variants.noneMatch}
         </p>
       ) : (
@@ -112,7 +112,7 @@ export function VariantChips({
                   'rounded-xl border px-2.5 py-2.5 text-left transition-colors',
                   active
                     ? 'border-emerald-500/70 bg-emerald-500/[0.07]'
-                    : 'border-border/70 bg-background/40 hover:border-emerald-500/40 hover:bg-muted/50',
+                    : 'border-border bg-background/40 hover:border-emerald-500/40 hover:bg-muted/50',
                 )}
               >
                 <span className="flex items-center justify-between gap-2">

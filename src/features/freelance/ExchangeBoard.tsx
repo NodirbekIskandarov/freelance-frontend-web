@@ -63,7 +63,7 @@ export function ExchangeBoard() {
       <section className="relative overflow-hidden rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-brand">
               <ClipboardList className="size-4" />
             </span>
             <div>
@@ -175,7 +175,7 @@ function StatPill({
       className={cn(
         'hidden items-center gap-2 rounded-xl border px-2.5 py-2 sm:flex',
         accent
-          ? 'border-emerald-500/25 bg-emerald-500/8 text-emerald-700 dark:text-emerald-400'
+          ? 'border-emerald-500/25 bg-emerald-500/8 text-brand'
           : 'border-border bg-muted/40 text-muted-foreground',
       )}
     >
@@ -247,7 +247,7 @@ function TaskListItem({
         {task.reference}
       </p>
 
-      <p className="mt-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+      <p className="mt-1.5 text-[11px] font-medium text-brand">
         {footnoteFor(task, money, m)}
       </p>
     </button>
@@ -359,7 +359,7 @@ function TaskPanel({ task, onBack }: { task: ExchangeTask; onBack: () => void })
               href={detail.delivery_file}
               target="_blank"
               rel="noreferrer"
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-brand hover:underline"
             >
               <Download className="size-3.5" />
               {m.exchange.downloadDelivery}
@@ -423,7 +423,7 @@ function OfferCard({ offer, taskId }: { offer: ExchangeOffer; taskId: string }) 
             &middot; {offer.freelancer_completed_jobs} ta ish
           </p>
         </div>
-        <p className="shrink-0 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+        <p className="shrink-0 text-sm font-bold text-brand">
           {money.decimalSom(offer.price)}
         </p>
       </div>

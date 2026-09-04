@@ -98,9 +98,9 @@ export default async function AboutPage({ params }: PageProps<'/[locale]'>) {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+              className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
             >
-              <dd className="text-2xl font-bold text-emerald-600 tabular-nums dark:text-emerald-400">
+              <dd className="text-2xl font-bold text-brand tabular-nums">
                 {stat.value}
               </dd>
               <dt className="mt-1 text-xs text-muted-foreground">{stat.label}</dt>
@@ -114,9 +114,9 @@ export default async function AboutPage({ params }: PageProps<'/[locale]'>) {
             {values.map((value, index) => (
               <article
                 key={index}
-                className="rounded-2xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="rounded-2xl border border-border bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
-                <span className="grid size-10 place-items-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+                <span className="grid size-10 place-items-center rounded-lg bg-emerald-500/12 text-brand">
                   <value.icon className="size-5" />
                 </span>
                 <h3 className="mt-3 text-base font-bold text-foreground">

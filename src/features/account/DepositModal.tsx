@@ -46,8 +46,8 @@ export function DepositModal({ open, onClose }: { open: boolean; onClose: () => 
 
         {/* Ikkinchi yo'l — sotish. Bu shunchaki maslahat emas: balansga
             pul aynan shu tarzda tushishi mumkin va u bugun ishlaydi. */}
-        <p className="flex gap-3 rounded-xl border border-border/70 p-3.5 text-sm leading-relaxed text-muted-foreground">
-          <Sparkles className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <p className="flex gap-3 rounded-xl border border-border p-3.5 text-sm leading-relaxed text-muted-foreground">
+          <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" />
           {m.wallet.depositEarn}
         </p>
       </div>

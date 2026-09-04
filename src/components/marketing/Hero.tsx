@@ -33,7 +33,7 @@ const floatingCards = [
     title: (m: Messages) => m.home.cardAssignments,
     desc: (m: Messages) => m.home.cardAssignmentsDesc,
     icon: ClipboardList,
-    accent: 'bg-emerald-500/20 text-emerald-300',
+    accent: 'bg-panel-accent-soft text-panel-accent',
     className: 'left-0 top-[4%] md:left-[2%]',
   },
   {
@@ -67,10 +67,18 @@ export function Hero({
   /** Kafolat muddati — SERVERDAN kelgan qiymatdan yasalgan matn. */
   guaranteeLabel: string;
 }) {
+  /*
+   * Sirt ham, ustidagi matn ham MAVZUGA ergashadi. Ilgari bu yerda qat'iy
+   * `bg-zinc-950 text-white` turardi va yorug' rejimda sahifa oq varaq
+   * ustidagi qora yamoq bo'lib ko'rinardi — sarlavha esa to'g'ridan qora
+   * blokka tegib turardi.
+   */
   return (
-    <section className="relative overflow-hidden bg-zinc-950 text-white">
+    <section className="relative overflow-hidden bg-panel text-panel-foreground">
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_480px_at_70%_20%,rgba(16,185,129,0.18),transparent_60%),radial-gradient(700px_400px_at_20%_80%,rgba(99,102,241,0.12),transparent_55%)]"
+        /* Yog'du kuchi mavzudan: yorug' sirtda 0.18 lik yashil dog' loyqa
+           yamoqqa aylanardi, qorong'ida esa u aynan kerak. */
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_480px_at_70%_20%,var(--panel-glow),transparent_60%)]"
         aria-hidden
       />
 
@@ -112,13 +120,17 @@ function HeroContent({
         style={{ animationDelay: RISE_DELAYS[0] }}
       >
         {m.home.heroTitle}{' '}
-        <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+        {/* Gradiyent MAVZUGA qarab: yorug' panelda emerald-300 → 1.46:1,
+              emerald-500 → 2.43:1 berardi, ya'ni katta matn uchun ham
+              (talab 3:1) yetmasdi. Yorug'da shkala ikki bosqich
+              to'qlashtirildi: 7.35:1 → 3.61:1. */}
+          <span className="bg-gradient-to-r from-emerald-800 to-emerald-600 bg-clip-text text-transparent dark:from-emerald-300 dark:to-emerald-500">
           {m.home.heroTitleAccent}
         </span>
       </h1>
 
       <p
-        className="hero-rise mx-auto mt-5 max-w-[520px] text-base leading-relaxed text-zinc-400 sm:text-lg lg:mx-0"
+        className="hero-rise mx-auto mt-5 max-w-[520px] text-base leading-relaxed text-panel-muted sm:text-lg lg:mx-0"
         style={{ animationDelay: RISE_DELAYS[1] }}
       >
         {m.home.heroLead}
@@ -130,18 +142,18 @@ function HeroContent({
 
       <ul className="mt-5 flex flex-wrap justify-center gap-x-4 gap-y-2 lg:justify-start">
         {promises.map((promise) => (
-          <li key={promise.label} className="flex items-center gap-1.5 text-xs text-zinc-400">
-            <span className="grid size-5 shrink-0 place-items-center rounded-md bg-white/5">
-              <promise.icon className="size-3 text-emerald-400" />
+          <li key={promise.label} className="flex items-center gap-1.5 text-xs text-panel-muted">
+            <span className="grid size-5 shrink-0 place-items-center rounded-md bg-panel-glass">
+              <promise.icon className="size-3 text-panel-accent" />
             </span>
             {promise.label}
           </li>
         ))}
       </ul>
 
-      <p className="mt-4 text-xs text-zinc-500">
+      <p className="mt-4 text-xs text-panel-dim">
         {m.home.heroOrFreelancer}{' '}
-        <Link href="/freelance" className="font-medium text-emerald-400 hover:underline">
+        <Link href="/freelance" className="font-medium text-panel-accent hover:underline">
           {m.home.heroFindFreelancer}
         </Link>
       </p>
@@ -168,13 +180,13 @@ function SearchShowcase({ highlights }: { highlights: LandingHighlights }) {
   const rows = highlights.subjects.slice(0, 3);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/12 bg-white/[0.03]">
+    <div className="overflow-hidden rounded-2xl border border-panel-border bg-white/[0.03]">
       {/* Butun blok bezak: skrinriderga o'qilmaydi va bosilmaydi.
           Yagona haqiqiy amal — pastdagi havola. */}
       <div aria-hidden className="pointer-events-none p-2.5 select-none">
-        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900/60 py-2.5 pr-2 pl-3.5">
-          <Search className="size-4 shrink-0 text-zinc-500" />
-          <span className="min-w-0 flex-1 truncate text-left text-sm text-zinc-500">
+        <div className="flex items-center gap-2 rounded-xl border border-panel-border bg-panel-card py-2.5 pr-2 pl-3.5">
+          <Search className="size-4 shrink-0 text-panel-dim" />
+          <span className="min-w-0 flex-1 truncate text-left text-sm text-panel-dim">
             {m.home.heroSearchPlaceholder}
           </span>
           <span className="shrink-0 rounded-lg bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-emerald-950">
@@ -184,21 +196,21 @@ function SearchShowcase({ highlights }: { highlights: LandingHighlights }) {
 
         {rows.length > 0 && (
           <div className="mt-2.5">
-            <p className="px-1 pb-1.5 text-[10px] font-semibold tracking-wider text-zinc-500 uppercase">
+            <p className="px-1 pb-1.5 text-[10px] font-semibold tracking-wider text-panel-dim uppercase">
               {m.home.topSubjects}
             </p>
 
-            <ul className="divide-y divide-white/[0.06] rounded-xl border border-white/[0.08] bg-zinc-900/40">
+            <ul className="divide-y divide-panel-divider rounded-xl border border-panel-border bg-panel-card">
               {rows.map((subject) => (
                 <li key={subject.id} className="flex items-center gap-3 px-3 py-2.5">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-500/12 text-emerald-300">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-panel-accent-soft text-panel-accent">
                     <CheckCheck className="size-3.5" />
                   </span>
                   <span className="min-w-0 flex-1 text-left">
-                    <span className="block truncate text-[13px] font-semibold text-white">
+                    <span className="block truncate text-[13px] font-semibold text-panel-foreground">
                       {subject.name}
                     </span>
-                    <span className="block truncate text-[11px] text-zinc-500">
+                    <span className="block truncate text-[11px] text-panel-dim">
                       {[
                         subject.university_short_name,
                         subject.course
@@ -210,12 +222,12 @@ function SearchShowcase({ highlights }: { highlights: LandingHighlights }) {
                     </span>
                   </span>
                   <span className="shrink-0 text-right text-[11px] tabular-nums">
-                    <span className="block font-semibold text-emerald-300">
+                    <span className="block font-semibold text-panel-accent">
                       {t((x) => x.home.instituteSolutions, {
                         count: formatCount(subject.solution_count),
                       })}
                     </span>
-                    <span className="block text-zinc-500">
+                    <span className="block text-panel-dim">
                       {t((x) => x.home.subjectSales, {
                         count: formatCount(subject.sale_count),
                       })}
@@ -230,15 +242,15 @@ function SearchShowcase({ highlights }: { highlights: LandingHighlights }) {
 
       <Link
         href="/materials"
-        className="flex items-center justify-between gap-2 border-t border-white/[0.08] px-3.5 py-2.5 text-[11px] transition-colors hover:bg-white/[0.03]"
+        className="flex items-center justify-between gap-2 border-t border-panel-border px-3.5 py-2.5 text-[11px] transition-colors hover:bg-white/[0.03]"
       >
-        <span className="truncate text-zinc-500">
+        <span className="truncate text-panel-dim">
           {t((x) => x.home.startFromInstituteNote, {
             institutes: formatCount(highlights.stats.universities),
             subjects: formatCount(highlights.stats.subjects),
           })}
         </span>
-        <span className="shrink-0 font-semibold text-emerald-400">{m.home.allMaterials} →</span>
+        <span className="shrink-0 font-semibold text-panel-accent">{m.home.allMaterials} →</span>
       </Link>
     </div>
   );
@@ -269,7 +281,7 @@ function HeroVisual({ highlights }: { highlights: LandingHighlights }) {
         ) : (
           <div className="hero-float absolute top-1/2 left-1/2 z-10 grid place-items-center">
             <div className="grid size-32 place-items-center rounded-[1.375rem] border border-emerald-400/25 bg-gradient-to-br from-emerald-500/25 via-emerald-500/10 to-transparent backdrop-blur-xl sm:size-40">
-              <GraduationCap className="size-12 text-emerald-300 sm:size-16" strokeWidth={1.4} />
+              <GraduationCap className="size-12 text-panel-accent sm:size-16" strokeWidth={1.4} />
             </div>
           </div>
         )}
@@ -296,15 +308,15 @@ function FeaturedSubject({ subject }: { subject: LandingHighlights['subjects'][n
     <div className="hero-float absolute top-1/2 left-1/2 z-10 w-[min(19rem,86%)]">
       <Link
         href={href}
-        className="block rounded-2xl border border-white/12 bg-zinc-900/85 p-4 backdrop-blur-xl transition-colors hover:border-emerald-400/40"
+        className="block rounded-2xl border border-panel-border bg-panel-card-strong p-4 backdrop-blur-xl transition-colors hover:border-brand-border"
       >
         <span className="flex items-center gap-2.5">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-500/15 text-emerald-300">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-panel-accent-soft text-panel-accent">
             <CheckCheck className="size-4" />
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold text-white">{subject.name}</span>
-            <span className="block truncate text-[11px] text-zinc-400">
+            <span className="block truncate text-sm font-semibold text-panel-foreground">{subject.name}</span>
+            <span className="block truncate text-[11px] text-panel-muted">
               {[subject.university_short_name, subject.course ? `${subject.course}-kurs` : '']
                 .filter(Boolean)
                 .join(' · ')}
@@ -312,9 +324,9 @@ function FeaturedSubject({ subject }: { subject: LandingHighlights['subjects'][n
           </span>
         </span>
 
-        <span className="mt-3.5 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
-          <span className="text-zinc-400">{m.home.heroFeaturedLabel}</span>
-          <span className="font-semibold text-emerald-300 tabular-nums">
+        <span className="mt-3.5 flex items-center justify-between border-t border-panel-border pt-3 text-[11px]">
+          <span className="text-panel-muted">{m.home.heroFeaturedLabel}</span>
+          <span className="font-semibold text-panel-accent tabular-nums">
             {t((x) => x.home.heroFeaturedCounts, {
               solutions: formatCount(subject.solution_count),
               sales: formatCount(subject.sale_count),
@@ -329,9 +341,9 @@ function FeaturedSubject({ subject }: { subject: LandingHighlights['subjects'][n
 function HeroVisualBackground() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      <div className="hero-blob hero-blob-1 absolute top-[48%] left-1/2 size-[88%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/20 blur-[80px]" />
-      <div className="hero-orbit absolute top-1/2 left-1/2 size-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/8" />
-      <div className="hero-orbit-reverse absolute top-1/2 left-1/2 size-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/8" />
+      <div className="hero-blob hero-blob-1 absolute top-[48%] left-1/2 size-[88%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-panel-accent-soft blur-[80px]" />
+      <div className="hero-orbit absolute top-1/2 left-1/2 size-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-panel-border" />
+      <div className="hero-orbit-reverse absolute top-1/2 left-1/2 size-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-panel-border" />
     </div>
   );
 }
@@ -357,7 +369,7 @@ function FloatingCard({
       style={{ animationDelay: `${250 + index * 100}ms` }}
     >
       <div
-        className="hero-card-float rounded-2xl border border-white/10 bg-white/[0.06] p-3 backdrop-blur-xl"
+        className="hero-card-float rounded-2xl border border-panel-border bg-white/[0.06] p-3 backdrop-blur-xl"
         style={{
           animationDuration: `${4.5 + index * 0.4}s`,
           animationDelay: `${index * 0.35}s`,
@@ -366,15 +378,15 @@ function FloatingCard({
         <div className="flex items-center gap-2.5">
           <div
             className={cn(
-              'grid size-9 shrink-0 place-items-center rounded-xl ring-1 ring-white/10',
+              'grid size-9 shrink-0 place-items-center rounded-xl ring-1 ring-panel-border',
               accent,
             )}
           >
             <Icon className="size-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[12px] leading-tight font-semibold text-white">{title}</div>
-            <div className="mt-0.5 text-[10px] leading-snug text-zinc-400">{desc}</div>
+            <div className="text-[12px] leading-tight font-semibold text-panel-foreground">{title}</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-panel-muted">{desc}</div>
           </div>
         </div>
       </div>
@@ -416,21 +428,21 @@ function InstituteCard({
       <Link
         href={`/materials/${toSlug(university.short_name || university.name)}`}
         tabIndex={clone ? -1 : undefined}
-        className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-3.5 transition-colors hover:border-emerald-400/40"
+        className="flex h-full flex-col rounded-2xl border border-panel-border bg-white/[0.04] p-3.5 transition-colors hover:border-brand-border"
       >
-        <span className="text-sm font-semibold text-white">
+        <span className="text-sm font-semibold text-panel-foreground">
           {university.short_name || university.name}
         </span>
-        <span className="mt-1 line-clamp-2 flex-1 text-[11px] leading-relaxed text-zinc-400">
+        <span className="mt-1 line-clamp-2 flex-1 text-[11px] leading-relaxed text-panel-muted">
           {university.name}
         </span>
         <span className="mt-3 flex items-center justify-between text-[11px] tabular-nums">
-          <span className="text-zinc-500">
+          <span className="text-panel-dim">
             {t((x) => x.home.instituteSubjects, {
               count: formatCount(university.subject_count),
             })}
           </span>
-          <span className="font-semibold text-emerald-300">
+          <span className="font-semibold text-panel-accent">
             {t((x) => x.home.instituteSolutions, {
               count: formatCount(university.solution_count),
             })}
@@ -463,16 +475,16 @@ function InstituteStrip({ highlights }: { highlights: LandingHighlights }) {
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-sm font-semibold text-white">
+        <p className="text-sm font-semibold text-panel-foreground">
           {m.home.startFromInstitute}{' '}
-          <span className="ml-1 font-normal text-zinc-500">
+          <span className="ml-1 font-normal text-panel-dim">
             {t((x) => x.home.startFromInstituteNote, {
               institutes: formatCount(highlights.stats.universities),
               subjects: formatCount(highlights.stats.subjects),
             })}
           </span>
         </p>
-        <Link href="/materials" className="text-xs font-semibold text-emerald-400 hover:underline">
+        <Link href="/materials" className="text-xs font-semibold text-panel-accent hover:underline">
           {m.home.allInstitutes} →
         </Link>
       </div>

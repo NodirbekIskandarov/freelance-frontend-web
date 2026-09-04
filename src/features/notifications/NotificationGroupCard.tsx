@@ -91,7 +91,7 @@ export function NotificationGroupCard({
       {/* O'qilmaganlar soni — «hammasi yangi» va «bittasi yangi» boshqa
           holat va ular bir xil ko'rinmasligi kerak. */}
       {group.unread > 0 && (
-        <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+        <span className="shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-brand">
           {group.unread}
         </span>
       )}

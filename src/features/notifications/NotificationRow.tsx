@@ -197,7 +197,7 @@ export function NotificationRow({
       {/* Surilganda ortidan chiqadigan belgi — nima bo'layotganini
           aytadi, aks holda qator sababsiz siljigandek ko'rinardi. */}
       {offset > 0 && (
-        <span className="absolute inset-y-0 left-0 flex items-center gap-1.5 bg-emerald-500/15 px-4 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+        <span className="absolute inset-y-0 left-0 flex items-center gap-1.5 bg-emerald-500/15 px-4 text-xs font-medium text-brand">
           <Check className="size-4" />
         </span>
       )}

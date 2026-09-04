@@ -72,7 +72,7 @@ export function Pagination({
         onClick={() => onChange(page - 1)}
         disabled={page <= 1}
         aria-label={m.ui.prevPage}
-        className={cn(itemBase, 'border-border/70 text-muted-foreground hover:bg-muted')}
+        className={cn(itemBase, 'border-border text-muted-foreground hover:bg-muted')}
       >
         <ChevronLeft className="size-4" />
       </button>
@@ -98,8 +98,8 @@ export function Pagination({
               itemBase,
               'tabular-nums',
               item === page
-                ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                : 'border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground',
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-brand'
+                : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground',
             )}
           >
             {item}
@@ -112,7 +112,7 @@ export function Pagination({
         onClick={() => onChange(page + 1)}
         disabled={page >= totalPages}
         aria-label={m.ui.nextPage}
-        className={cn(itemBase, 'border-border/70 text-muted-foreground hover:bg-muted')}
+        className={cn(itemBase, 'border-border text-muted-foreground hover:bg-muted')}
       >
         <ChevronRight className="size-4" />
       </button>

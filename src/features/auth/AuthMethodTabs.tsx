@@ -40,7 +40,7 @@ export function AuthMethodTabs({
       <div
         role="tablist"
         aria-label={m.auth.methodTabsLabel}
-        className="grid grid-cols-2 gap-1 rounded-xl border border-border/70 bg-muted/40 p-1 dark:border-white/10 dark:bg-white/[0.04]"
+        className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1 dark:border-white/10 dark:bg-white/[0.04]"
       >
         {tabs.map((tab) => {
           const active = value === tab.id;

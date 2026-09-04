@@ -304,21 +304,21 @@ export function WalletView() {
             label: m.wallet.toppedUp,
             value: wallet.totals.topped_up,
             icon: ArrowDownLeft,
-            tone: 'text-emerald-600 dark:text-emerald-400',
+            tone: 'text-brand',
             hint: '',
           },
           {
             label: m.wallet.earned,
             value: wallet.totals.earned,
             icon: PiggyBank,
-            tone: 'text-emerald-600 dark:text-emerald-400',
+            tone: 'text-brand',
             hint: '',
           },
           {
             label: m.wallet.heldTile,
             value: wallet.totals.held,
             icon: Lock,
-            tone: 'text-amber-600 dark:text-amber-400',
+            tone: 'text-warning',
             // Muddat SERVERDAN. «7 kun» ni tarjimaga yozib qo'ysak,
             // sozlama o'zgargan kuni sayt yolg'on gapira boshlardi.
             hint: held
@@ -342,7 +342,7 @@ export function WalletView() {
             hint: '',
           },
         ].map((item) => (
-          <div key={item.label} className="rounded-xl border border-border/70 bg-card p-3.5">
+          <div key={item.label} className="rounded-xl border border-border bg-card p-3.5">
             <dt className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
               <item.icon className={cn('size-3.5', item.tone)} />
               {item.label}
@@ -360,7 +360,7 @@ export function WalletView() {
                     {' · '}
                     <Link
                       href="/legal#hold"
-                      className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                      className="font-medium text-brand hover:underline"
                     >
                       {m.wallet.holdExplain}
                     </Link>
@@ -389,7 +389,7 @@ export function WalletView() {
             {withdrawals.results.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-foreground">
@@ -410,7 +410,7 @@ export function WalletView() {
                   className={cn(
                     'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
                     item.status === 'paid'
-                      ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400'
+                      ? 'bg-emerald-500/12 text-brand'
                       : item.status === 'rejected'
                         ? 'bg-destructive/12 text-destructive'
                         : 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
@@ -478,7 +478,7 @@ export function WalletView() {
           <div
             role="group"
             aria-label={m.wallet.transactions}
-            className="flex gap-1 rounded-full border border-border/70 p-1"
+            className="flex gap-1 rounded-full border border-border p-1"
           >
             {(
               [
@@ -495,7 +495,7 @@ export function WalletView() {
                 className={cn(
                   'rounded-full px-3 py-1 text-xs font-medium transition-colors',
                   direction === value
-                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                    ? 'bg-emerald-500/15 text-brand'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -520,13 +520,13 @@ export function WalletView() {
               return (
                 <article
                   key={transaction.id}
-                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-card p-3.5 sm:gap-4"
+                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 sm:gap-4"
                 >
                   <span
                     className={cn(
                       'grid size-10 shrink-0 place-items-center rounded-lg',
                       isCredit
-                        ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
+                        ? 'bg-emerald-500/12 text-brand'
                         : 'bg-muted text-muted-foreground',
                     )}
                   >
@@ -567,7 +567,7 @@ export function WalletView() {
                     <div
                       className={cn(
                         'text-sm font-semibold whitespace-nowrap tabular-nums',
-                        isCredit ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground',
+                        isCredit ? 'text-brand' : 'text-foreground',
                       )}
                     >
                       {money.decimalSom(transaction.amount)}

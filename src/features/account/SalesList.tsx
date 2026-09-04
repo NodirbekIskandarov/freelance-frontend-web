@@ -29,7 +29,7 @@ const STATUS_LABEL: Record<SaleStatus, (m: Messages) => string> = {
 
 const STATUS_TONE: Record<SaleStatus, string> = {
   held: 'bg-amber-500/12 text-amber-700 dark:text-amber-300',
-  released: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300',
+  released: 'bg-emerald-500/12 text-brand',
   disputed: 'bg-destructive/12 text-destructive dark:text-red-400',
   refunded: 'bg-muted text-muted-foreground',
   partially_refunded: 'bg-muted text-muted-foreground',
@@ -89,7 +89,7 @@ function SaleCard({ sale }: { sale: Sale }) {
   const title = [sale.solution_title, sale.variant_label].filter(Boolean).join(' · ');
 
   return (
-    <article className="rounded-xl border border-border/70 bg-card p-3.5">
+    <article className="rounded-xl border border-border bg-card p-3.5">
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <h3 className="min-w-0 flex-1 text-sm font-semibold text-foreground">{title}</h3>
         <p
@@ -97,7 +97,7 @@ function SaleCard({ sale }: { sale: Sale }) {
             'shrink-0 text-sm font-bold tabular-nums',
             sale.status === 'refunded'
               ? 'text-muted-foreground line-through'
-              : 'text-emerald-700 dark:text-emerald-400',
+              : 'text-brand',
           )}
         >
           +{money.decimalSom(sale.seller_earning)}
@@ -161,7 +161,7 @@ function SaleCard({ sale }: { sale: Sale }) {
       {sale.status === 'disputed' && (
         <a
           href="#disputes"
-          className="mt-2 inline-block text-[11px] font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+          className="mt-2 inline-block text-[11px] font-medium text-brand hover:underline"
         >
           {m.sales.disputeLink}
         </a>
@@ -223,8 +223,8 @@ export function SalesList() {
             className={cn(
               'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
               filter === value
-                ? 'border-emerald-500/40 bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
-                : 'border-border/70 text-muted-foreground hover:text-foreground',
+                ? 'border-emerald-500/40 bg-emerald-500/12 text-brand'
+                : 'border-border text-muted-foreground hover:text-foreground',
             )}
           >
             {value === 'all' ? m.wallet.filterAll : STATUS_LABEL[value](m)}

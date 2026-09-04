@@ -19,7 +19,7 @@ import { useSubmitAssignmentRequestMutation } from './requestsApi';
 const MAX_VARIANTS = 100;
 
 const fieldClass =
-  'w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 function FieldLabel({
   htmlFor,
@@ -165,7 +165,7 @@ export function AssignmentRequestModal({
     >
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{m.requests.sentTitle}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {m.requests.assignmentSentText}
@@ -199,7 +199,7 @@ export function AssignmentRequestModal({
             />
           </div>
 
-          <fieldset className="rounded-xl border border-border/70 p-3.5">
+          <fieldset className="rounded-xl border border-border p-3.5">
             <legend className="px-1 text-sm font-medium text-foreground">
               {m.requests.variantMode}
               <span aria-hidden className="ml-0.5 text-destructive">
@@ -221,8 +221,8 @@ export function AssignmentRequestModal({
                   className={cn(
                     'inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border text-sm font-medium transition-colors',
                     hasVariants === option.value
-                      ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                      : 'border-border/70 text-muted-foreground hover:bg-muted',
+                      ? 'border-emerald-500/60 bg-emerald-500/10 text-brand'
+                      : 'border-border text-muted-foreground hover:bg-muted',
                   )}
                 >
                   <input
@@ -306,7 +306,7 @@ export function AssignmentRequestModal({
             />
 
             {file ? (
-              <div className="flex items-center gap-2 rounded-xl border border-border/70 px-3 py-2.5">
+              <div className="flex items-center gap-2 rounded-xl border border-border px-3 py-2.5">
                 <span className="min-w-0 flex-1 truncate text-sm text-foreground">{file.name}</span>
                 <button
                   type="button"
@@ -326,9 +326,9 @@ export function AssignmentRequestModal({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-border/70 px-4 py-8 text-sm text-muted-foreground transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/[0.03]"
+                className="flex w-full flex-col items-center gap-2 rounded-xl border border-dashed border-border px-4 py-8 text-sm text-muted-foreground transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/[0.03]"
               >
-                <Upload className="size-5 text-emerald-600 dark:text-emerald-400" />
+                <Upload className="size-5 text-brand" />
                 {m.requests.pickFile}
               </button>
             )}

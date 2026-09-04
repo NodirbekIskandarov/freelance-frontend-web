@@ -66,8 +66,8 @@ function CommentRow({
   const name = comment.author.full_name?.trim() || m.comments.anonymous;
 
   return (
-    <li className="flex gap-3 border-b border-border/50 py-3.5 last:border-0">
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-500/12 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+    <li className="flex gap-3 border-b border-border py-3.5 last:border-0">
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-emerald-500/12 text-xs font-bold text-brand">
         {initialsOf(name)}
       </span>
 
@@ -149,7 +149,7 @@ export function AssignmentComments({
   return (
     <section>
       <div className="flex flex-wrap items-center gap-2">
-        <MessageSquare className="size-4 text-emerald-600 dark:text-emerald-400" />
+        <MessageSquare className="size-4 text-brand" />
         <h3 className="text-sm font-semibold text-foreground">{m.comments.title}</h3>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground tabular-nums">
           {data?.count ?? 0}
@@ -172,7 +172,7 @@ export function AssignmentComments({
             value={body}
             onChange={(event) => setBody(event.target.value)}
             placeholder={m.comments.placeholder}
-            className="w-full resize-none rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
+            className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
           />
 
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
@@ -201,7 +201,7 @@ export function AssignmentComments({
           yozilgan matn behuda ketardi. Mavzuning O'ZI esa ko'rinadi —
           u katalogning bir qismi.
         */
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/70 bg-muted/30 px-3.5 py-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/30 px-3.5 py-3">
           <p className="text-sm text-muted-foreground">{m.comments.loginRequired}</p>
           <ButtonLink href="/login" variant="emerald" size="sm">
             {m.header.login}
@@ -221,7 +221,7 @@ export function AssignmentComments({
             ))}
           </div>
         ) : comments.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border/70 px-4 py-10 text-center">
+          <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center">
             <MessageSquare className="mx-auto size-6 text-muted-foreground" />
             <p className="mt-2 text-sm font-medium text-foreground">{m.comments.empty}</p>
             <p className="mt-1 text-xs text-muted-foreground">{m.comments.emptyHint}</p>

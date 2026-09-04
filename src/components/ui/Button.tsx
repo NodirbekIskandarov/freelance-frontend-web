@@ -23,7 +23,7 @@ export const buttonVariants = cva(
         outline: 'border-border bg-background hover:bg-muted hover:text-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-muted hover:text-foreground',
-        link: 'text-emerald-600 underline-offset-4 hover:underline dark:text-emerald-400',
+        link: 'text-brand underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4',

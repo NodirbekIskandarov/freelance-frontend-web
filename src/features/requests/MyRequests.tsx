@@ -43,7 +43,7 @@ type TabKey = (typeof TABS)[number]['key'];
 
 const statusTones: Record<RequestStatus, string> = {
   pending: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
-  approved: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
+  approved: 'bg-emerald-500/12 text-brand',
   rejected: 'bg-destructive/12 text-destructive',
 };
 
@@ -129,14 +129,14 @@ function RequestCard({
   const dates = useDates();
 
   return (
-    <article className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <article className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">
           {href ? (
             <Link
               href={href}
               title={m.requests.openInCatalogue}
-              className="group inline-flex items-start gap-1 text-sm font-bold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400"
+              className="group inline-flex items-start gap-1 text-sm font-bold text-foreground hover:text-brand dark:hover:text-emerald-400"
             >
               {title}
               <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 opacity-60 transition-opacity group-hover:opacity-100" />
@@ -318,7 +318,7 @@ export function MyRequests() {
                         href={row.file}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                        className="text-xs font-medium text-brand hover:underline"
                       >
                         {m.requests.file}
                       </a>
@@ -358,7 +358,7 @@ export function MyRequests() {
                       className={cn(
                         'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap',
                         row.is_fulfilled
-                          ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400'
+                          ? 'bg-emerald-500/12 text-brand'
                           : 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
                       )}
                     >

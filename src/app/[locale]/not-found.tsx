@@ -37,7 +37,7 @@ export default function NotFound() {
       <main className="flex flex-1 items-center">
         <Container className="py-14 sm:py-20">
           <div className="mx-auto max-w-xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-brand">
               <Compass className="size-3.5" />
               {m.notFound.badge}
             </span>
@@ -69,7 +69,7 @@ export default function NotFound() {
               </ButtonLink>
             </div>
 
-            <div className="mt-10 border-t border-border/60 pt-6">
+            <div className="mt-10 border-t border-border pt-6">
               <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {m.notFound.lookingFor}
               </p>
@@ -79,9 +79,9 @@ export default function NotFound() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="flex items-center gap-2.5 rounded-lg border border-border/60 bg-card px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:border-emerald-500/40 hover:bg-muted/40"
+                      className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:border-emerald-500/40 hover:bg-muted/40"
                     >
-                      <item.icon className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <item.icon className="size-4 shrink-0 text-brand" />
                       {m.notFound[item.key]}
                     </Link>
                   </li>

@@ -55,7 +55,7 @@ export function AssignmentStatsCard({
   ];
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-4">
+    <section className="rounded-2xl border border-border bg-card p-4">
       <h3 className="text-sm font-bold text-foreground">{t((x) => x.assignmentStats.title)}</h3>
 
       <dl className="mt-3 space-y-2.5">

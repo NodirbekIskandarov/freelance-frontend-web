@@ -49,8 +49,8 @@ export function InstituteList({
 
   return (
     <div className={cn('min-w-0', className)}>
-      <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
-        <header className="flex items-center justify-between gap-2 border-b border-border/60 px-3.5 py-3">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card">
+        <header className="flex items-center justify-between gap-2 border-b border-border px-3.5 py-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground">{m.materials.institutes}</p>
             <p className="text-[11px] text-muted-foreground tabular-nums">
@@ -69,8 +69,8 @@ export function InstituteList({
             className={cn(
               'inline-flex h-7 shrink-0 items-center gap-1 rounded-lg border px-2 text-[11px] font-medium transition-colors',
               alphabetical
-                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                : 'border-border/70 text-muted-foreground hover:text-foreground',
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-brand'
+                : 'border-border text-muted-foreground hover:text-foreground',
             )}
           >
             <ArrowUpDown className="size-3" />
@@ -140,7 +140,7 @@ export function InstituteList({
                       className={cn(
                         'shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums',
                         solutions > 0
-                          ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+                          ? 'bg-emerald-500/12 text-brand'
                           : 'bg-muted text-muted-foreground',
                       )}
                     >
@@ -156,7 +156,7 @@ export function InstituteList({
         <button
           type="button"
           onClick={onRequestUniversity}
-          className="flex w-full items-center justify-center gap-1.5 border-t border-border/60 px-3.5 py-3 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-500/[0.06] dark:text-emerald-300"
+          className="flex w-full items-center justify-center gap-1.5 border-t border-border px-3.5 py-3 text-xs font-medium text-brand transition-colors hover:bg-emerald-500/[0.06]"
         >
           {m.materials.instituteMissing}
           <ArrowRight className="size-3.5" />
@@ -197,7 +197,7 @@ export function SubjectRequestCard({
 
   return (
     <div className={cn('min-w-0', className)}>
-      <section className="rounded-2xl border border-border/70 bg-card p-3.5">
+      <section className="rounded-2xl border border-border bg-card p-3.5">
         <p className="text-sm font-semibold text-foreground">{m.materials.subjectMissing}</p>
         {/*
           Tushuntirish HAR DOIM ko'rinadi, mukofot esa QO'SHIMCHA qator.
@@ -210,7 +210,7 @@ export function SubjectRequestCard({
           {m.materials.subjectMissingBonus}
         </p>
         {subjectRequestReward > 0 && (
-          <p className="mt-1 text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-400">
+          <p className="mt-1 text-[11px] leading-relaxed text-brand">
             {t((x) => x.materials.subjectMissingReward, {
               amount: money.som(subjectRequestReward),
             })}

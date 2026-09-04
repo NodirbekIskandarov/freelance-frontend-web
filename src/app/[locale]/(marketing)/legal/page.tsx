@@ -84,7 +84,7 @@ export default async function LegalPage({ params }: PageProps<'/[locale]'>) {
               {m.questionsAt}{' '}
               <a
                 href={`mailto:${siteConfig.contact.email}`}
-                className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                className="font-medium text-brand hover:underline"
               >
                 {siteConfig.contact.email}
               </a>

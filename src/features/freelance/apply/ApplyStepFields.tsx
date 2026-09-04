@@ -123,7 +123,7 @@ function PersonalStep({ draft, errors, update }: StepFieldsProps) {
       <p
         className={cn(
           'text-xs font-medium',
-          draft.phoneVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground',
+          draft.phoneVerified ? 'text-brand' : 'text-muted-foreground',
         )}
       >
         {draft.phoneVerified ? m.apply.verified : m.apply.notVerified}

@@ -3,6 +3,7 @@
 import { BookOpen, ClipboardList, FileText, GraduationCap, PenTool } from 'lucide-react';
 
 import { Container } from '@/components/ui/Container';
+import { cn } from '@/lib/cn';
 import type { Messages } from '@/i18n/messages/uz';
 import { useT } from '@/i18n/useT';
 import { formatCount } from '@/lib/format';
@@ -27,8 +28,7 @@ const services = [
     desc: (m: Messages) => m.home.service1Desc,
     price: (m: Messages) => m.home.service1Price,
     icon: ClipboardList,
-    tone: 'bg-emerald-500/12 text-emerald-400',
-    price_tone: 'text-emerald-500 dark:text-emerald-400',
+    tone: 'bg-brand-subtle text-brand',
     count: null,
   },
   {
@@ -36,8 +36,7 @@ const services = [
     desc: (m: Messages) => m.home.service2Desc,
     price: (m: Messages) => m.home.service2Price,
     icon: BookOpen,
-    tone: 'bg-violet-500/12 text-violet-400',
-    price_tone: 'text-violet-500 dark:text-violet-400',
+    tone: 'bg-muted text-muted-foreground',
     count: '5K+',
   },
   {
@@ -45,8 +44,7 @@ const services = [
     desc: (m: Messages) => m.home.service3Desc,
     price: (m: Messages) => m.home.service3Price,
     icon: PenTool,
-    tone: 'bg-teal-500/12 text-teal-400',
-    price_tone: 'text-teal-500 dark:text-teal-400',
+    tone: 'bg-muted text-muted-foreground',
     count: '3K+',
   },
   {
@@ -54,8 +52,7 @@ const services = [
     desc: (m: Messages) => m.home.service4Desc,
     price: (m: Messages) => m.home.service4Price,
     icon: FileText,
-    tone: 'bg-rose-500/12 text-rose-400',
-    price_tone: 'text-rose-500 dark:text-rose-400',
+    tone: 'bg-muted text-muted-foreground',
     count: '2K+',
   },
   {
@@ -63,8 +60,7 @@ const services = [
     desc: (m: Messages) => m.home.service5Desc,
     price: (m: Messages) => m.home.service5Price,
     icon: GraduationCap,
-    tone: 'bg-amber-500/12 text-amber-400',
-    price_tone: 'text-amber-500 dark:text-amber-400',
+    tone: 'bg-muted text-muted-foreground',
     count: '1K+',
   },
 ] as const;
@@ -73,7 +69,7 @@ export function ServicesOverview({ solutionCount }: { solutionCount: number }) {
   const { t, m } = useT();
 
   return (
-    <section className="border-y border-border/60 bg-muted/20 py-10 sm:py-14" id="xizmatlar">
+    <section className="border-y border-border bg-muted/20 py-10 sm:py-14" id="xizmatlar">
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -88,7 +84,7 @@ export function ServicesOverview({ solutionCount }: { solutionCount: number }) {
           {services.map((service) => (
             <article
               key={service.title(m)}
-              className="flex flex-col rounded-2xl border border-border/70 bg-card p-4"
+              className="flex flex-col rounded-2xl border border-border bg-card p-4"
             >
               <div className="flex items-start justify-between gap-2">
                 <span
@@ -107,9 +103,23 @@ export function ServicesOverview({ solutionCount }: { solutionCount: number }) {
                 {service.desc(m)}
               </p>
 
-              <div className="mt-4 flex items-center justify-between gap-2 border-t border-border/50 pt-3">
+              <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-3">
                 <span className="text-[11px] text-muted-foreground">{m.home.servicePrice}</span>
-                <span className={`text-[13px] font-bold ${service.price_tone}`}>
+                {/* Narx BITTA rangda — `--price`. Ilgari har karta o'z
+                    rangida edi: yashil, binafsha, moviy, QIZIL va sariq.
+                    Qizil narx xato xabariday ko'rinardi, qolganlari esa
+                    hech qanday ma'no bermasdi — rang shunchaki kartani
+                    ajratardi. */}
+                <span
+                  className={cn(
+                    'text-[13px] font-bold',
+                    /* Raqamsiz qiymat («kelishuv asosida») — NARX EMAS,
+                       narxning yo'qligi. Ilgari u qizil edi va xato
+                       xabariday o'qilardi; endi ham summalar rangida
+                       turmaydi. */
+                    /\d/.test(service.price(m)) ? 'text-price' : 'text-muted-foreground',
+                  )}
+                >
                   {service.price(m)}
                 </span>
               </div>

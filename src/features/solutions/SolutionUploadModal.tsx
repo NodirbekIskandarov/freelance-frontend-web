@@ -31,7 +31,7 @@ const MAX_SIZE_MB = 50;
 const PRICE_PATTERN = /^\d{1,10}(\.\d{1,2})?$/;
 
 const fieldClass =
-  'w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -188,7 +188,7 @@ export function SolutionUploadModal({
     >
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{m.upload.doneTitle}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.upload.doneText}</p>
         </div>
@@ -206,7 +206,7 @@ export function SolutionUploadModal({
 
             {file ? (
               <div className="flex items-center gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/[0.06] px-3 py-2.5">
-                <Paperclip className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <Paperclip className="size-4 shrink-0 text-brand" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm text-foreground">{file.name}</span>
                   <span className="block text-[11px] text-muted-foreground">
@@ -235,7 +235,7 @@ export function SolutionUploadModal({
                 onChange={(event) => pickFile(event.target.files?.[0] ?? null)}
                 className={cn(
                   fieldClass,
-                  'py-2.5 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500/15 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-emerald-700 dark:file:text-emerald-300',
+                  'py-2.5 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-500/15 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-brand dark:file:text-emerald-300',
                 )}
               />
             )}

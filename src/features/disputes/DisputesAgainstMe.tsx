@@ -57,7 +57,7 @@ export function DisputesAgainstMe() {
   }
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-5">
+    <section className="rounded-2xl border border-border bg-card p-5">
       <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
         <ShieldAlert className="size-3.5 text-destructive" />
         {m.dispute.againstMeTitle}
@@ -72,7 +72,7 @@ export function DisputesAgainstMe() {
           const overdue = new Date(dispute.respond_deadline).getTime() <= now;
 
           return (
-            <li key={dispute.id} className="rounded-xl border border-border/70 p-3.5">
+            <li key={dispute.id} className="rounded-xl border border-border p-3.5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-foreground">
@@ -112,7 +112,7 @@ export function DisputesAgainstMe() {
                       value={text}
                       onChange={(event) => setText(event.target.value)}
                       placeholder={m.dispute.replyPlaceholder}
-                      className="w-full resize-none rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
+                      className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
                     />
                     {error && (
                       <p role="alert" className="mt-1.5 text-xs text-destructive">

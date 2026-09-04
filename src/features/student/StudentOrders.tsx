@@ -12,7 +12,7 @@ import { useT } from '@/i18n/useT';
 import { useDates } from '@/lib/useDates';
 
 const statusTones: Record<OrderStatus, string> = {
-  paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
+  paid: 'bg-emerald-500/12 text-brand',
   pending: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
   failed: 'bg-destructive/12 text-destructive',
   refunded: 'bg-blue-500/12 text-blue-700 dark:text-blue-400',
@@ -69,7 +69,7 @@ export function StudentOrders() {
           {data.results.map((order) => (
             <article
               key={order.id}
-              className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+              className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
             >
               <div className="min-w-0 flex-1">
                 <h2 className="text-sm font-bold text-foreground">{order.solution_title}</h2>

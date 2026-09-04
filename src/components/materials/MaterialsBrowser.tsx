@@ -323,7 +323,7 @@ export function MaterialsBrowser({
         {/* Ko'rinish almashtirgichi sarlavha bilan BIR QATORDA: u butun
             ro'yxatga tegishli, ya'ni ro'yxatning o'z ichida turgani uni
             faqat tanlangan institutga tegishlidek ko'rsatardi. */}
-        <div className="inline-flex shrink-0 rounded-xl border border-border/70 bg-card p-0.5">
+        <div className="inline-flex shrink-0 rounded-xl border border-border bg-card p-0.5">
           {views.map((item) => (
             <button
               key={item.value}
@@ -333,7 +333,7 @@ export function MaterialsBrowser({
               className={cn(
                 'inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors',
                 view === item.value
-                  ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+                  ? 'bg-emerald-500/12 text-brand'
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
@@ -455,7 +455,7 @@ export function MaterialsBrowser({
                 </span>
               </p>
 
-              <div className="inline-flex rounded-xl border border-border/70 bg-card p-0.5">
+              <div className="inline-flex rounded-xl border border-border bg-card p-0.5">
                 {sortTabs.map((tab) => (
                   <button
                     key={tab.value}
@@ -468,7 +468,7 @@ export function MaterialsBrowser({
                     className={cn(
                       'h-8 rounded-lg px-2.5 text-xs font-medium transition-colors',
                       subjectSort === tab.value
-                        ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+                        ? 'bg-emerald-500/12 text-brand'
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
@@ -568,7 +568,7 @@ function UniversityHeader({ group }: { group: CatalogueGroup }) {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5 sm:gap-4 sm:p-4">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-3.5 sm:gap-4 sm:p-4">
       <UniversityBadge university={university} className="size-11 text-[11px] sm:size-12" />
 
       <div className="min-w-0 flex-1">
@@ -595,9 +595,9 @@ function UniversityHeader({ group }: { group: CatalogueGroup }) {
               className={cn(
                 'block text-base font-bold tabular-nums sm:text-lg',
                 stat.tone === 'emerald'
-                  ? 'text-emerald-600 dark:text-emerald-400'
+                  ? 'text-brand'
                   : stat.tone === 'amber'
-                    ? 'text-amber-600 dark:text-amber-400'
+                    ? 'text-warning'
                     : 'text-foreground',
               )}
             >

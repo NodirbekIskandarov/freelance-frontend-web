@@ -71,7 +71,7 @@ export function OtpInput({
             }
           }}
           className={cn(
-            'size-11 rounded-xl border border-border/70 bg-background text-center text-lg font-semibold text-foreground transition-colors outline-none sm:size-12',
+            'size-11 rounded-xl border border-border bg-background text-center text-lg font-semibold text-foreground transition-colors outline-none sm:size-12',
             'focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20',
             'disabled:opacity-60 dark:border-white/10 dark:bg-white/[0.04] dark:text-white',
           )}

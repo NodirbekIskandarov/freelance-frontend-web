@@ -32,7 +32,7 @@ export function Testimonials() {
             <p className="mt-1.5 text-sm text-muted-foreground">{m.home.reviewsLead}</p>
           </div>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card px-4 py-2.5">
+          <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-2.5">
             <span className="text-2xl font-bold text-foreground tabular-nums">
               {TESTIMONIAL_SUMMARY.average.toFixed(1)}
             </span>
@@ -59,10 +59,10 @@ function ReviewCard({ review }: { review: Testimonial }) {
   const { t, m } = useT();
 
   return (
-    <figure className="flex flex-col rounded-2xl border border-border/70 bg-card p-4">
+    <figure className="flex flex-col rounded-2xl border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <Stars value={review.rating} />
-        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
+        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-brand">
           <BadgeCheck className="size-3" />
           {m.home.reviewVerified}
         </span>
@@ -72,8 +72,8 @@ function ReviewCard({ review }: { review: Testimonial }) {
         «{review.comment}»
       </blockquote>
 
-      <figcaption className="mt-4 flex items-center gap-2.5 border-t border-border/50 pt-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500/12 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+      <figcaption className="mt-4 flex items-center gap-2.5 border-t border-border pt-3">
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500/12 text-[11px] font-bold text-brand">
           {initials(review.author)}
         </span>
         <span className="min-w-0">

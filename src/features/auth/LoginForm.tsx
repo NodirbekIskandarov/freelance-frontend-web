@@ -113,7 +113,7 @@ export function LoginForm() {
                 yozayotganda ma'lum bo'ladi, kartaning pastida emas. */}
             <Link
               href="/forgot-password"
-              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+              className="text-xs font-medium text-brand hover:underline"
             >
               {m.auth.forgot}
             </Link>
@@ -141,7 +141,7 @@ export function LoginForm() {
         {m.auth.noAccount}{' '}
         <Link
           href="/register"
-          className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+          className="font-medium text-brand hover:underline"
         >
           {m.auth.goRegister}
         </Link>

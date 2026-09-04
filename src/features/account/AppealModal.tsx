@@ -150,7 +150,7 @@ export function AppealModal({
     >
       {reference ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{m.appeals.sentTitle}</p>
           {/* Raqam FAQAT yuborilgandan keyin: uni oldindan ko'rsatish
               hali mavjud bo'lmagan murojaatning nomerini aytish bo'lardi. */}
@@ -187,8 +187,8 @@ export function AppealModal({
                     className={cn(
                       'inline-flex h-10 items-center rounded-xl border px-3 text-sm font-medium transition-colors',
                       active
-                        ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                        : 'border-border/70 text-muted-foreground hover:text-foreground',
+                        ? 'border-emerald-500/50 bg-emerald-500/10 text-brand'
+                        : 'border-border text-muted-foreground hover:text-foreground',
                     )}
                   >
                     {appealTopicLabel(value, m)}
@@ -218,7 +218,7 @@ export function AppealModal({
               value={message}
               onChange={(event) => setMessage(event.target.value)}
               placeholder={m.appeals.describePlaceholder}
-              className="w-full resize-none rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
+              className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
             />
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
               {m.appeals.describeHint}
@@ -233,7 +233,7 @@ export function AppealModal({
             <div
               onDrop={onDrop}
               onDragOver={(event) => event.preventDefault()}
-              className="rounded-xl border border-dashed border-border/80 px-4 py-5 text-center"
+              className="rounded-xl border border-dashed border-border px-4 py-5 text-center"
             >
               <button
                 type="button"

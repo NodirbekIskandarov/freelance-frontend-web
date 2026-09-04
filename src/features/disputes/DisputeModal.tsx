@@ -170,7 +170,7 @@ export function DisputeModal({
     >
       {isSuccess ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{solutionTitle}</p>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">{m.dispute.sentText}</p>
         </div>
@@ -187,7 +187,7 @@ export function DisputeModal({
 
             {/* Qaysi xarid — va qancha vaqt qolgani. Muddat o'tsa forma
                 yuborilmaydi va buni bosishdan oldin ko'rsatish kerak. */}
-            <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border/70 bg-muted/20 p-3.5">
+            <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {[solutionTitle, variantLabel].filter(Boolean).join(' · ')}
@@ -229,7 +229,7 @@ export function DisputeModal({
                         'flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 transition-colors',
                         isSelected
                           ? 'border-emerald-500/60 bg-emerald-500/[0.06]'
-                          : 'border-border/70 hover:bg-muted/50',
+                          : 'border-border hover:bg-muted/50',
                       )}
                     >
                       <input
@@ -266,7 +266,7 @@ export function DisputeModal({
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder={m.dispute.commentPlaceholder}
-                className="w-full resize-none rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
+                className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
               />
               {commentError && <p className="mt-1.5 text-xs text-destructive">{commentError}</p>}
             </div>
@@ -288,7 +288,7 @@ export function DisputeModal({
 
               <label
                 htmlFor="dispute-evidence"
-                className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border border-dashed border-border/70 px-4 py-6 text-center transition-colors hover:bg-muted/40"
+                className="flex cursor-pointer flex-col items-center gap-1 rounded-xl border border-dashed border-border px-4 py-6 text-center transition-colors hover:bg-muted/40"
               >
                 <Upload className="size-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">
@@ -304,7 +304,7 @@ export function DisputeModal({
                   {files.map((file, index) => (
                     <li
                       key={`${file.name}-${index}`}
-                      className="flex items-center gap-2 rounded-lg border border-border/70 px-3 py-2"
+                      className="flex items-center gap-2 rounded-lg border border-border px-3 py-2"
                     >
                       <span className="min-w-0 flex-1 truncate text-xs text-foreground">
                         {file.name}
@@ -338,7 +338,7 @@ export function DisputeModal({
           </form>
 
           <aside className="space-y-4">
-            <div className="rounded-xl border border-border/70 p-4">
+            <div className="rounded-xl border border-border p-4">
               <p className="text-sm font-semibold text-foreground">{m.dispute.nextTitle}</p>
               <ol className="mt-3 space-y-3">
                 {steps.map((step, index) => (

@@ -18,7 +18,7 @@ export function SiteLogo({
       )}
     >
       Yopamiz
-      <span className={cn('text-emerald-500', accentClassName)}>.uz</span>
+      <span className={cn('text-brand', accentClassName)}>.uz</span>
     </Link>
   );
 }

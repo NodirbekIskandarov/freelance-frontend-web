@@ -62,7 +62,7 @@ export function ApplyWizard() {
   if (isFreelancer(user)) {
     return (
       <div className="rounded-2xl border border-emerald-500/25 bg-card p-8 text-center">
-        <CheckCircle2 className="mx-auto size-10 text-emerald-500" />
+        <CheckCircle2 className="mx-auto size-10 text-brand" />
         <h2 className="mt-3 text-lg font-semibold text-foreground">{m.apply.alreadyFreelancer}</h2>
         <ButtonLink href="/freelancer/dashboard" variant="emerald" className="mt-5">
           {m.apply.goToCabinet}
@@ -77,7 +77,7 @@ export function ApplyWizard() {
   if (user.freelancer_profile?.status === 'pending' || existing?.status === 'pending') {
     return (
       <div className="rounded-2xl border border-amber-500/30 bg-card p-8 text-center">
-        <Clock className="mx-auto size-10 text-amber-500" />
+        <Clock className="mx-auto size-10 text-warning" />
         <h2 className="mt-3 text-lg font-semibold text-foreground">{m.apply.underReview}</h2>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
           {m.apply.underReviewText}
@@ -90,7 +90,7 @@ export function ApplyWizard() {
     return (
       <div className="rounded-2xl border border-emerald-500/25 bg-card px-6 py-14 text-center">
         <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-emerald-500/15">
-          <CheckCircle2 className="size-9 text-emerald-500" />
+          <CheckCircle2 className="size-9 text-brand" />
         </span>
         <h2 className="mt-4 text-2xl font-bold text-foreground">{m.apply.sent}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -236,7 +236,7 @@ export function ApplyWizard() {
 
         <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-5">
           <span className="grid size-10 place-items-center rounded-xl bg-emerald-500/15">
-            <Shield className="size-5 text-emerald-600 dark:text-emerald-400" />
+            <Shield className="size-5 text-brand" />
           </span>
           <h2 className="mt-3 text-sm font-semibold text-foreground">{m.apply.secureTitle}</h2>
           <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">

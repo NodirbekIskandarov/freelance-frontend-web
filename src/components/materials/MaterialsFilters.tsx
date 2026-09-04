@@ -48,7 +48,7 @@ export const DEFAULT_MATERIALS_FILTERS: MaterialsFilterState = {
 };
 
 const field =
-  'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 export interface FilterOption {
   value: string;
@@ -154,7 +154,7 @@ export function MaterialsFilters({
           type="button"
           onClick={onReset}
           disabled={!isDirty}
-          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border/70 px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
+          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border px-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
         >
           <RotateCcw className="size-4" />
           {m.materials.clear}

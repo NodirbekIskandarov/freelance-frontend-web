@@ -23,7 +23,7 @@ import { useDates } from '@/lib/useDates';
 const statusTones: Record<AppealStatus, string> = {
   open: 'bg-sky-500/12 text-sky-700 dark:text-sky-400',
   in_review: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
-  resolved: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
+  resolved: 'bg-emerald-500/12 text-brand',
 };
 
 export function Appeals() {
@@ -54,7 +54,7 @@ export function Appeals() {
     <>
       <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
         <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
-          <MessageSquarePlus className="size-4 text-emerald-600 dark:text-emerald-400" />
+          <MessageSquarePlus className="size-4 text-brand" />
           {m.appeals.newAppeal}
         </h2>
 
@@ -133,7 +133,7 @@ export function Appeals() {
             {data.results.map((appeal) => (
               <article
                 key={appeal.id}
-                className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -161,7 +161,7 @@ export function Appeals() {
 
                 {appeal.reply && (
                   <div className="mt-3 rounded-lg border-l-2 border-emerald-500 bg-emerald-500/5 py-2.5 pr-3 pl-3">
-                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                    <p className="text-xs font-semibold text-brand">
                       Qo&apos;llab-quvvatlash javobi
                     </p>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">

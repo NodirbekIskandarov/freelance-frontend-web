@@ -20,7 +20,7 @@ export function StatCard({
   tone: string;
 }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <div className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className={cn('grid size-10 place-items-center rounded-lg', tone)}>
         <Icon className="size-5" />
       </div>

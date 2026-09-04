@@ -45,7 +45,7 @@ function SolutionBadge({ count }: { count: number }) {
       className={cn(
         'inline-flex shrink-0 items-center rounded-md px-2 py-1 text-[11px] font-semibold whitespace-nowrap tabular-nums',
         count > 0
-          ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+          ? 'bg-emerald-500/12 text-brand'
           : 'bg-muted text-muted-foreground',
       )}
     >
@@ -184,8 +184,8 @@ export function SubjectTable({
   const { m } = useT();
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/70 bg-card">
-      <div className="flex items-center gap-2 border-b border-border/60 bg-muted/30 px-3 py-2.5 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase sm:px-4">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="flex items-center gap-2 border-b border-border bg-muted/30 px-3 py-2.5 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase sm:px-4">
         {/* Ikonka ustuni sarlavhasiz — uning tepasida yozadigan so'z yo'q. */}
         <span aria-hidden className="w-9 shrink-0" />
         <span className={cn(COL.name, 'truncate')}>{m.materials.colSubject}</span>
@@ -207,12 +207,12 @@ export function SubjectTable({
                 href={`/materials/${universitySlug}/${subject.slug}`}
                 className="group flex items-center gap-2 px-3 py-3.5 transition-colors hover:bg-emerald-500/[0.04] sm:px-4 lg:py-3"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 transition-colors group-hover:bg-emerald-500/20 dark:text-emerald-400">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-brand transition-colors group-hover:bg-emerald-500/20">
                   <SubjectIcon name={subject.name} className="size-4" />
                 </span>
 
                 <span className={COL.name}>
-                  <span className="block truncate text-sm font-semibold text-foreground transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                  <span className="block truncate text-sm font-semibold text-foreground transition-colors group-hover:text-brand dark:group-hover:text-emerald-300">
                     {subject.name}
                   </span>
                   <span className="mt-0.5 block truncate text-[11px]">
@@ -294,16 +294,16 @@ export function SubjectCardGrid({
             key={subject.id}
             href={`/materials/${universitySlug}/${subject.slug}`}
             style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}
-            className="card-enter card-lift group flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-3 transition-colors hover:border-emerald-500/45 sm:p-4"
+            className="card-enter card-lift group flex min-w-0 flex-col rounded-2xl border border-border bg-card p-3 transition-colors hover:border-emerald-500/45 sm:p-4"
           >
             <div className="flex items-start justify-between gap-2">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 transition-colors group-hover:bg-emerald-500/20 dark:text-emerald-400">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-brand transition-colors group-hover:bg-emerald-500/20">
                 <SubjectIcon name={subject.name} className="size-[18px]" />
               </span>
               <SolutionBadge count={counts.solutions} />
             </div>
 
-            <h3 className="mt-3 line-clamp-2 text-sm leading-snug font-bold text-foreground transition-colors group-hover:text-emerald-700 sm:text-[15px] dark:group-hover:text-emerald-300">
+            <h3 className="mt-3 line-clamp-2 text-sm leading-snug font-bold text-foreground transition-colors group-hover:text-brand sm:text-[15px] dark:group-hover:text-emerald-300">
               {subject.name}
             </h3>
 
@@ -313,7 +313,7 @@ export function SubjectCardGrid({
               <CourseTags subject={subject} />
             </div>
 
-            <div className="mt-3 border-t border-border/50 pt-2.5">
+            <div className="mt-3 border-t border-border pt-2.5">
               <SolvedProgress
                 solved={counts.solved}
                 variants={counts.variants}

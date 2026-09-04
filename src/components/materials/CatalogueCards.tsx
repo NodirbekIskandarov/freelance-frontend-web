@@ -23,7 +23,7 @@ export function UniversityLogo({
   return (
     <div
       className={cn(
-        'grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-base font-bold text-white ring-4 ring-card',
+        'grid size-14 shrink-0 place-items-center rounded-2xl border text-base font-bold ring-4 ring-card',
         gradientFor(university.id),
         className,
       )}
@@ -57,7 +57,7 @@ export function UniversityBadge({
   return (
     <span
       className={cn(
-        'grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br px-1 text-[10px] leading-none font-bold text-white',
+        'grid size-10 shrink-0 place-items-center rounded-xl border px-1 text-[10px] leading-none font-bold ',
         gradientFor(university.id),
         className,
       )}
@@ -92,7 +92,7 @@ export function SubjectMiniCard({
       href={`/materials/${universitySlug}/${subject.slug}`}
       style={{ animationDelay: `${Math.min(index, 6) * 45}ms` }}
       className={cn(
-        'card-enter card-lift card-sheen group hover: relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card p-3 hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-3.5 dark:border-zinc-700/80 dark:bg-zinc-900',
+        'card-enter card-lift card-sheen group hover: relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-3 hover:border-emerald-500/45 hover:bg-emerald-500/[0.04] sm:p-3.5 dark:border-zinc-700/80 dark:bg-zinc-900',
         className,
       )}
     >
@@ -104,7 +104,7 @@ export function SubjectMiniCard({
       />
 
       <div className="flex items-start justify-between gap-2">
-        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-emerald-500/20 group-hover:ring-emerald-500/25 dark:text-emerald-400">
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-brand ring-1 ring-emerald-500/10 transition-all duration-300 group-hover:scale-105 group-hover:bg-emerald-500/20 group-hover:ring-emerald-500/25">
           <SubjectIcon name={subject.name} className="size-[18px]" />
         </span>
 
@@ -116,7 +116,7 @@ export function SubjectMiniCard({
           className={cn(
             'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums transition-colors',
             hasAssignments
-              ? 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300'
+              ? 'bg-emerald-500/12 text-brand'
               : 'bg-muted text-muted-foreground dark:bg-zinc-800',
           )}
         >
@@ -132,7 +132,7 @@ export function SubjectMiniCard({
         fanda ayniqsa ko'rinardi. Yorliqlar pastda TEKISLANMASDI ham:
         yorliqlar soni har fanda har xil.
       */}
-      <h3 className="mt-2.5 line-clamp-2 text-[15px] leading-snug font-bold text-foreground transition-colors group-hover:text-emerald-700 sm:text-base dark:group-hover:text-emerald-300">
+      <h3 className="mt-2.5 line-clamp-2 text-[15px] leading-snug font-bold text-foreground transition-colors group-hover:text-brand sm:text-base dark:group-hover:text-emerald-300">
         {subject.name}
       </h3>
 
@@ -149,7 +149,7 @@ export function SubjectMiniCard({
         takrorlangan bir xil yozuv faqat balandlik egallardi.
       */}
       {(subject.course || subject.semester || subject.category_name) && (
-        <div className="mt-2.5 flex flex-wrap gap-1 border-t border-border/50 pt-2.5">
+        <div className="mt-2.5 flex flex-wrap gap-1 border-t border-border pt-2.5">
           {subject.course && (
             <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
               {subject.course}-kurs

@@ -12,7 +12,7 @@ import { useMoney } from '@/lib/useMoney';
 import { useT } from '@/i18n/useT';
 
 const statusTones: Record<string, string> = {
-  paid: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-400',
+  paid: 'bg-emerald-500/12 text-brand',
   pending: 'bg-amber-500/12 text-amber-700 dark:text-amber-400',
   failed: 'bg-destructive/12 text-destructive',
   refunded: 'bg-blue-500/12 text-blue-700 dark:text-blue-400',
@@ -50,7 +50,7 @@ export function StudentDashboard() {
           label={m.student.paid}
           value={String(buying.paid)}
           icon={CircleCheck}
-          tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
+          tone="bg-emerald-500/12 text-brand"
         />
         <StatCard
           label={m.student.library}
@@ -62,7 +62,7 @@ export function StudentDashboard() {
           label={m.student.spentTotal}
           value={money.decimalSom(buying.spent_total)}
           icon={Wallet}
-          tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
+          tone="bg-amber-500/12 text-warning"
         />
       </section>
 
@@ -79,13 +79,13 @@ export function StudentDashboard() {
             label={m.student.sales}
             value={String(data.selling.sales)}
             icon={ShoppingBag}
-            tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400"
+            tone="bg-emerald-500/12 text-brand"
           />
           <StatCard
             label={m.student.earned}
             value={money.decimalSom(data.selling.earned_total)}
             icon={Wallet}
-            tone="bg-amber-500/12 text-amber-600 dark:text-amber-400"
+            tone="bg-amber-500/12 text-warning"
           />
         </section>
       )}
@@ -95,7 +95,7 @@ export function StudentDashboard() {
           <h2 className="text-lg font-bold text-foreground">{m.ui.recentOrders}</h2>
           <Link
             href="/student/orders"
-            className="text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            className="text-sm font-medium text-brand hover:underline"
           >
             {m.common.all}
           </Link>
@@ -110,7 +110,7 @@ export function StudentDashboard() {
             {data.recent_orders.map((order) => (
               <article
                 key={order.id}
-                className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+                className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
               >
                 <div className="min-w-0 flex-1">
                   <h3 className="text-sm font-bold text-foreground">{order.solution_title}</h3>

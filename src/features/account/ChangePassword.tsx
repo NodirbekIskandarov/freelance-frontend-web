@@ -28,7 +28,7 @@ import { useGetLoginMethodsQuery } from './identitiesApi';
  * yaqinlashtiradi.
  */
 const fieldClass =
-  'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 export function ChangePassword() {
   const { m } = useT();
@@ -85,11 +85,11 @@ export function ChangePassword() {
   }
 
   return (
-    <div className="rounded-xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <div className="rounded-xl border border-border bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <KeyRound className="size-4 text-emerald-600 dark:text-emerald-400" />
+            <KeyRound className="size-4 text-brand" />
             {hasPassword ? m.changePassword.titleChange : m.changePassword.titleSet}
           </h3>
           <p className="mt-1 max-w-lg text-xs leading-relaxed text-muted-foreground">
@@ -105,14 +105,14 @@ export function ChangePassword() {
       </div>
 
       {done && !open && (
-        <p className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+        <p className="mt-3 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-brand">
           <Check className="size-3.5" />
           {m.changePassword.done}
         </p>
       )}
 
       {open && (
-        <form onSubmit={handleSubmit} className="mt-4 space-y-3 border-t border-border/50 pt-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3 border-t border-border pt-4">
           {hasPassword && (
             <div>
               <label

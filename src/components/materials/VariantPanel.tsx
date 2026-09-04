@@ -186,8 +186,8 @@ export function VariantPanel({
   const minePending = mine.filter((item) => !catalogueIds.has(item.id));
 
   return (
-    <section className="scroll-mt-20 rounded-2xl border border-border/70 bg-card">
-      <header className="flex items-center justify-between gap-2 border-b border-border/60 px-4 py-3">
+    <section className="scroll-mt-20 rounded-2xl border border-border bg-card">
+      <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-bold text-foreground">
             {t((x) => x.variants.variantNumber, { number: variant.number })}
@@ -217,13 +217,13 @@ export function VariantPanel({
             {shown.map((solution) => (
               <li
                 key={solution.id}
-                className="rounded-xl border border-border/70 bg-background/40 p-3"
+                className="rounded-xl border border-border bg-background/40 p-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="min-w-0 flex-1 text-[13px] leading-snug font-semibold text-foreground">
                     {solution.title}
                   </p>
-                  <p className="shrink-0 text-[13px] font-bold text-emerald-700 dark:text-emerald-400">
+                  <p className="shrink-0 text-[13px] font-bold text-brand">
                     {money.decimalSom(solution.price)}
                   </p>
                 </div>
@@ -254,7 +254,7 @@ export function VariantPanel({
                 */}
                 <div className="mt-2 flex flex-wrap gap-1">
                   {solution.file_format && (
-                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-brand">
                       {solution.file_format}
                     </span>
                   )}
@@ -289,7 +289,7 @@ export function VariantPanel({
                     href={myUploadById.get(solution.id)!.file}
                     target="_blank"
                     rel="noreferrer"
-                    className="solution-action-in mt-2.5 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                    className="solution-action-in mt-2.5 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     <Download className="size-3.5" />
                     {m.variants.download}
@@ -371,7 +371,7 @@ export function VariantPanel({
             {minePending.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-background/40 px-2.5 py-1.5"
+                className="flex items-center justify-between gap-2 rounded-lg border border-border bg-background/40 px-2.5 py-1.5"
               >
                 <span
                   className="min-w-0 flex-1 truncate text-[11px] text-foreground"
@@ -386,7 +386,7 @@ export function VariantPanel({
                   className={cn(
                     'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
                     item.status === 'published'
-                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                      ? 'bg-emerald-500/15 text-brand'
                       : item.status === 'rejected'
                         ? 'bg-destructive/15 text-destructive'
                         : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
@@ -412,7 +412,7 @@ export function VariantPanel({
         Shart-sharoit ham shu yerda: nechta yubora olasiz, qabul ochiqmi,
         moderatsiya nima qiladi.
       */}
-      <footer className="border-t border-border/60 px-4 py-3">
+      <footer className="border-t border-border px-4 py-3">
         {!variant.submissions_open ? (
           /* Yopilgani ochiq aytiladi. Tugmani shunchaki yashirish «bu yerda
              yuklab bo'lmaydi» degan xulosani o'zi chiqarishga qoldirardi;

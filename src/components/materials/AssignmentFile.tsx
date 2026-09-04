@@ -56,13 +56,13 @@ export function AssignmentFile({ url }: { url: string }) {
   const canShow = kind !== 'other';
 
   return (
-    <section className="mt-4 rounded-xl border border-border/70 bg-card">
+    <section className="mt-4 rounded-xl border border-border bg-card">
       <div className="flex flex-wrap items-center gap-2 px-3.5 py-3">
         {/* Tor ekranda sarlavha o'z qatorini oladi va tugmalar tagiga
             tushadi: bitta qatorga tiqilganda fayl nomi ikki harfgacha
             qisqarardi. */}
         <div className="flex min-w-0 flex-1 basis-full items-center gap-2 sm:basis-0">
-          <FileText className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <FileText className="size-4 shrink-0 text-brand" />
 
           <div className="min-w-0">
             <p className="text-[13px] font-semibold text-foreground">{m.assignmentFile.title}</p>
@@ -99,7 +99,7 @@ export function AssignmentFile({ url }: { url: string }) {
       </div>
 
       {canShow && open && (
-        <div className="border-t border-border/60 p-2">
+        <div className="border-t border-border p-2">
           {kind === 'pdf' && (
             /*
               `<object>`, `<iframe>` emas: PDF ko'rsatgichi yo'q brauzerda
@@ -118,7 +118,7 @@ export function AssignmentFile({ url }: { url: string }) {
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                  className="inline-flex items-center gap-1 font-medium text-brand hover:underline"
                 >
                   {m.assignmentFile.openInNewTab}
                   <ExternalLink className="size-3" />

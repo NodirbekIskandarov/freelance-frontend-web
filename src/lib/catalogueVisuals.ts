@@ -35,19 +35,28 @@ import {
  * hosil qilinadi: rang — ID'dan, ikonka — nomdagi kalit so'zdan.
  */
 
-const GRADIENTS = [
-  'from-emerald-500 to-teal-600',
-  'from-blue-500 to-indigo-600',
-  'from-violet-500 to-purple-600',
-  'from-amber-400 to-orange-500',
-  'from-rose-500 to-pink-600',
-  'from-cyan-500 to-sky-600',
+/*
+ * Institut belgisi — BITTA oila, olti xil to'yingan rang emas.
+ *
+ * Ilgari bu yerda emerald, ko'k, binafsha, sariq, pushti va moviy
+ * gradiyentlar bor edi va ular ro'yxatda yonma-yon turardi. Rang hech
+ * qanday ma'no bermasdi — institutni faqat NOMI ajratadi — lekin ko'z
+ * har safar o'sha rangdan ma'no izlab qolardi va sahifadagi eng
+ * to'yingan narsa aynan shu kvadratchalar bo'lardi.
+ *
+ * Farq saqlandi, lekin bo'g'iq: brend rangining to'rt bosqichi. Bir xil
+ * ID har doim bir xil bosqichni beradi — sahifalar orasida barqaror.
+ */
+const AVATAR_TONES = [
+  'bg-brand-subtle text-brand border-brand-border',
+  'bg-muted text-foreground border-border',
+  'bg-brand-subtle text-brand border-brand-border',
+  'bg-muted text-muted-foreground border-border',
 ];
 
-/** Bir xil ID har doim bir xil rangni beradi — sahifalar orasida barqaror. */
 export function gradientFor(id: string): string {
   const sum = [...id].reduce((total, char) => total + char.charCodeAt(0), 0);
-  return GRADIENTS[sum % GRADIENTS.length]!;
+  return AVATAR_TONES[sum % AVATAR_TONES.length]!;
 }
 
 export function initialsOf(value: string): string {

@@ -140,7 +140,7 @@ export function DocxPreview({ url, label }: { url: string; label: string }) {
           href={url}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+          className="font-medium text-brand hover:underline"
         >
           {m.assignmentFile.openInNewTab}
         </a>

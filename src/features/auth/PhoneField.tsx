@@ -31,7 +31,7 @@ export function PhoneField({
       <AuthFieldLabel htmlFor={id}>{label}</AuthFieldLabel>
 
       <div className="flex gap-2">
-        <span className="grid h-12 w-16 shrink-0 place-items-center rounded-xl border border-border/70 bg-muted/50 text-sm font-medium text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]">
+        <span className="grid h-12 w-16 shrink-0 place-items-center rounded-xl border border-border bg-muted/50 text-sm font-medium text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]">
           +998
         </span>
 

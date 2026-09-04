@@ -222,7 +222,7 @@ export function RegisterForm() {
                   .then((result) => setDemoCode(result.demo_code ?? null))
                   .catch(() => setError(m.register.resendFailed))
               }
-              className="font-medium text-emerald-600 transition-colors hover:underline disabled:opacity-60 dark:text-emerald-400"
+              className="font-medium text-brand transition-colors hover:underline disabled:opacity-60"
             >
               {isSending ? m.register.sending : m.register.resend}
             </button>
@@ -307,7 +307,7 @@ export function RegisterForm() {
         {m.register.haveAccount}{' '}
         <Link
           href="/login"
-          className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+          className="font-medium text-brand hover:underline"
         >
           {m.register.goLogin}
         </Link>

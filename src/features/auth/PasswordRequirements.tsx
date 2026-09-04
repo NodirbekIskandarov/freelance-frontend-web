@@ -45,16 +45,16 @@ export function PasswordRequirements({
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-2 dark:border-white/10">
+      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 dark:border-white/10">
         <span className="flex items-center gap-2 text-xs font-semibold text-foreground dark:text-zinc-200">
-          <KeyRound className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+          <KeyRound className="size-3.5 text-brand" />
           {m.password.rulesTitle}
         </span>
         <span
           className={cn(
             'rounded-full px-2 py-0.5 text-[10px] font-medium tabular-nums',
             doneCount === items.length
-              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+              ? 'bg-emerald-500/20 text-brand'
               : 'bg-muted text-muted-foreground',
           )}
         >
@@ -69,7 +69,7 @@ export function PasswordRequirements({
             className={cn(
               'flex items-start gap-2 text-[11px] leading-snug transition-colors',
               item.ok
-                ? 'font-medium text-emerald-700 dark:text-emerald-300'
+                ? 'font-medium text-brand'
                 : 'text-muted-foreground',
             )}
           >
@@ -80,7 +80,7 @@ export function PasswordRequirements({
               )}
             >
               {item.ok ? (
-                <Check className="size-2.5 text-emerald-600 dark:text-emerald-400" />
+                <Check className="size-2.5 text-brand" />
               ) : (
                 <X className="size-2.5 opacity-50" />
               )}
@@ -90,13 +90,13 @@ export function PasswordRequirements({
         ))}
       </ul>
 
-      <p className="border-t border-border/60 px-3 py-2 text-[10px] leading-relaxed text-muted-foreground dark:border-white/10">
+      <p className="border-t border-border px-3 py-2 text-[10px] leading-relaxed text-muted-foreground dark:border-white/10">
         <span className="font-medium text-foreground/80 dark:text-zinc-400">
           {m.password.example}
         </span>
-        <span className="font-mono text-emerald-700 dark:text-emerald-400">Aliyev2024</span>
+        <span className="font-mono text-brand">Aliyev2024</span>
         <span className="mx-1">·</span>
-        <span className="font-mono text-emerald-700 dark:text-emerald-400">Vali_2024</span>
+        <span className="font-mono text-brand">Vali_2024</span>
       </p>
     </div>
   );

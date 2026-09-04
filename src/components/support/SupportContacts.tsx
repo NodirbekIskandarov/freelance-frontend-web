@@ -26,7 +26,7 @@ export function SupportContacts({ m }: { m: Messages }) {
       value: siteConfig.contact.email,
       note: m.help.contactEmailNote,
       href: `mailto:${siteConfig.contact.email}`,
-      tone: 'bg-emerald-500/10 text-emerald-500',
+      tone: 'bg-emerald-500/10 text-brand',
     },
     {
       icon: Phone,
@@ -34,7 +34,7 @@ export function SupportContacts({ m }: { m: Messages }) {
       value: formatPhone(siteConfig.contact.phone),
       note: m.help.contactPhoneNote,
       href: `tel:${siteConfig.contact.phone}`,
-      tone: 'bg-amber-500/10 text-amber-500',
+      tone: 'bg-amber-500/10 text-warning',
     },
     {
       icon: MapPin,
@@ -55,7 +55,7 @@ export function SupportContacts({ m }: { m: Messages }) {
               <card.icon className="size-4" />
             </span>
             <span className="mt-3 block text-sm font-semibold text-foreground">{card.title}</span>
-            <span className="mt-1 block truncate text-sm text-emerald-700 dark:text-emerald-400">
+            <span className="mt-1 block truncate text-sm text-brand">
               {card.value}
             </span>
             <span className="mt-1 block text-[11px] text-muted-foreground">{card.note}</span>
@@ -68,12 +68,12 @@ export function SupportContacts({ m }: { m: Messages }) {
             href={card.href}
             target={card.href.startsWith('http') ? '_blank' : undefined}
             rel={card.href.startsWith('http') ? 'noreferrer' : undefined}
-            className="rounded-2xl border border-border/70 bg-card p-3.5 transition-colors hover:border-emerald-500/40"
+            className="rounded-2xl border border-border bg-card p-3.5 transition-colors hover:border-emerald-500/40"
           >
             {body}
           </a>
         ) : (
-          <div key={card.title} className="rounded-2xl border border-border/70 bg-card p-3.5">
+          <div key={card.title} className="rounded-2xl border border-border bg-card p-3.5">
             {body}
           </div>
         );

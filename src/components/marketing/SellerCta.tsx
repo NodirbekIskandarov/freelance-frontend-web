@@ -56,13 +56,13 @@ export function SellerCta({ awaitingVariants }: { awaitingVariants: number }) {
         <div className="overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-500/[0.07] via-transparent to-transparent p-5 sm:p-7 lg:p-9">
           <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-12">
             <div>
-              <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+              <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-warning">
                 {m.home.sellerBadge}
               </span>
 
               <h2 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                 {m.home.sellerTitle}{' '}
-                <span className="text-amber-600 dark:text-amber-400">
+                <span className="text-warning">
                   {m.home.sellerTitleAccent}
                 </span>
               </h2>
@@ -89,9 +89,9 @@ export function SellerCta({ awaitingVariants }: { awaitingVariants: number }) {
               {REWARD_ROWS.map((row) => (
                 <li
                   key={row.title(m)}
-                  className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-warning">
                     <row.icon className="size-4" />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -100,7 +100,7 @@ export function SellerCta({ awaitingVariants }: { awaitingVariants: number }) {
                     </span>
                     <span className="block text-[11px] text-muted-foreground">{row.note(m)}</span>
                   </span>
-                  <span className="shrink-0 text-sm font-bold text-amber-600 tabular-nums dark:text-amber-400">
+                  <span className="shrink-0 text-sm font-bold text-warning tabular-nums dark:text-amber-400">
                     {row.amount(m)}
                   </span>
                 </li>

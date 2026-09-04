@@ -77,7 +77,7 @@ export function NotificationList() {
                   <span
                     className={cn(
                       'rounded-full px-1.5 text-[10px] leading-4 font-bold',
-                      active ? 'bg-emerald-950/15' : 'bg-emerald-500/15 text-emerald-600',
+                      active ? 'bg-emerald-950/15' : 'bg-emerald-500/15 text-brand',
                     )}
                   >
                     {count}
@@ -122,7 +122,7 @@ export function NotificationList() {
             type="button"
             disabled={markAllState.isLoading}
             onClick={() => void markAll()}
-            className="text-sm font-medium text-emerald-600 hover:underline disabled:opacity-50 dark:text-emerald-400"
+            className="text-sm font-medium text-brand hover:underline disabled:opacity-50"
           >
             {m.notifications.markAllLong}
           </button>
@@ -141,7 +141,7 @@ export function NotificationList() {
           <p className="mt-1 text-sm text-muted-foreground">{m.notifications.emptyHint}</p>
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border/60 bg-card">
+        <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
           {/* Bir xil turdagi ketma-ket xabarlar bitta kartaga yig'iladi —
               sabab `groupNotifications` da. */}
           {groupNotifications(data.results).map((entry) => (

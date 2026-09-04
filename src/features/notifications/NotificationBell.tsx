@@ -94,7 +94,7 @@ export function NotificationBell() {
                 type="button"
                 disabled={markAllState.isLoading}
                 onClick={() => void markAll()}
-                className="text-xs font-medium text-emerald-600 hover:underline disabled:opacity-50 dark:text-emerald-400"
+                className="text-xs font-medium text-brand hover:underline disabled:opacity-50"
               >
                 {m.notifications.markAll}
               </button>
@@ -125,7 +125,7 @@ export function NotificationBell() {
 
           <Link
             href="/notifications"
-            className="block border-t border-border py-3 text-center text-sm font-medium text-emerald-600 hover:bg-muted dark:border-zinc-800 dark:text-emerald-400"
+            className="block border-t border-border py-3 text-center text-sm font-medium text-brand hover:bg-muted dark:border-zinc-800"
           >
             {m.notifications.seeAll}
           </Link>

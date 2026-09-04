@@ -26,7 +26,7 @@ const SEMESTER_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
 }));
 
 const fieldClass =
-  'w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -138,7 +138,7 @@ export function SubjectRequestModal({
     >
       {done ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{m.requests.sentTitle}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {m.requests.subjectSentText}

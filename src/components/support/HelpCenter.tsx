@@ -62,7 +62,7 @@ const SHORTCUTS: {
     section: 'guarantee',
     item: 0,
     icon: RotateCcw,
-    tone: 'bg-amber-500/10 text-amber-500',
+    tone: 'bg-amber-500/10 text-warning',
     label: (m) => m.help.shortcutRefund,
     note: (m) => m.help.shortcutRefundNote,
   },
@@ -70,7 +70,7 @@ const SHORTCUTS: {
     section: 'selling',
     item: 0,
     icon: Upload,
-    tone: 'bg-emerald-500/10 text-emerald-500',
+    tone: 'bg-emerald-500/10 text-brand',
     label: (m) => m.help.shortcutUpload,
     note: (m) => m.help.shortcutUploadNote,
   },
@@ -207,7 +207,7 @@ export function HelpCenter({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={m.help.searchPlaceholder}
-            className="h-12 w-full rounded-2xl border border-border/70 bg-card pr-4 pl-11 text-sm text-foreground transition-colors outline-none focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
+            className="h-12 w-full rounded-2xl border border-border bg-card pr-4 pl-11 text-sm text-foreground transition-colors outline-none focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20"
           />
         </div>
 
@@ -218,7 +218,7 @@ export function HelpCenter({
               key={term(m)}
               type="button"
               onClick={() => setQuery(term(m))}
-              className="h-8 rounded-full border border-border/70 px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              className="h-8 rounded-full border border-border px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
             >
               {term(m)}
             </button>
@@ -237,7 +237,7 @@ export function HelpCenter({
               key={`card-${shortcut.section}-${shortcut.item}`}
               type="button"
               onClick={() => jumpTo(section.id, shortcut.item)}
-              className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card px-3.5 py-3 text-left transition-colors hover:border-emerald-500/40"
+              className="group flex items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-3 text-left transition-colors hover:border-emerald-500/40"
             >
               <span
                 className={cn('grid size-9 shrink-0 place-items-center rounded-xl', shortcut.tone)}
@@ -262,7 +262,7 @@ export function HelpCenter({
         <div className="min-w-0 lg:sticky lg:top-20">
           <nav
             aria-label={m.help.sectionsLabel}
-            className="overflow-hidden rounded-2xl border border-border/70 bg-card p-2"
+            className="overflow-hidden rounded-2xl border border-border bg-card p-2"
           >
             <p className="px-1.5 pt-1 pb-2 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
               {m.help.sectionsLabel}
@@ -304,7 +304,7 @@ export function HelpCenter({
             </ul>
           </nav>
 
-          <section className="mt-3 rounded-2xl border border-border/70 bg-card p-3.5">
+          <section className="mt-3 rounded-2xl border border-border bg-card p-3.5">
             <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <span className="size-2 rounded-full bg-emerald-500" aria-hidden />
               {m.help.operatorsTitle}
@@ -337,7 +337,7 @@ export function HelpCenter({
               <button
                 type="button"
                 onClick={toggleAll}
-                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-border/70 px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {allOpen ? <Minus className="size-3.5" /> : <Plus className="size-3.5" />}
                 {allOpen ? m.help.collapseAll : m.help.expandAll}
@@ -373,7 +373,7 @@ export function HelpCenter({
                     key={key}
                     className={cn(
                       'overflow-hidden rounded-2xl border bg-card transition-colors',
-                      isOpen ? 'border-emerald-500/30' : 'border-border/70',
+                      isOpen ? 'border-emerald-500/30' : 'border-border',
                     )}
                   >
                     <h3>
@@ -387,7 +387,7 @@ export function HelpCenter({
                           className={cn(
                             'mt-0.5 grid size-6 shrink-0 place-items-center rounded-md text-[11px] font-bold tabular-nums',
                             isOpen
-                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                              ? 'bg-emerald-500/15 text-brand'
                               : 'bg-muted text-muted-foreground',
                           )}
                         >
@@ -407,7 +407,7 @@ export function HelpCenter({
                             </span>
                           )}
                           {query && (
-                            <span className="mt-1 block text-[11px] text-emerald-700 dark:text-emerald-400">
+                            <span className="mt-1 block text-[11px] text-brand">
                               {section.title}
                             </span>
                           )}
@@ -428,7 +428,7 @@ export function HelpCenter({
                             <ol className="mt-3 space-y-2 rounded-xl bg-muted/40 p-3">
                               {item.steps.map((step, stepIndex) => (
                                 <li key={step} className="flex items-start gap-2.5">
-                                  <span className="grid size-5 shrink-0 place-items-center rounded-md bg-emerald-500/15 text-[10px] font-bold text-emerald-700 tabular-nums dark:text-emerald-300">
+                                  <span className="grid size-5 shrink-0 place-items-center rounded-md bg-emerald-500/15 text-[10px] font-bold text-brand tabular-nums">
                                     {stepIndex + 1}
                                   </span>
                                   <span className="text-xs leading-relaxed text-muted-foreground">
@@ -439,7 +439,7 @@ export function HelpCenter({
                             </ol>
                           )}
 
-                          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-border/50 pt-3">
+                          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
                             <div className="flex items-center gap-2">
                               <span className="text-[11px] text-muted-foreground">
                                 {vote ? m.help.thanks : m.help.helpful}
@@ -452,7 +452,7 @@ export function HelpCenter({
                                     onClick={() =>
                                       setFeedback((current) => ({ ...current, [key]: value }))
                                     }
-                                    className="h-7 rounded-lg border border-border/70 px-2.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted"
+                                    className="h-7 rounded-lg border border-border px-2.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted"
                                   >
                                     {value === 'yes' ? m.common.yes : m.common.no}
                                   </button>
@@ -466,7 +466,7 @@ export function HelpCenter({
                               <button
                                 type="button"
                                 onClick={() => setAppealTopic('other')}
-                                className="text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                                className="text-xs font-semibold text-brand"
                               >
                                 {m.help.askOperator} →
                               </button>
@@ -474,7 +474,7 @@ export function HelpCenter({
                               item.link && (
                                 <Link
                                   href={item.link.href}
-                                  className="text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                                  className="text-xs font-semibold text-brand"
                                 >
                                   {item.link.label} →
                                 </Link>
@@ -490,7 +490,7 @@ export function HelpCenter({
             )}
           </div>
 
-          <section className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card p-4">
+          <section className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-foreground">{m.help.stillStuck}</p>
               <p className="mt-1 max-w-md text-xs leading-relaxed text-muted-foreground">

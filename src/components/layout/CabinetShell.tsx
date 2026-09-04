@@ -130,7 +130,7 @@ export function CabinetShell({ children }: { children: ReactNode }) {
                     className={cn(
                       'flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
                       isActive
-                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                        ? 'bg-emerald-500/10 text-brand'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     )}
                   >

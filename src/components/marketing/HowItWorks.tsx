@@ -35,8 +35,8 @@ export function HowItWorks() {
   return (
     <section id="qanday-ishlaydi" className="pb-[40px]" aria-label={m.home.howAria}>
       <Container>
-        <div className="overflow-hidden rounded-3xl bg-zinc-950 px-6 py-10 sm:px-8 sm:py-12 lg:px-10">
-          <h2 className="text-center text-2xl font-bold tracking-tight text-white sm:text-[1.75rem]">
+        <div className="overflow-hidden rounded-3xl border border-panel-border bg-panel px-6 py-10 sm:px-8 sm:py-12 lg:px-10">
+          <h2 className="text-center text-2xl font-bold tracking-tight text-panel-foreground sm:text-[1.75rem]">
             {m.home.howTitle}
           </h2>
 
@@ -45,16 +45,16 @@ export function HowItWorks() {
               <Fragment key={index}>
                 <div className="flex-1 lg:px-2 xl:px-3">
                   <div className="flex items-center gap-3">
-                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500 text-sm font-bold text-white">
+                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
                       {index + 1}
                     </div>
-                    <div className="grid size-12 place-items-center rounded-xl bg-zinc-800/90 ring-1 ring-white/10">
-                      <step.icon className="size-5 text-emerald-400" />
+                    <div className="grid size-12 place-items-center rounded-xl bg-panel-card-strong ring-1 ring-panel-border">
+                      <step.icon className="size-5 text-panel-accent" />
                     </div>
                   </div>
 
-                  <h3 className="mt-5 text-base font-bold text-white">{step.title(m)}</h3>
-                  <p className="mt-2 max-w-[220px] text-sm leading-relaxed text-zinc-400">
+                  <h3 className="mt-5 text-base font-bold text-panel-foreground">{step.title(m)}</h3>
+                  <p className="mt-2 max-w-[220px] text-sm leading-relaxed text-panel-muted">
                     {step.desc(m)}
                   </p>
                 </div>
@@ -62,7 +62,7 @@ export function HowItWorks() {
                 {index < steps.length - 1 ? (
                   <div className="hidden shrink-0 items-center self-start pt-5 lg:flex lg:w-10 xl:w-14">
                     <div className="h-px flex-1 border-t border-dashed border-zinc-600" />
-                    <ChevronRight className="size-4 shrink-0 text-zinc-600" />
+                    <ChevronRight className="size-4 shrink-0 text-panel-dim" />
                   </div>
                 ) : null}
               </Fragment>

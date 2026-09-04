@@ -44,7 +44,10 @@
  * rejim (.dark) qiymatlari eski ilovadan aynan ko'chirilgan.
  */
 :root {
-  --background: oklch(1 0 0);
+  /* Sahifa fon KARTADAN farq qiladi (#fafafa / #ffffff). Ilgari ikkalasi
+     ham sof oq edi va karta faqat deyarli ko'rinmas chegara bilan
+     ajralardi — sahifa tekis varaqqa o'xshab qolgandi. */
+  --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -55,13 +58,79 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+
+  /*
+   * Ikkilamchi matn TO'QLASHTIRILDI: oklch(0.556) ≈ #737373 sof oq ustida
+   * 4.74:1 berardi — chegaradan zo'rg'a o'tadi — va yashil tusli kartada
+   * (#ecfdf5) aynan 4.5:1 ga tushib qolardi, ya'ni o'sha yerda talab
+   * bajarilmasdi. Yangi qiymat ≈ #52525b: oq ustida 7.73:1, tus ustida
+   * 7.34:1.
+   */
+  --muted-foreground: oklch(0.44 0.006 286);
+
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+
+  /* Chegara ko'rinadigan bo'ldi va komponentlar unga SHAFFOFLIKSIZ
+     murojaat qiladi: `border-border/60` oq karta ustida deyarli yo'q
+     edi. */
+  --border: oklch(0.905 0.002 286);
+  --input: oklch(0.905 0.002 286);
+  --ring: oklch(0.52 0.13 163);
+
+  /* ---------------------------------------------------------------
+   * Brend va holat ranglari — BITTA to'plam.
+   *
+   * Ilgari ular yo'q edi va har komponent o'zi rang tanlardi: narxlar
+   * yashil, binafsha, sariq va hatto QIZIL bo'lib chizilardi — «kelishuv
+   * asosida» yozuvi xato xabariday ko'rinardi.
+   * --------------------------------------------------------------- */
+
+  /* Yorug'da emerald-700: emerald-500 oq ustida 2.54:1, emerald-600 esa
+     3.77:1 — ikkalasi ham kichik matn uchun yetmaydi. 700 → 5.48:1. */
+  --brand: #047857;
+  --brand-foreground: #ffffff;
+  --brand-subtle: #ecfdf5;
+  --brand-border: #a7f3d0;
+
+  --success: #047857;
+  --success-subtle: #ecfdf5;
+  /* amber-700 (#a16207) sariq tusli banner ustida 4.33:1 berardi —
+     o'sha yerda talab bajarilmasdi. Bu qiymat tus ustida 4.95:1, oq
+     ustida 5.63:1. */
+  --warning: #96590a;
+  --warning-subtle: #fefce8;
+  --info: #1d4ed8;
+  --info-subtle: #eff6ff;
+  --destructive-subtle: #fef2f2;
+
+  /* BARCHA pul qiymatlari uchun bitta rang. Chuqur yashil: pul ko'zga
+     tashlanadi, lekin holat rangi bilan chalkashmaydi (7.68:1). */
+  --price: #065f46;
+
+  /* ---------------------------------------------------------------
+   * «Panel» — hero va «Qanday ishlaydi?» bloklari.
+   *
+   * Ilgari ular `bg-zinc-950 text-white` bilan QAT'IY qorong'i edi va
+   * yorug' rejimda sahifa oq varaq ustidagi qora yamoqlarga o'xshardi.
+   * Endi sirt ham, ustidagi matn ham mavzuga ergashadi.
+   * --------------------------------------------------------------- */
+  --panel: #f0fdf7;
+  --panel-foreground: oklch(0.145 0 0);
+  --panel-muted: #52525b;
+  --panel-dim: #71717a;
+  --panel-border: #d4d4d8;
+  --panel-glass: rgba(255, 255, 255, 0.72);
+  --panel-accent: #047857;
+  --panel-accent-soft: rgba(4, 120, 87, 0.1);
+  --panel-glow: rgba(16, 185, 129, 0.1);
+  /* Panel ustidagi «shisha» kartalar: yorug'da OQ, qorong'ida deyarli
+     qora. Ilgari ular `bg-zinc-900/…` bilan qat'iy edi va yorug'
+     sirtda kulrang yamoq bo'lib turardi. */
+  --panel-card: rgba(255, 255, 255, 0.85);
+  --panel-card-strong: #ffffff;
+  --panel-divider: rgba(0, 0, 0, 0.07);
 }
 
 .dark {
@@ -76,13 +145,49 @@
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  /* O'lchangan: oklch(0.708) ≈ #71717a karta ustida 3.84:1 berardi va
+     11px yozuvlar («21 sotuv», «29 fan») talabdan past edi. Bu qiymat
+     6.6:1. Qorong'i mavzuning xarakteri o'zgarmaydi — matn ozgina
+     yorug'roq. */
+  --muted-foreground: oklch(0.68 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.7 0.15 163);
+
+  /* Qorong'ida aksent YORUG' bo'lishi kerak — teskarisi. */
+  --brand: #34d399;
+  --brand-foreground: #022c22;
+  --brand-subtle: rgba(16, 185, 129, 0.12);
+  --brand-border: rgba(16, 185, 129, 0.24);
+
+  --success: #4ade80;
+  --success-subtle: rgba(74, 222, 128, 0.12);
+  --warning: #fbbf24;
+  --warning-subtle: rgba(251, 191, 36, 0.12);
+  --info: #60a5fa;
+  --info-subtle: rgba(96, 165, 250, 0.12);
+  --destructive-subtle: rgba(248, 113, 113, 0.12);
+
+  --price: #34d399;
+
+  --panel: #09090b;
+  --panel-foreground: #ffffff;
+  --panel-muted: #a1a1aa;
+  /* O'lchangan: #71717a panel ustida 3.85:1 berardi va 11px yozuvlar
+     («21 sotuv», «TATU · 1-kurs») talabdan past edi. Bu qiymat 5.49:1,
+     lekin `panel-muted` dan hamon xiraroq — bosqichlar saqlanadi. */
+  --panel-dim: #8b8b94;
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --panel-glass: rgba(255, 255, 255, 0.05);
+  --panel-accent: #6ee7b7;
+  --panel-accent-soft: rgba(16, 185, 129, 0.18);
+  --panel-glow: rgba(16, 185, 129, 0.18);
+  --panel-card: rgba(24, 24, 27, 0.6);
+  --panel-card-strong: rgba(24, 24, 27, 0.85);
+  --panel-divider: rgba(255, 255, 255, 0.06);
 }
 
 /* Tailwind v4: yuqoridagi CSS o'zgaruvchilarni utility'larga bog'laydi. */
@@ -105,4 +210,30 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-subtle: var(--brand-subtle);
+  --color-brand-border: var(--brand-border);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-price: var(--price);
+
+  --color-panel: var(--panel);
+  --color-panel-foreground: var(--panel-foreground);
+  --color-panel-muted: var(--panel-muted);
+  --color-panel-dim: var(--panel-dim);
+  --color-panel-border: var(--panel-border);
+  --color-panel-glass: var(--panel-glass);
+  --color-panel-accent: var(--panel-accent);
+  --color-panel-accent-soft: var(--panel-accent-soft);
+  --color-panel-glow: var(--panel-glow);
+  --color-panel-card: var(--panel-card);
+  --color-panel-card-strong: var(--panel-card-strong);
+  --color-panel-divider: var(--panel-divider);
 }

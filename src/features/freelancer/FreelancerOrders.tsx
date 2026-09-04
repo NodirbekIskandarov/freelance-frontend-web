@@ -86,7 +86,7 @@ function JobCard({ job, onDeliver }: { job: ExchangeTask; onDeliver: () => void 
   const { data: detail } = useGetTaskQuery(job.id);
 
   return (
-    <article className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <article className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start gap-4">
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-bold text-foreground">{job.title}</h2>

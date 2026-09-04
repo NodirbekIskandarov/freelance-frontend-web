@@ -65,7 +65,7 @@ function NavLink({
   const className = cn(
     'inline-flex items-center rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
     active
-      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+      ? 'bg-emerald-500/10 text-brand'
       : 'text-muted-foreground hover:text-foreground',
     mobile && 'w-full px-3 py-2.5',
   );
@@ -129,7 +129,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background dark:border-white/10 dark:bg-zinc-950">
+    <header className="sticky top-0 z-50 border-b border-border bg-background dark:border-white/10 dark:bg-zinc-950">
       <div className="mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 sm:px-6">
         <SiteLogo className="shrink-0" />
 
@@ -189,7 +189,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className={cn('border-t border-border/60 md:hidden', open ? 'block' : 'hidden')}>
+      <div className={cn('border-t border-border md:hidden', open ? 'block' : 'hidden')}>
         <div className="mx-auto max-w-[90rem] px-4 pt-2 pb-5 sm:px-6">
           <div className="grid gap-0.5 rounded-2xl border border-border bg-card p-2 dark:border-white/10 dark:bg-zinc-900">
             {PUBLIC_NAV_ITEMS.map((item) => (

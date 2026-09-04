@@ -28,7 +28,7 @@ export function LandingBottomGrid() {
         <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
           <FAQ items={landingFaq(locale)} />
 
-          <aside className="rounded-2xl border border-border/70 bg-card p-5 lg:self-start">
+          <aside className="rounded-2xl border border-border bg-card p-5 lg:self-start">
             <h2 className="text-lg font-bold tracking-tight text-foreground">
               {m.home.signupTitle}
             </h2>
@@ -43,7 +43,7 @@ export function LandingBottomGrid() {
             <ul className="mt-4 space-y-2">
               {perks.map((perk) => (
                 <li key={perk} className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-brand" />
                   {perk}
                 </li>
               ))}

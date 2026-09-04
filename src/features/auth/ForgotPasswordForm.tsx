@@ -223,7 +223,7 @@ export function ForgotPasswordForm() {
               type="button"
               disabled={isSending}
               onClick={() => void send(identifier).catch(() => setError(m.forgot.resendFailed))}
-              className="font-medium text-emerald-600 transition-colors hover:underline disabled:opacity-60 dark:text-emerald-400"
+              className="font-medium text-brand transition-colors hover:underline disabled:opacity-60"
             >
               {isSending ? m.forgot.sending : m.forgot.resend}
             </button>
@@ -276,7 +276,7 @@ export function ForgotPasswordForm() {
         {m.auth.haveAccount}{' '}
         <Link
           href="/login"
-          className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+          className="font-medium text-brand hover:underline"
         >
           {m.auth.goLogin}
         </Link>

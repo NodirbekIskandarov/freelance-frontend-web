@@ -98,7 +98,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
   const { data: detail } = useGetTaskQuery(task.id);
 
   return (
-    <article className="rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <article className="rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h2 className="text-sm font-bold text-foreground">{task.title}</h2>
@@ -109,7 +109,7 @@ function TaskCard({ task, onOffer }: { task: ExchangeTask; onOffer: () => void }
         </div>
 
         <div className="text-right">
-          <div className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+          <div className="text-sm font-bold text-brand">
             {task.budget !== null ? money.decimalSom(task.budget) : m.freelance.negotiable}
           </div>
           <div className="text-[11px] text-muted-foreground">{task.offer_count} ta taklif</div>

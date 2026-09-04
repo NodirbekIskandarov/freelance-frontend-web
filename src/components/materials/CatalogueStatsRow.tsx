@@ -35,7 +35,7 @@ export function CatalogueStatsRow({ stats }: { stats: CatalogueStats }) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 sm:px-4 sm:py-3.5"
+          className="rounded-2xl border border-border bg-card px-3.5 py-3 sm:px-4 sm:py-3.5"
         >
           {/* Chapdagi yashil chiziq — kartani sanoq sifatida o'qitadi va
               to'rttasini bitta blok bo'lib ko'rinishga bog'laydi. */}

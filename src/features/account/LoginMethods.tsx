@@ -36,7 +36,7 @@ const ICONS: Record<LoginMethodKind, typeof Phone> = {
 };
 
 const fieldClass =
-  'h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
+  'h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/60 focus-visible:ring-3 focus-visible:ring-emerald-500/20';
 
 /**
  * Bir usulni bog'lash oynasi: identifikator → kod → tasdiq.
@@ -222,13 +222,13 @@ function MethodRow({ method }: { method: LoginMethod }) {
   const Icon = ICONS[method.kind];
 
   return (
-    <li className="flex flex-wrap items-center gap-3 border-b border-border/50 py-3.5 last:border-0">
+    <li className="flex flex-wrap items-center gap-3 border-b border-border py-3.5 last:border-0">
       <span
         className={cn(
           'grid size-10 shrink-0 place-items-center rounded-xl',
           method.verified
-            ? 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400'
-            : 'bg-amber-500/12 text-amber-600 dark:text-amber-400',
+            ? 'bg-emerald-500/12 text-brand'
+            : 'bg-amber-500/12 text-warning',
         )}
       >
         <Icon className="size-5" />
@@ -240,7 +240,7 @@ function MethodRow({ method }: { method: LoginMethod }) {
             {loginMethodLabel(method.kind, m)}
           </span>
           {method.verified ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[11px] font-medium text-brand">
               <Check className="size-3" />
               {m.loginMethods.verified}
             </span>
@@ -313,7 +313,7 @@ export function LoginMethods() {
   const linked = new Set(data.methods.map((item) => item.kind));
 
   return (
-    <div className="rounded-xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <div className="rounded-xl border border-border bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-foreground">{m.loginMethods.title}</h3>
@@ -329,7 +329,7 @@ export function LoginMethods() {
         ))}
       </ul>
 
-      <div className="mt-4 flex flex-wrap gap-2 border-t border-border/50 pt-4">
+      <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
         {!linked.has('phone') && (
           <Button variant="outline" size="sm" onClick={() => setLinking('phone')}>
             <Plus className="size-3.5" />
@@ -359,7 +359,7 @@ export function LoginMethods() {
         odamni chalg'itardi.
       */}
       {!linked.has('google') && isGoogleConfigured && (
-        <div className="mt-4 border-t border-border/50 pt-4">
+        <div className="mt-4 border-t border-border pt-4">
           <p className="mb-2 text-xs text-muted-foreground">{m.loginMethods.googleHint}</p>
           <GoogleCredentialButton onCredential={handleGoogle} text="signin_with" />
 

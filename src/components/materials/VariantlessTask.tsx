@@ -60,7 +60,7 @@ export function VariantlessTask({
   const alreadyRequested = justRequested || (myRequests.data?.count ?? 0) > 0;
 
   return (
-    <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
+    <div className="rounded-xl border border-border bg-muted/20 p-4">
       <p className="text-sm font-semibold text-foreground">Yagona topshiriq</p>
       <p className="mt-0.5 text-xs text-muted-foreground">{m.variants.variantless}</p>
 
@@ -108,7 +108,7 @@ export function VariantlessTask({
         )}
       </div>
 
-      <div className="mt-3 border-t border-border/70 pt-3">
+      <div className="mt-3 border-t border-border pt-3">
         {/* Foydalanuvchining o'z yuborganlari — chop etilmagunicha ular
             katalogda ko'rinmaydi, shuning uchun bu ro'yxatsiz odam yechimi
             yetib bordimi-yo'qmi bilmasdi. */}
@@ -117,7 +117,7 @@ export function VariantlessTask({
             {mine.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-2 rounded-lg border border-border/70 bg-card px-2.5 py-1.5"
+                className="flex items-center justify-between gap-2 rounded-lg border border-border bg-card px-2.5 py-1.5"
               >
                 <span
                   className="min-w-0 flex-1 truncate text-[11px] text-foreground"
@@ -132,7 +132,7 @@ export function VariantlessTask({
                   className={cn(
                     'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
                     item.status === 'published'
-                      ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                      ? 'bg-emerald-500/15 text-brand'
                       : item.status === 'rejected'
                         ? 'bg-destructive/15 text-destructive'
                         : 'bg-amber-500/15 text-amber-700 dark:text-amber-300',

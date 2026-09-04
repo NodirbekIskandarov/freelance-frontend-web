@@ -280,7 +280,7 @@ export function SubjectTasks({
         />
       </div>
 
-      <div className="mt-4 rounded-2xl border border-border/60 bg-card/80 p-2 sm:p-2.5">
+      <div className="mt-4 rounded-2xl border border-border bg-card/80 p-2 sm:p-2.5">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 [scrollbar-width:none] overflow-x-auto pb-0.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <div
@@ -301,7 +301,7 @@ export function SubjectTasks({
                     className={cn(
                       'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
                       isActive
-                        ? 'bg-background text-emerald-700 dark:text-emerald-300'
+                        ? 'bg-background text-brand'
                         : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
@@ -310,7 +310,7 @@ export function SubjectTasks({
                       className={cn(
                         'inline-flex min-w-[1.25rem] items-center justify-center rounded-md px-1 text-[11px] tabular-nums',
                         isActive
-                          ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                          ? 'bg-emerald-500/10 text-brand'
                           : 'bg-background/60 text-muted-foreground',
                       )}
                     >
@@ -342,7 +342,7 @@ export function SubjectTasks({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={m.tasks.searchPlaceholder}
-              className="h-9 w-full rounded-lg border border-border/60 bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
+              className="h-9 w-full rounded-lg border border-border bg-background/80 pr-8 pl-8 text-sm transition-colors outline-none placeholder:text-muted-foreground/70 focus-visible:border-emerald-500/40 focus-visible:ring-2 focus-visible:ring-emerald-500/10"
             />
             {query && (
               <button
@@ -378,11 +378,11 @@ export function SubjectTasks({
           o'rta ustun belgilaydi va izohlar to'r ostidan darhol chiqadi.
         */}
         <div className="min-w-0 space-y-3 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-          <div className="flex w-full min-w-0 flex-col rounded-2xl border border-border/70 bg-card">
+          <div className="flex w-full min-w-0 flex-col rounded-2xl border border-border bg-card">
             {/* Telefonda YASHIRIN: faol tab allaqachon «Barchasi 5» deb
                 turibdi va bu sarlavha o'sha ikki so'zni qaytarib, birinchi
                 ekrandan 60px yeb qo'yardi. */}
-            <div className="hidden border-b border-border/60 px-3 py-2.5 sm:px-4 lg:block">
+            <div className="hidden border-b border-border px-3 py-2.5 sm:px-4 lg:block">
               <p className="text-[13px] font-medium text-foreground">{tabLabel(type)}</p>
               <p className="text-[11px] text-muted-foreground">
                 {t((x) => x.materials.taskCount, { count: filtered.length })}
@@ -391,7 +391,7 @@ export function SubjectTasks({
 
             <div className="scrollbar-slim max-h-[420px] min-h-0 flex-1 space-y-1 overflow-y-auto p-2 sm:p-2.5">
               {filtered.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border/70 px-4 py-8 text-center">
+                <div className="rounded-xl border border-dashed border-border px-4 py-8 text-center">
                   <p className="text-sm font-medium text-foreground">
                     {counts[type]
                       ? m.tasks.notFound
@@ -419,14 +419,14 @@ export function SubjectTasks({
                         'flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-colors',
                         isActive
                           ? 'border-emerald-500/60 bg-emerald-500/[0.07]'
-                          : 'border-transparent hover:border-border/60 hover:bg-muted/35',
+                          : 'border-transparent hover:border-border hover:bg-muted/35',
                       )}
                     >
                       <span
                         className={cn(
                           'inline-flex size-6 shrink-0 items-center justify-center rounded-md text-[10px] font-semibold tabular-nums',
                           isActive
-                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                            ? 'bg-emerald-500/15 text-brand'
                             : 'bg-muted text-muted-foreground',
                         )}
                       >
@@ -473,7 +473,7 @@ export function SubjectTasks({
                             className={cn(
                               'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap',
                               availability === 'has_solution'
-                                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                                ? 'bg-emerald-500/15 text-brand'
                                 : availability === 'demand'
                                   ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
                                   : 'bg-muted text-muted-foreground',
@@ -499,7 +499,7 @@ export function SubjectTasks({
             Bir xil uchta rang ikkala joyda ishlatiladi va izoh ikki marta
             takrorlanardi.
           */}
-          <div className="rounded-2xl border border-border/70 bg-card px-4 py-3">
+          <div className="rounded-2xl border border-border bg-card px-4 py-3">
             <ul className="space-y-1.5">
               {(['available', 'requested', 'empty'] as const).map((status) => (
                 <li
@@ -550,7 +550,7 @@ export function SubjectTasks({
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-border/70 bg-card px-4 py-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card px-4 py-16 text-center">
               <FileText className="size-8 text-muted-foreground" />
               <p className="mt-3 text-sm font-medium text-foreground">{m.tasks.nothingSelected}</p>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.tasks.pickFromList}</p>
@@ -593,7 +593,7 @@ export function SubjectTasks({
           izohlardan oldin bo'lishi kerak.
         */}
         {active && (
-          <div className="min-w-0 rounded-2xl border border-border/70 bg-card p-4 sm:p-5 lg:col-start-2 lg:row-start-2">
+          <div className="min-w-0 rounded-2xl border border-border bg-card p-4 sm:p-5 lg:col-start-2 lg:row-start-2">
             <AssignmentComments
               key={active.id}
               assignmentId={active.id}

@@ -115,7 +115,7 @@ export function PurchaseModal({
     >
       {isSuccess ? (
         <div className="flex flex-col items-center py-4 text-center">
-          <CircleCheck className="size-10 text-emerald-600 dark:text-emerald-400" />
+          <CircleCheck className="size-10 text-brand" />
           <p className="mt-3 text-sm font-medium text-foreground">{solution.title}</p>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">{m.purchase.doneText}</p>
         </div>
@@ -130,11 +130,11 @@ export function PurchaseModal({
         <div className="space-y-5">
           {/* Nima sotib olinayotgani — oynada bittagina karta bo'lsa ham,
               odam qaysi variantni bosganini adashtirishi mumkin. */}
-          <div className="flex gap-3 border-b border-border/70 pb-4">
+          <div className="flex gap-3 border-b border-border pb-4">
             {/* Bo'sh kulrang kvadrat o'rniga fayl turi: rasm yo'q, lekin
                 shu joy baribir «nima sotib olinayapti» degan savolga
                 javob beradi. Kengaytma noma'lum bo'lsa — oddiy ikonka. */}
-            <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-border/70 bg-muted/40 text-[11px] font-bold tracking-wide text-muted-foreground">
+            <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-border bg-muted/40 text-[11px] font-bold tracking-wide text-muted-foreground">
               {solution.file_format || <FileText className="size-5" aria-hidden />}
             </div>
             <div className="min-w-0">
@@ -201,13 +201,13 @@ export function PurchaseModal({
             {/* To'lov tizimi hali ulanmagan. Tugma qilib qo'yish — bosib,
                 hech nima bo'lmasligini ko'rish; shuning uchun u ochiq
                 «tez orada» deb turadi. */}
-            <p className="mt-2 flex items-center gap-2 rounded-xl border border-dashed border-border/70 px-3.5 py-3 text-xs text-muted-foreground">
+            <p className="mt-2 flex items-center gap-2 rounded-xl border border-dashed border-border px-3.5 py-3 text-xs text-muted-foreground">
               <Plus className="size-3.5 shrink-0" />
               {m.purchase.topUpSoon}
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
+          <div className="rounded-xl border border-border bg-muted/20 p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{m.purchase.priceRow}</span>
               <span className="font-medium text-foreground">
@@ -215,7 +215,7 @@ export function PurchaseModal({
               </span>
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3">
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
               <span className="text-sm font-semibold text-foreground">{m.purchase.totalRow}</span>
               <span className="text-lg font-bold text-foreground">
                 {money.decimalSom(solution.price)}

@@ -71,7 +71,7 @@ export function FreelancerOffers() {
           {data.results.map((offer) => (
             <article
               key={offer.id}
-              className="flex flex-wrap items-center gap-4 rounded-xl border border-border/60 bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+              className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
             >
               <div className="min-w-0 flex-1">
                 <p className="text-xs leading-relaxed text-muted-foreground">{offer.message}</p>

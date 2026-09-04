@@ -26,8 +26,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Fokus halqasi TOKENDAN: yorug'da emerald-500 oq fonda 2.5:1 berardi
+     va halqa deyarli ko'rinmasdi. `--ring` ikkala mavzuda ham fonidan
+     kamida 3:1 ajraladi. */
   :focus-visible {
-    outline: 2px solid var(--color-emerald-500);
+    outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
 }

@@ -25,7 +25,7 @@ export function Guarantee({
   const cards = [
     {
       icon: CircleCheck,
-      tone: 'bg-emerald-500/10 text-emerald-500',
+      tone: 'bg-emerald-500/10 text-brand',
       title: m.home.guaranteeModeration,
       text: m.home.guaranteeModerationText,
     },
@@ -37,7 +37,7 @@ export function Guarantee({
     },
     {
       icon: RotateCcw,
-      tone: 'bg-amber-500/10 text-amber-500',
+      tone: 'bg-amber-500/10 text-warning',
       title: t((x) => x.home.guaranteeWindow, { window: windowLabel }),
       text: t((x) => x.home.guaranteeWindowText, { hours: authorLabel }),
     },
@@ -50,11 +50,11 @@ export function Guarantee({
   ];
 
   return (
-    <section className="border-y border-border/60 bg-muted/20 py-10 sm:py-14">
+    <section className="border-y border-border bg-muted/20 py-10 sm:py-14">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12">
           <div>
-            <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+            <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-brand">
               {m.home.guaranteeBadge}
             </span>
             <h2 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -76,7 +76,7 @@ export function Guarantee({
 
           <div className="grid gap-2.5 sm:grid-cols-2">
             {cards.map((card) => (
-              <article key={card.title} className="rounded-2xl border border-border/70 bg-card p-4">
+              <article key={card.title} className="rounded-2xl border border-border bg-card p-4">
                 <span
                   className={`grid size-9 place-items-center rounded-xl ${card.tone}`}
                   aria-hidden

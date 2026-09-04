@@ -192,7 +192,7 @@ export function AccountProfile() {
   if (isLoading || !user) return <div className="h-64 animate-pulse rounded-xl bg-muted" />;
 
   return (
-    <div className="rounded-xl border border-border/60 bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
+    <div className="rounded-xl border border-border bg-background p-5 dark:border-zinc-800 dark:bg-zinc-900/70">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <AvatarUpload user={user} />
 

@@ -74,18 +74,18 @@ export default async function FreelancePage({ params }: PageProps<'/[locale]'>) 
       <Container className="py-8 sm:py-12">
         <Breadcrumbs items={crumbs} />
 
-        <header className="mt-6 overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-950 via-zinc-950 to-black p-6 sm:p-8">
-          <p className="text-xs font-semibold tracking-wider text-emerald-400 uppercase">
+        <header className="mt-6 overflow-hidden rounded-2xl border border-panel-border bg-panel p-6 sm:p-8">
+          <p className="text-xs font-semibold tracking-wider text-panel-accent uppercase">
             {interpolate(m.pages.verifiedFreelancers, { count: freelancers.length })}
           </p>
-          <h1 className="mt-2 text-2xl leading-tight font-bold text-white sm:text-3xl">
+          <h1 className="mt-2 text-2xl leading-tight font-bold text-panel-foreground sm:text-3xl">
             {m.pages.findLead}{' '}
             <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
               {m.pages.findAccent}
             </span>{' '}
             {m.pages.findTail}
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-400">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-panel-muted">
             {m.pages.freelanceLead}
           </p>
 
@@ -107,8 +107,8 @@ export default async function FreelancePage({ params }: PageProps<'/[locale]'>) 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="inline-flex items-baseline gap-2 rounded-xl border border-emerald-500/25 bg-black/40 px-3.5 py-2">
-      <dt className="order-2 text-xs text-zinc-500">{label}</dt>
-      <dd className="order-1 text-base font-bold text-emerald-300 tabular-nums sm:text-lg">
+      <dt className="order-2 text-xs text-panel-dim">{label}</dt>
+      <dd className="order-1 text-base font-bold text-panel-accent tabular-nums sm:text-lg">
         {value}
       </dd>
     </div>

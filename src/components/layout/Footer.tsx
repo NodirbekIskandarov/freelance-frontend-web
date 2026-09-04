@@ -62,7 +62,7 @@ function ContactItem({
 }) {
   const content = (
     <>
-      <Icon className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+      <Icon className="mt-0.5 size-4 shrink-0 text-brand" />
       <span>{children}</span>
     </>
   );

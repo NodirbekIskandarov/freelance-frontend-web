@@ -17,7 +17,7 @@ export function AuthCard({ children, className }: { children: ReactNode; classNa
   return (
     <div
       className={cn(
-        'relative w-full max-w-[540px] overflow-hidden rounded-[16px] border border-border/70 bg-card p-6 sm:p-8 dark:border-white/10 dark:bg-zinc-900/92 dark:backdrop-blur-2xl',
+        'relative w-full max-w-[540px] overflow-hidden rounded-[16px] border border-border bg-card p-6 sm:p-8 dark:border-white/10 dark:bg-zinc-900/92 dark:backdrop-blur-2xl',
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function AuthCardHeader({
 }) {
   return (
     <div className="mb-6 text-center">
-      <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+      <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl border border-emerald-500/25 bg-emerald-500/10 text-brand">
         {icon}
       </div>
       <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{title}</h1>
@@ -58,7 +58,7 @@ export function AuthSeparator() {
   return (
     <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-border/70 dark:border-white/10" />
+        <div className="w-full border-t border-border dark:border-white/10" />
       </div>
       <div className="relative flex justify-center text-xs tracking-wider uppercase">
         <span className="bg-card px-3 text-muted-foreground dark:bg-transparent">{m.auth.or}</span>
@@ -83,7 +83,7 @@ export function AuthInput({ className, ...props }: InputHTMLAttributes<HTMLInput
     <input
       {...props}
       className={cn(
-        'h-12 w-full rounded-xl border border-border/70 bg-background px-4 text-sm text-foreground transition-colors outline-none',
+        'h-12 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground transition-colors outline-none',
         'placeholder:text-muted-foreground/70 focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/20',
         'dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-zinc-500',
         className,

@@ -60,9 +60,9 @@ export function AssignmentOverview({
   ];
 
   return (
-    <section className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+    <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="rounded-md bg-emerald-500/12 px-2 py-1 text-[10px] font-bold tracking-wide text-emerald-700 uppercase dark:text-emerald-300">
+        <span className="rounded-md bg-emerald-500/12 px-2 py-1 text-[10px] font-bold tracking-wide text-brand uppercase">
           {assignmentTypeLabel(type, m.assignmentTypes)}
         </span>
         {variants.length > 0 && (
@@ -92,7 +92,7 @@ export function AssignmentOverview({
       {variants.length > 0 && (
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {tiles.map((tile) => (
-            <div key={tile.label} className="rounded-xl border border-border/60 bg-muted/25 p-3">
+            <div key={tile.label} className="rounded-xl border border-border bg-muted/25 p-3">
               <p className="text-base leading-tight font-bold text-foreground tabular-nums sm:text-lg">
                 {tile.value}
               </p>
