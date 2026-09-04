@@ -651,6 +651,35 @@
 
 .marquee {
   overflow: hidden;
+
+  /*
+   * Ikki chekka XIRALASHIB tugaydi, qirqilmaydi.
+   *
+   * `overflow: hidden` yolg'iz qolganda lenta chekkasida kartalar aniq
+   * vertikal chiziq bo'lib kesilardi va u yerda karta tugagani emas,
+   * ekran tugagani ko'rinardi — ya'ni aylanish o'sha chiziqda
+   * boshlanadigandek taassurot berardi.
+   *
+   * Maska tuman kengligi ekranga qarab o'zgaradi: telefonda 24px lenta
+   * o'rtasidan ko'p joyni yemaydi, keng ekranda esa 64px yumshoqroq
+   * o'tish beradi.
+   */
+  --marquee-fade: clamp(1.5rem, 6vw, 4rem);
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent
+  );
 }
 
 .marquee-track {
