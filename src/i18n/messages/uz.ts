@@ -1413,6 +1413,7 @@ export const uz = {
   },
 
   auth: {
+    alreadySignedIn: 'Siz allaqachon tizimdasiz — bosh sahifaga o‘tkazilmoqda…',
     loginTitle: 'Kirish',
     loginSubtitle: 'Google, telefon raqam yoki email bilan kiring.',
     registerTitle: "Ro'yxatdan o'tish",

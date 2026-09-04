@@ -1399,6 +1399,7 @@ export const ru: Messages = {
   },
 
   auth: {
+    alreadySignedIn: 'Вы уже вошли — переходим на главную…',
     loginTitle: 'Вход',
     loginSubtitle: 'Войдите через Google, номер телефона или email.',
     registerTitle: 'Регистрация',

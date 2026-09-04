@@ -1,4 +1,5 @@
 import { LoginForm } from '@/features/auth/LoginForm';
+import { GuestOnly } from '@/features/auth/GuestOnly';
 import { DEFAULT_LOCALE, isLocale } from '@/i18n/config';
 import { getMessages } from '@/i18n/messages';
 import { buildMetadata } from '@/lib/seo';
@@ -16,5 +17,9 @@ export async function generateMetadata({ params }: PageProps<'/[locale]'>) {
 }
 
 export default function LoginPage() {
-  return <LoginForm />;
+  return (
+    <GuestOnly>
+      <LoginForm />
+    </GuestOnly>
+  );
 }
