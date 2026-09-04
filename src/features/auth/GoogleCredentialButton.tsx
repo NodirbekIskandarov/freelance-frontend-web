@@ -87,21 +87,51 @@ export function GoogleCredentialButton({
      * tanlov `auto` bo'lishi mumkin va u soatga qarab hal qilinadi — qaysi
      * biri amalda chizilganini faqat klass biladi.
      */
+    /*
+     * Oxirgi marta QAYSI qiymatlar bilan chizilgani.
+     *
+     * Bu ikkita son butun tuzatishning o'zagi. `ResizeObserver` kuzatayotgan
+     * konteynerni `render()` ning O'ZI o'zgartiradi: eski tugma o'chiriladi,
+     * yangisi qo'yiladi va balandlik sakraydi — kuzatuvchi yana ishga
+     * tushadi. SDK esa tugmani asinxron chizadi (ramka, shrift, avatar
+     * rasmi ketma-ket keladi va har biri o'lchamni o'zgartiradi), ya'ni
+     * halqa hech qachon tinchimaydi: brauzer Google'ga tinimsiz so'rov
+     * yuborib turadi.
+     *
+     * Shuning uchun endi qayta chizish faqat MA'NOLI o'zgarishda bo'ladi —
+     * tema yoki kenglik. Balandlik o'zgargani hech nimani anglatmaydi: u
+     * tugmaning o'z natijasi.
+     */
+    let lastTheme: string | null = null;
+    let lastWidth = 0;
+
     function render() {
       const google = window.google;
       if (!container || !google) return;
 
       const isDark = document.documentElement.classList.contains('dark');
+      const theme = isDark ? 'filled_black' : 'outline';
+
       // Kenglik konteynerdan: qat'iy qiymat tor ekranda toshib, keng
       // ekranda esa yonidagi maydonlardan tor bo'lib qolardi.
-      const width = Math.min(
-        MAX_WIDTH,
-        Math.round(container.getBoundingClientRect().width) || MAX_WIDTH,
-      );
+      const measured = Math.round(container.getBoundingClientRect().width);
+
+      // Konteyner hali chizilmagan (kengligi nol) — o'lchash ma'nosiz.
+      if (measured === 0 && lastWidth > 0) return;
+
+      const width = Math.min(MAX_WIDTH, measured || MAX_WIDTH);
+
+      /* Bir necha pikselli farq e'tiborga olinmaydi: aylantirish paneli
+         paydo bo'lgani yoki yaxlitlash tufayli kenglik doim bir-ikki
+         piksel tebranib turadi. */
+      if (theme === lastTheme && Math.abs(width - lastWidth) < 8) return;
+
+      lastTheme = theme;
+      lastWidth = width;
 
       container.replaceChildren();
       google.accounts.id.renderButton(container, {
-        theme: isDark ? 'filled_black' : 'outline',
+        theme,
         size: 'large',
         // Sahifadagi boshqa tugmalar dumaloq burchakli; SDK'ning standart
         // to'rtburchagi ular orasida begona ko'rinardi.
